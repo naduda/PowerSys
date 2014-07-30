@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<MenuBar xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.MenuBarController">
+	<menus>
+		<Menu text="Файл">
+			<items>
+				<MenuItem text="Відкрити схему" onAction="#openScheme">
+					<graphic>
+						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+							<image>
+								<Image url="@../Icon/OpenFolder.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</MenuItem>
+				<MenuItem text="Відкрити проект">
+					<graphic>
+						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+							<image>
+								<Image url="@../Icon/OpenProject.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</MenuItem>
+				<Menu text="Тренд">
+					<items>
+						<MenuItem text="Відкрити тренд">
+							<graphic>
+								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+									<image>
+										<Image url="@../Icon/OpenProject.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</MenuItem>
+						<MenuItem text="Створити тренд">
+							<graphic>
+								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+									<image>
+										<Image url="@../Icon/Create.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</MenuItem>
+					</items>
+					<graphic>
+						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+							<image>
+								<Image url="@../Icon/Trend.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</Menu>
+				<SeparatorMenuItem />
+				<MenuItem text="Блокування">
+					<graphic>
+						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+							<image>
+								<Image url="@../Icon/Block.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</MenuItem>
+				<MenuItem text="Вихід">
+					<graphic>
+						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+							<image>
+								<Image url="@../Icon/Exit.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</MenuItem>
+			</items>
+		</Menu>
+		<Menu text="Журнали">
+			<items>
+
+			</items>
+		</Menu>
+		<Menu text="Звіти">
+			<items>
+
+			</items>
+		</Menu>
+		<Menu text="Інструменти">
+			<items>
+
+			</items>
+		</Menu>
+		<Menu text="Налаштування">
+			<items>
+
+			</items>
+		</Menu>
+		<Menu text="Вихід">
+			<items>
+
+			</items>
+		</Menu>
+		<Menu text="Про програму ...">
+			<items>
+
+			</items>
+		</Menu>
+	</menus>
+</MenuBar>

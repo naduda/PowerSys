@@ -1,0 +1,19 @@
+.root {
+  -fx-background-color: silver;
+  -fx-font-family: "Courier New";
+  -fx-font-weight: bold;
+}
+.toolBarButton {
+    -fx-text-fill: green;
+    -fx-font-family: "Courier New";
+    -fx-font-weight: bold;
+    /*-fx-background-color: linear-gradient(#61a2b1, #2A5058); */
+    -fx-background-radius: 1 1 1 1;
+    -fx-background-color: Transparent;
+    -fx-background-repeat:no-repeat;
+    -fx-border: none;
+     /* -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );*/
+}
+.titled-pane > .title{
+   -fx-padding: 0 0 0 -9;
+}

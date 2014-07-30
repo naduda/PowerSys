@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<ScrollPane fx:id="spTree" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.TreeController" hbarPolicy="NEVER">
+	<padding>
+		<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+	</padding>
+	<Accordion fx:id="accordTree">
+		<panes>
+			<TitledPane fx:id="tpSchemes" text="Схеми" prefWidth="${spTree.width-spTree.padding.left-spTree.padding.right-5}" prefHeight="${spTree.height/2}">
+				<graphic>
+					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+						<Image url="@../Icon/schemes.png"/>
+					</ImageView>
+				</graphic>
+				<content>
+					<TreeView fx:id="tvSchemes" showRoot="false">
+						<root>
+							<TreeItem fx:id="trSchemes" value="trSchemes"/>
+						</root>
+					</TreeView>
+				</content>
+			</TitledPane>
+			<TitledPane text="Тренди" prefHeight="${spTree.height/2}">
+				<graphic>
+					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+						<Image url="@../Icon/trend2.png"/>
+					</ImageView>
+				</graphic>
+				<content>
+					<TreeView showRoot="false" >
+						<root>
+							<TreeItem value="trTrends">
+								<children>
+									<TreeItem value="Item1" />
+								</children>
+							</TreeItem>
+						</root>
+					</TreeView>
+				</content>
+			</TitledPane>
+			<TitledPane text="Звіти" prefHeight="${spTree.height/2}">
+				<graphic>
+					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+						<Image url="@../Icon/report.png"/>
+					</ImageView>
+				</graphic>
+				<content>
+					<TreeView showRoot="false" >
+						<root>
+							<TreeItem value="trReports">
+								<children>
+									<TreeItem value="Item1" />
+								</children>
+							</TreeItem>
+						</root>
+					</TreeView>
+				</content>
+			</TitledPane>
+		</panes>
+	</Accordion>
+</ScrollPane>
