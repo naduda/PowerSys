@@ -1,8 +1,8 @@
 package controllers;
 
 import commands.Commands;
-
 import topic.SendTopic;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,20 +19,21 @@ public class LoginController {
 	@FXML private PasswordField password;
 	@FXML private Button btnSignin;
 	
-    @FXML protected void login(ActionEvent event) {
-    	SendTopic st = new SendTopic();
-    	st.setConnectionParams(dbServer.getText(), dbName.getText(), user.getText(), password.getText());
-    	
-    	final Task<Void> task = new Task<Void>() {
-			@Override
-			protected Void call() throws Exception {
-				st.run(dbServer, dbName, user, password, btnSignin);
-				return null;
-			}
-        	
-        };
-        new Thread(task, "SendMainTopic").start();
-        
+    @FXML protected void login(ActionEvent event) {	
+    	new Thread(new Runnable() {
+            @Override public void run() {
+                Platform.runLater(new Runnable() {
+                    @Override public void run() {
+                    	dbServer.setDisable(true);
+                    	dbName.setDisable(true);
+                    	user.setDisable(true);
+                    	password.setDisable(true);
+                    	btnSignin.setDisable(true);
+                    }
+                });
+            }
+        }, "disableElements").start();
+
         Commands commands = new Commands();
         
         final Task<Void> taskResult = new Task<Void>() {
@@ -44,6 +45,35 @@ public class LoginController {
         };
         new Thread(taskResult, "taskResult").start();
 
+        final Task<Void> taskSendTopic = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				new SendTopic(dbServer.getText(), dbName.getText(), user.getText(), password.getText());
+				return null;
+			}       	
+        };
+        new Thread(taskSendTopic, "taskSendTopic").start();
+        
         actiontarget.setText("Sending...");
     }
+
+	public TextField getDbServer() {
+		return dbServer;
+	}
+
+	public TextField getDbName() {
+		return dbName;
+	}
+
+	public TextField getUser() {
+		return user;
+	}
+
+	public PasswordField getPassword() {
+		return password;
+	}
+
+	public Button getBtnSignin() {
+		return btnSignin;
+	}
 }

@@ -23,12 +23,11 @@ public class SendProtocolTopic {
 	private TextMessage msgT;
 	private ObjectMessage msgO;
 	private TopicPublisher publisher;
+	private TopicConnection connection = null;
+	private TopicSession pubSession = null;
 	
 	public SendProtocolTopic() {
-		System.out.println("SendProtocolTopic start");
 		ConnectionFactory factory;
-		TopicConnection connection = null;
-		TopicSession pubSession = null;
 
 		try {			
 			factory = new com.sun.messaging.ConnectionFactory();
@@ -43,27 +42,30 @@ public class SendProtocolTopic {
 			msgT = pubSession.createTextMessage();
 			msgO = pubSession.createObjectMessage();
 			
-			System.out.println("Sending Protocol...");
+			System.out.println(this);
 		} catch (Exception e) {
 			System.err.println("SendTopic");
 			e.printStackTrace();
-		} finally {
-			try {
-				pubSession.close();
-		        connection.close();
-		    } catch (Exception e) {
-		    	System.out.println("Can't close JMS connection/session " + e.getMessage());
-		    }
 		}
 	}
 	
+	public void closeSessionConnection() {
+		try {
+			pubSession.close();
+	        connection.close();
+	    } catch (Exception e) {
+	    	System.out.println("Can't close JMS connection/session " + e.getMessage());
+	    }
+	}
+	
 	public void runCommand() {
+		System.out.println("runCommand() started");
 		while (isRun) {
 			if (!isSended && commandSend.length() > 0) {
 				try {
 					msgT.setText(commandSend);
 					publisher.publish(msgT);
-					System.out.println(commandSend);
+					System.out.println("publish " + msgT.getText());
 					setSended(true);
 				} catch (JMSException e) {
 					System.err.println("SendProtocolTopic runCommand()");
@@ -72,6 +74,7 @@ public class SendProtocolTopic {
 				}
 			}
 		}
+		closeSessionConnection();
 	}
 	
 	public void run() {
@@ -86,6 +89,7 @@ public class SendProtocolTopic {
 				}
 			}
 		}
+		closeSessionConnection();
 	}
 
 	public String getCommandSend() {

@@ -8,10 +8,11 @@ public class Commands {
 	public ReceiveProtocolTopic protocolTopic;
 	
 	public Commands() {
+		protocolTopic = new ReceiveProtocolTopic();
 		final Task<Void> taskCommands = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
-				protocolTopic = new ReceiveProtocolTopic();
+				protocolTopic.run();
 				return null;
 			}       	
         };

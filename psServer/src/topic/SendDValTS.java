@@ -1,58 +1,45 @@
 package topic;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
-import javax.jms.TopicSession;
+import com.sun.messaging.ConnectionFactory;
 
 import jdbc.PostgresDB;
 import model.DvalTS;
 
-public class SendDValTS extends SendTopic implements Runnable {
-	
-	private boolean isRun = true;	
+public class SendDValTS extends ASender {
+
 	private List<DvalTS> ls = null;
+	private PostgresDB pdb;
 	
-	public SendDValTS(TopicSession pubSession, String nameTopic) {		
-		super();		
-		setTopic(pubSession, nameTopic);
+	public SendDValTS(ConnectionFactory factory, String topicName, PostgresDB pdb) {
+		super(factory, topicName);
+		this.pdb = pdb;
 	}
-	
+
 	@Override
-	public void run() {
-		Timestamp dt = new Timestamp(new Date().getTime());
-		PostgresDB pdb = getPdb();
-		
-		while (isRun) {
-			try {
-				ls = pdb.getLastTS(dt);
-				if (ls != null) {
-					for (int i = 0; i < ls.size(); i++) {
-						DvalTS ts = ls.get(i);
-						if (i == 0) dt = ts.getServdt();
+	public Timestamp senderMessage(Timestamp dt) {
+		try {
+			ls = pdb.getLastTS(dt);
+			if (ls != null) {
+				for (int i = 0; i < ls.size(); i++) {
+					DvalTS ts = ls.get(i);
+					if (i == 0) dt = ts.getServdt();
 
-						msgO.setObject(ts);
-						publisher.publish(msgO);
-					}
-				}
-			} catch (Exception e) {
-				System.err.println("SendDValTS");
-				try {
-					if (ls == null) Thread.sleep(60000); //Connection broken
-				} catch (InterruptedException e1) {
-
+					msgObject.setObject(ts);
+					producer.send(topic, msgObject);
 				}
 			}
-		}
-	}
-
-	public boolean isRun() {
-		return isRun;
-	}
-
-	public void setRun(boolean isRun) {
-		this.isRun = isRun;
-	}
+		} catch (Exception e) {
+			System.err.println("SendDValTS");
+			try {
+				if (ls == null) Thread.sleep(60000); //Connection broken
+			} catch (InterruptedException e1) {
 	
+			}
+		}
+		return dt;
+	}
+
 }

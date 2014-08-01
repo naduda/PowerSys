@@ -42,23 +42,28 @@ public class ReceiveProtocolTopic implements MessageListener {
 		} catch (Exception e) {
 			System.err.println("ReceiveTopic ");
 			e.printStackTrace();
-		} finally {
-			try {
-				session.close();
-		        connection.close();
-		    } catch (Exception e) {
-		    	System.out.println("Can't close JMS connection/session " + e.getMessage());
-		    }
 		}
+	}
+	
+	public void closeSessionConnection() {
+		try {
+			session.close();
+	        connection.close();
+	    } catch (Exception e) {
+	    	System.out.println("Can't close JMS connection/session " + e.getMessage());
+	    }
 	}
 	
 	public void run() {
 		while (isRun) {
 			
 		}
+		closeSessionConnection();
 	}
+	
 	@Override
 	public void onMessage(Message msg) {
+		System.out.println(msg);
 		try {
 			if (msg instanceof ObjectMessage) {
 				setValObject(((ObjectMessage)msg).getObject());
@@ -85,6 +90,7 @@ public class ReceiveProtocolTopic implements MessageListener {
 
 	public void setCommand(String command) {
 		this.command = command;
+		System.out.println("command = " + command);
 	}
 
 	public boolean isRun() {

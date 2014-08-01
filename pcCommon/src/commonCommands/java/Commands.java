@@ -18,9 +18,9 @@ public class Commands {
 		System.out.println(sendProtocolTopic + "/" + receiveProtocolTopic);
 	}
 	
-	public Map<Integer, Tsignal> getSignals() {
-		System.out.println("getSignals");
+	public Map<Integer, Tsignal> getSignals() {	
 		sendProtocolTopic.setCommandSend("getSignals");
+		System.out.print("getSignals sended ");
 //		boolean isReceive = false;
 		System.out.println(receiveProtocolTopic);
 //		while (!isReceive) {

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre8"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/commons-dbcp2-2.0.1.jar"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/commons-pool2-2.2.jar"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/imq.jar"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/jms.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/mybatis-3.2.7.jar"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/postgresql-9.3-1101.jdbc4.jar"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/prLibs.jar"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/psCommon.jar"/>
+	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/mybatis-3.2.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
