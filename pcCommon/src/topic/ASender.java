@@ -1,5 +1,7 @@
 package topic;
 
+import inter.IJMSConnection;
+
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -16,6 +18,7 @@ public abstract class ASender implements Runnable {
 
 	private boolean isRun = true;
 	private ConnectionFactory factory;
+	private IJMSConnection jConn;
 	private String topicName;
 	
 	public ObjectMessage msgObject;
@@ -24,14 +27,15 @@ public abstract class ASender implements Runnable {
 	
 	public Timestamp dt = new Timestamp(new Date().getTime());
 	
-	public ASender(ConnectionFactory factory, String topicName) {
+	public ASender(ConnectionFactory factory, IJMSConnection jConn, String topicName) {
 		this.factory = factory;
+		this.jConn = jConn;
 		this.topicName = topicName;
 	}
 
 	@Override
 	public void run() {
-		try (JMSContext context = factory.createContext("admin","admin", Session.AUTO_ACKNOWLEDGE);) {
+		try (JMSContext context = factory.createContext(jConn.getUser(),jConn.getPassword(), Session.AUTO_ACKNOWLEDGE);) {
 			producer = context.createProducer();
 			topic = context.createTopic(topicName);
 			msgObject = context.createObjectMessage();
@@ -39,6 +43,7 @@ public abstract class ASender implements Runnable {
 			while (isRun) {
 				try {
 					dt = senderMessage(dt);
+					Thread.sleep(100);
 				} catch (Exception e) {
 					System.err.println("ASender()");
 				}

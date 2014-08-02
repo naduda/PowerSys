@@ -14,7 +14,7 @@ import model.Tsignal;
 import com.sun.messaging.ConnectionConfiguration;
 import com.sun.messaging.ConnectionFactory;
 
-public class SendTopic {
+public class SendTopic implements Runnable {
 	
 	private String dbServer;
 	private String dbPort;
@@ -26,26 +26,33 @@ public class SendTopic {
 	public TopicPublisher publisher;
 	public JMSContext context;
 	public JMSProducer producer;
-	private ConnectionFactory factory;
+	
+	public ConnectionFactory factory;
+	public JMSConnection jConn;
 
 	public SendTopic(String dbServer, String dbName, String dbUser, String dbPassword) {
 		try {
+			jConn = new JMSConnection("127.0.0.1", "7676", "admin", "admin");
 			setConnectionParams(dbServer, dbName, dbUser, dbPassword);
-			factory = new com.sun.messaging.ConnectionFactory();
-			factory.setProperty(ConnectionConfiguration.imqAddressList, "mq://127.0.0.1:7676,mq://127.0.0.1:7676");
-
-			Map<Integer, Tsignal> signals = getPdb().getTsignalsMap();
-
-			new Thread(new SendDValTI(factory, "DvalTI", signals, getPdb()), "SendDValTI_Thread").start();
-			new Thread(new SendDValTS(factory, "DvalTS", getPdb()), "SendDValTS_Thread").start();
-			new Thread(new SendAlarms(factory, "Alarms", false, getPdb()), "SendAlarms_Thread").start();
-			new Thread(new SendAlarms(factory, "Alarms", true, getPdb()), "SendAlarmsConfirm_Thread").start();	
 			
-			System.out.println("Send ...");
+			factory = new com.sun.messaging.ConnectionFactory();
+			factory.setProperty(ConnectionConfiguration.imqAddressList, jConn.getConnConfiguration());
 		} catch (JMSException e) {
 			System.err.println("SendTopic()");
 		}
 		
+	}
+	
+	@Override
+	public void run() {
+		Map<Integer, Tsignal> signals = getPdb().getTsignalsMap();
+
+		new Thread(new SendDValTI(factory, jConn, "DvalTI", signals, getPdb()), "SendDValTI_Thread").start();
+		new Thread(new SendDValTS(factory, jConn, "DvalTS", getPdb()), "SendDValTS_Thread").start();
+		new Thread(new SendAlarms(factory, jConn, "Alarms", false, getPdb()), "SendAlarms_Thread").start();
+		new Thread(new SendAlarms(factory, jConn, "Alarms", true, getPdb()), "SendAlarmsConfirm_Thread").start();	
+		
+		System.out.println("Send ...");
 	}
 	
 	public PostgresDB getPdb() {

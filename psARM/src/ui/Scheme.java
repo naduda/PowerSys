@@ -86,16 +86,16 @@ public class Scheme extends ScrollPane {
 			}
 		});
 		
-		Map<Integer, LinkedValue> oldTI = Main.pdb.getOldTI();
-		Map<Integer, LinkedValue> oldTS = Main.pdb.getOldTS();
-		
-		for (LinkedValue lv : oldTI.values()) {
-			MainStage.controller.updateTI(this, lv);
-		}
-
-		for (LinkedValue lv : oldTS.values()) {
-			MainStage.controller.updateTS(this, lv);
-		}
+//		Map<Integer, LinkedValue> oldTI = Main.pdb.getOldTI();
+//		Map<Integer, LinkedValue> oldTS = Main.pdb.getOldTS();
+//		
+//		for (LinkedValue lv : oldTI.values()) {
+//			MainStage.controller.updateTI(this, lv);
+//		}
+//
+//		for (LinkedValue lv : oldTS.values()) {
+//			MainStage.controller.updateTS(this, lv);
+//		}
 
 		bgColor = String.format("-fx-background: %s;", doc.getPage().getFillColor());
 		setStyle(bgColor);

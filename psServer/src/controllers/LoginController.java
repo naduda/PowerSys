@@ -1,6 +1,6 @@
 package controllers;
 
-import commands.Commands;
+import commands.CommandResult;
 import topic.SendTopic;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -34,25 +34,20 @@ public class LoginController {
             }
         }, "disableElements").start();
 
-        Commands commands = new Commands();
         
-        final Task<Void> taskResult = new Task<Void>() {
-			@Override
-			protected Void call() throws Exception {
-				commands.run();
-				return null;
-			}       	
-        };
-        new Thread(taskResult, "taskResult").start();
 
-        final Task<Void> taskSendTopic = new Task<Void>() {
-			@Override
-			protected Void call() throws Exception {
-				new SendTopic(dbServer.getText(), dbName.getText(), user.getText(), password.getText());
-				return null;
-			}       	
-        };
-        new Thread(taskSendTopic, "taskSendTopic").start();
+        //final task<void> tasksendtopic = new task<void>() {
+		//	@override
+		//	protected void call() throws exception {
+		//		new sendtopic(dbserver.gettext(), dbname.gettext(), user.gettext(), password.gettext());
+		//		return null;
+		//	}       	
+        //};
+        SendTopic sTopic = new SendTopic(dbServer.getText(), dbName.getText(), user.getText(), password.getText());
+        new Thread(sTopic, "taskSendTopic").start();
+        
+        CommandResult cResult = new CommandResult(sTopic);
+        new Thread(cResult, "taskResult").start();
         
         actiontarget.setText("Sending...");
     }

@@ -9,64 +9,63 @@
 <?import fxmltableview.*?> 
 <?import javafx.scene.control.cell.*?> 
 
-<Pane fx:id="bpAlarms" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.AlarmController" style="-fx-background-color: red;">	
-	<BorderPane prefWidth="${bpAlarms.width}">
-		<top>
-			<ToolBar fx:id="tbAlarms">
-				<Label text="Сигналізація"/>
-				<Button text="" onAction="#kvitOne" styleClass="toolBarButton">
-					<graphic>
-						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-							<Image url="@../Icon/kvitOne.png"/>
-						</ImageView>
-					</graphic>
-				</Button>
-				<Button text="" onAction="#kvitPS" styleClass="toolBarButton">
-					<graphic>
-						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-							<Image url="@../Icon/kvitPS.png"/>
-						</ImageView>
-					</graphic>
-				</Button>
-				<Button text="" onAction="#kvitAll" styleClass="toolBarButton">
-					<graphic>
-						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-							<Image url="@../Icon/kvitAll.png"/>
-						</ImageView>
-					</graphic>
-				</Button>
-				<Separator/>
-				<Label text="Пріоритет"/>
-				<ChoiceBox fx:id="cbPriority">
-					<items>
-						<FXCollections fx:factory="observableArrayList">
-							<String fx:value="Будь-який"/>
-						</FXCollections>
-					</items>
-					<value>
-						<String fx:value="Будь-який" />
-					</value>
-				</ChoiceBox>
-			</ToolBar>
-		</top>
-		<center>
-			<TableView fx:id="tvAlarms" styleClass="table" maxHeight="${bpAlarms.height - tbAlarms.height}">
-				<columns>
-					<TableColumn id="pObject" text="Об'єкт" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pLocation" text="Розміщення" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pAlarmName" text="Сигналізація" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pRecordDT" text="Дата збереження" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pEventDT" text="Дата події" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pAlarmMes" text="Повідомлення" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pLogState" text="Стан" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pConfirmDT" text="Дата квітування" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pUserRef" text="Користувач" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pLogNote" text="Примітка" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pAlarmPriority" text="Пріоритет" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pEventType" text="Тип події" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pSchemeObject" text="Об'єкт схеми" minWidth="${tvAlarms.width/15}"/>
-				</columns>
-			</TableView>
-		</center>
-	</BorderPane>
-</Pane>
+<BorderPane fx:id="bpAlarms" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.AlarmController">
+	<padding><Insets top="0" right="0" bottom="0" left="0"/></padding>
+	<top>
+		<ToolBar fx:id="tbAlarms">
+			<Label text="Сигналізація"/>
+			<Button text="" onAction="#kvitOne" styleClass="toolBarButton">
+				<graphic>
+					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+						<Image url="@../Icon/kvitOne.png"/>
+					</ImageView>
+				</graphic>
+			</Button>
+			<Button text="" onAction="#kvitPS" styleClass="toolBarButton">
+				<graphic>
+					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+						<Image url="@../Icon/kvitPS.png"/>
+					</ImageView>
+				</graphic>
+			</Button>
+			<Button text="" onAction="#kvitAll" styleClass="toolBarButton">
+				<graphic>
+					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+						<Image url="@../Icon/kvitAll.png"/>
+					</ImageView>
+				</graphic>
+			</Button>
+			<Separator/>
+			<Label text="Пріоритет"/>
+			<ChoiceBox fx:id="cbPriority">
+				<items>
+					<FXCollections fx:factory="observableArrayList">
+						<String fx:value="Будь-який"/>
+					</FXCollections>
+				</items>
+				<value>
+					<String fx:value="Будь-який" />
+				</value>
+			</ChoiceBox>
+		</ToolBar>
+	</top>
+	<center>
+		<TableView fx:id="tvAlarms" styleClass="table" maxHeight="${bpAlarms.height - tbAlarms.height}">
+			<columns>
+				<TableColumn id="pObject" text="Об'єкт" minWidth="${tvAlarms.width/15}"/>
+				<TableColumn id="pLocation" text="Розміщення" minWidth="${tvAlarms.width/15}"/>
+				<TableColumn id="pAlarmName" text="Сигналізація" minWidth="${tvAlarms.width/15}"/>
+				<TableColumn id="pRecordDT" text="Дата збереження" minWidth="${tvAlarms.width/15}"/>
+				<TableColumn id="pEventDT" text="Дата події" minWidth="${tvAlarms.width/15}"/>
+				<TableColumn id="pAlarmMes" text="Повідомлення" minWidth="${tvAlarms.width/15}"/>
+				<TableColumn id="pLogState" text="Стан" minWidth="${tvAlarms.width/15}"/>
+				<TableColumn id="pConfirmDT" text="Дата квітування" minWidth="${tvAlarms.width/15}"/>
+				<TableColumn id="pUserRef" text="Користувач" minWidth="${tvAlarms.width/15}"/>
+				<TableColumn id="pLogNote" text="Примітка" minWidth="${tvAlarms.width/15}"/>
+				<TableColumn id="pAlarmPriority" text="Пріоритет" minWidth="${tvAlarms.width/15}"/>
+				<TableColumn id="pEventType" text="Тип події" minWidth="${tvAlarms.width/15}"/>
+				<TableColumn id="pSchemeObject" text="Об'єкт схеми" minWidth="${tvAlarms.width/15}"/>
+			</columns>
+		</TableView>
+	</center>
+</BorderPane>

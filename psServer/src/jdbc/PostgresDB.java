@@ -93,7 +93,7 @@ public class PostgresDB {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getTsignalsMap();
 		} catch (Exception e) {
-			System.out.println("getTsignalsMap");
+			System.err.println("getTsignalsMap");
 			return null;
 		} finally {
 			session.close();

@@ -60,7 +60,7 @@ public class MainStage extends Stage {
 				sign.setLocation(location);
 			}
 			
-			Main.pdb.getAlarms(dt).forEach(a -> { controller.getAlarmsController().addAlarm(a); });
+//			Main.pdb.getAlarms(dt).forEach(a -> { controller.getAlarmsController().addAlarm(a); });
 			
 			setScheme(DEFAULT_SCHEME);
 			controller.getSpTreeController().expandSchemes();

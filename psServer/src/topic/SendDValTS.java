@@ -13,8 +13,8 @@ public class SendDValTS extends ASender {
 	private List<DvalTS> ls = null;
 	private PostgresDB pdb;
 	
-	public SendDValTS(ConnectionFactory factory, String topicName, PostgresDB pdb) {
-		super(factory, topicName);
+	public SendDValTS(ConnectionFactory factory, JMSConnection jConn, String topicName, PostgresDB pdb) {
+		super(factory, jConn, topicName);
 		this.pdb = pdb;
 	}
 

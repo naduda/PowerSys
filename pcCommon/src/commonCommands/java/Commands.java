@@ -3,24 +3,21 @@ package commonCommands.java;
 import java.util.Map;
 
 import topic.ReceiveProtocolTopic;
-import topic.SendProtocolTopic;
+import topic.SendCommands;
 import model.Tsignal;
 
 public class Commands {
 
-	private SendProtocolTopic sendProtocolTopic;
+	private SendCommands sendCommands;
 	private ReceiveProtocolTopic receiveProtocolTopic;
 	
-	public Commands(SendProtocolTopic sendProtocolTopic, ReceiveProtocolTopic receiveProtocolTopic) {
-		this.sendProtocolTopic = sendProtocolTopic;
+	public Commands(SendCommands sendCommands, ReceiveProtocolTopic receiveProtocolTopic) {
+		this.sendCommands = sendCommands;
 		this.receiveProtocolTopic = receiveProtocolTopic;
-		System.out.println("*********************");
-		System.out.println(sendProtocolTopic + "/" + receiveProtocolTopic);
 	}
 	
 	public Map<Integer, Tsignal> getSignals() {	
-		sendProtocolTopic.setCommandSend("getSignals");
-		System.out.print("getSignals sended ");
+		sendCommands.setCommand("getSignals");
 //		boolean isReceive = false;
 		System.out.println(receiveProtocolTopic);
 //		while (!isReceive) {

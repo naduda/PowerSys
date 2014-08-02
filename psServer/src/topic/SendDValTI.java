@@ -19,8 +19,8 @@ public class SendDValTI extends ASender {
 	private Map<Integer, Tsignal> signals;
 	private PostgresDB pdb;
 
-	public SendDValTI(ConnectionFactory factory, String topicName, Map<Integer, Tsignal> signals, PostgresDB pdb) {
-		super(factory, topicName);
+	public SendDValTI(ConnectionFactory factory, JMSConnection jConn, String topicName, Map<Integer, Tsignal> signals, PostgresDB pdb) {
+		super(factory, jConn, topicName);
 		this.signals = signals;
 		this.pdb = pdb;
 	}

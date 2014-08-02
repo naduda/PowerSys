@@ -16,8 +16,8 @@ public class SendAlarms extends ASender {
 	private boolean isConfirm;
 	private PostgresDB pdb;
 	
-	public SendAlarms(ConnectionFactory factory, String topicName, boolean isConfirm, PostgresDB pdb) {
-		super(factory, topicName);
+	public SendAlarms(ConnectionFactory factory, JMSConnection jConn, String topicName, boolean isConfirm, PostgresDB pdb) {
+		super(factory, jConn, topicName);
 		this.isConfirm = isConfirm;
 		this.pdb = pdb;
 	}

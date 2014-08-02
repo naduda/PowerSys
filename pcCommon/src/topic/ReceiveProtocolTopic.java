@@ -15,7 +15,7 @@ import com.sun.messaging.ConnectionFactory;
 import com.sun.messaging.jms.Session;
 import com.sun.messaging.jms.TopicConnection;
 
-public class ReceiveProtocolTopic implements MessageListener {
+public class ReceiveProtocolTopic implements Runnable, MessageListener {
 
 	private boolean isRun = true;
 	private Serializable valObject;
@@ -37,8 +37,10 @@ public class ReceiveProtocolTopic implements MessageListener {
 			Topic protocolTopic = session.createTopic("ProtocolTopic");
 			TopicSubscriber subscriber = session.createSubscriber(protocolTopic);						
 			subscriber.setMessageListener(this);
-
-			System.out.println(this);
+			
+			Topic commandTopic = session.createTopic("CommandTopic");
+			TopicSubscriber subscriberCommand = session.createSubscriber(commandTopic);				
+			subscriberCommand.setMessageListener(this);
 		} catch (Exception e) {
 			System.err.println("ReceiveTopic ");
 			e.printStackTrace();
@@ -54,6 +56,7 @@ public class ReceiveProtocolTopic implements MessageListener {
 	    }
 	}
 	
+	@Override
 	public void run() {
 		while (isRun) {
 			
@@ -63,7 +66,7 @@ public class ReceiveProtocolTopic implements MessageListener {
 	
 	@Override
 	public void onMessage(Message msg) {
-		System.out.println(msg);
+		System.out.println(msg.getClass());
 		try {
 			if (msg instanceof ObjectMessage) {
 				setValObject(((ObjectMessage)msg).getObject());
@@ -90,7 +93,6 @@ public class ReceiveProtocolTopic implements MessageListener {
 
 	public void setCommand(String command) {
 		this.command = command;
-		System.out.println("command = " + command);
 	}
 
 	public boolean isRun() {
