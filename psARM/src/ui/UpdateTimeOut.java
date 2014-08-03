@@ -5,7 +5,7 @@ import java.util.List;
 import controllers.Controller;
 import javafx.application.Platform;
 
-public class UpdateTimeOut {
+public class UpdateTimeOut implements Runnable {
 
 	private boolean isRun = true;
 	private int sec;
@@ -17,6 +17,7 @@ public class UpdateTimeOut {
 		run();
 	}
 
+	@Override
 	public void run() {
 		try {
 			while (isRun) {

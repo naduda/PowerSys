@@ -1,7 +1,10 @@
 package model;
 
-public class Tsignal {
+import java.io.Serializable;
 
+public class Tsignal implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private int idsignal;
 	private int noderef;
 	private int sortnum;

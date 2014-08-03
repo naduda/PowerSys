@@ -20,7 +20,7 @@ import com.sun.messaging.ConnectionFactory;
 import com.sun.messaging.jms.Session;
 import com.sun.messaging.jms.TopicConnection;
 
-public class ReceiveTopic implements MessageListener {
+public class ReceiveTopic implements MessageListener, Runnable {
 
 	private TopicSession session = null;
 	private TopicConnection connection = null;
@@ -41,6 +41,7 @@ public class ReceiveTopic implements MessageListener {
 		run();
 	}
 	
+	@Override
 	public void run() {
 		try {
 			factory = new com.sun.messaging.ConnectionFactory();

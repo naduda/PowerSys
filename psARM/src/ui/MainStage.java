@@ -2,16 +2,13 @@ package ui;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import model.ConfTree;
 import model.Tsignal;
 import controllers.Controller;
+import topic.ClientPowerSys;
 import ua.pr.common.ToolsPrLib;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -24,6 +21,8 @@ import javafx.stage.Stage;
 public class MainStage extends Stage {
 
 	private static final String DEFAULT_SCHEME = "ПС-110 кВ 'Блок-4'";
+	private static ClientPowerSys psClient = new ClientPowerSys();
+	public static Map<Integer, Tsignal> signals = psClient.getTsignalsMap();
 	public static ListView<String> lvTree;
 	public static BorderPane bpScheme;
 	public static Map<Integer, Scheme> schemes = new HashMap<>();
@@ -40,17 +39,16 @@ public class MainStage extends Stage {
 
 			bpScheme = controller.getBpScheme();
 			
-			SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-			Timestamp dt = new Timestamp(new Date().getTime());
-			try {
-				dt = new Timestamp(formatter.parse(formatter.format(new Date())).getTime());
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			
-			Map<Integer, ConfTree> confTree = Main.pdb.getConfTreeMap();
-			
-			for (Tsignal sign : Main.signals.values()) {
+//			SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+//			Timestamp dt = new Timestamp(new Date().getTime());
+//			try {
+//				dt = new Timestamp(formatter.parse(formatter.format(new Date())).getTime());
+//			} catch (ParseException e) {
+//				e.printStackTrace();
+//			}
+
+			Map<Integer, ConfTree> confTree = psClient.getConfTreeMap();
+			for (Tsignal sign : signals.values()) {
 				ConfTree ct = confTree.get(sign.getNoderef());
 				String location = ct.getNodename();
 				while (ct.getParentref() > 0) {
@@ -59,8 +57,11 @@ public class MainStage extends Stage {
 				}
 				sign.setLocation(location);
 			}
-			
+
 //			Main.pdb.getAlarms(dt).forEach(a -> { controller.getAlarmsController().addAlarm(a); });
+			long st = System.currentTimeMillis();
+			psClient.getAlarmsCurrentDay().forEach(a -> { controller.getAlarmsController().addAlarm(a);});
+			System.out.println(System.currentTimeMillis() - st);
 			
 			setScheme(DEFAULT_SCHEME);
 			controller.getSpTreeController().expandSchemes();

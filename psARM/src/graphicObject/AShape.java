@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import model.Tsignal;
-import ui.Main;
+import ui.MainStage;
 import ui.Scheme;
 import xml.ShapeX;
 import javafx.animation.PauseTransition;
@@ -131,7 +131,7 @@ public abstract class AShape extends Group {
 			String[] sSign = sh.getSignal().split("\\|");
 			for (String st : sSign) {
 				int idSignal = Integer.parseInt(st);
-				Tsignal tSignal = Main.signals.get(idSignal);
+				Tsignal tSignal = MainStage.signals.get(idSignal);
 				if (tSignal != null) {
 					signals.put(tSignal.getTypesignalref(), tSignal);
 				}

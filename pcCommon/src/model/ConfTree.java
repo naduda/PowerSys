@@ -1,7 +1,10 @@
 package model;
 
-public class ConfTree {
+import java.io.Serializable;
 
+public class ConfTree implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private int idnode;
 	private String typedenom;
 	private String nodename;

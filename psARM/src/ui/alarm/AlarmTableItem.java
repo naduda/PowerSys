@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import ui.Main;
+import ui.MainStage;
 import model.Alarm;
 import model.TSysParam;
 import javafx.beans.property.SimpleStringProperty;
@@ -35,8 +36,8 @@ public class AlarmTableItem {
 	private int logState;
 	
 	public AlarmTableItem(Alarm a) {
-		a.setpObject(Main.signals.get(a.getObjref()).getNamesignal());
-		a.setpLocation(Main.signals.get(a.getObjref()).getLocation());
+		a.setpObject(MainStage.signals.get(a.getObjref()).getNamesignal());
+		a.setpLocation(MainStage.signals.get(a.getObjref()).getLocation());
 		
     	String sAlarmMes = a.getAlarmmes();
     	if (sAlarmMes.toLowerCase().startsWith("<vf::")) {

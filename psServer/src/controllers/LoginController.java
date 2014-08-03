@@ -1,9 +1,8 @@
 package controllers;
 
-import commands.CommandResult;
+import proxyPowersys.StartServer;
 import topic.SendTopic;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -34,21 +33,10 @@ public class LoginController {
             }
         }, "disableElements").start();
 
-        
-
-        //final task<void> tasksendtopic = new task<void>() {
-		//	@override
-		//	protected void call() throws exception {
-		//		new sendtopic(dbserver.gettext(), dbname.gettext(), user.gettext(), password.gettext());
-		//		return null;
-		//	}       	
-        //};
         SendTopic sTopic = new SendTopic(dbServer.getText(), dbName.getText(), user.getText(), password.getText());
         new Thread(sTopic, "taskSendTopic").start();
-        
-        CommandResult cResult = new CommandResult(sTopic);
-        new Thread(cResult, "taskResult").start();
-        
+
+        new StartServer(sTopic.getPdb());
         actiontarget.setText("Sending...");
     }
 
