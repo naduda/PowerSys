@@ -27,7 +27,7 @@ import model.TSysParam;
 import model.TViewParam;
 import model.Tsignal;
 
-public class PostgresDB {
+public class PostgresDB implements IMapper {
 
 	private DataSource dataSource;
 	private SqlSession session;
@@ -88,6 +88,7 @@ public class PostgresDB {
 		}
 	}
 	
+	@Override
 	public Map<Integer, Tsignal> getTsignalsMap() {
 		try {
 			session = sqlSessionFactory.openSession();
@@ -100,6 +101,7 @@ public class PostgresDB {
 		}
 	}
 	
+	@Override
 	public List<DvalTI> getLastTI(Timestamp servdt) {
 		try {
 			session = sqlSessionFactory.openSession();
@@ -111,7 +113,8 @@ public class PostgresDB {
 		}
 	}
 	
-	public Map<Integer, LinkedValue> getOldTI() {
+	@Override
+	public List<DvalTI> getOldTI() {
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getOldTI();
@@ -123,6 +126,7 @@ public class PostgresDB {
 		}
 	}
 	
+	@Override
 	public List<DvalTS> getLastTS(Timestamp servdt) {
 		try {
 			session = sqlSessionFactory.openSession();
@@ -134,6 +138,7 @@ public class PostgresDB {
 		}
 	}
 	
+	@Override
 	public Map<Integer, LinkedValue> getOldTS() {
 		try {
 			session = sqlSessionFactory.openSession();
@@ -146,7 +151,8 @@ public class PostgresDB {
 		}
 	}
 
-	public Integer setTS(int idsignal, int val, int schemeref) {
+	@Override
+	public Integer setTS(int idsignal, double val, int schemeref) {
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).setTS(idsignal, val, schemeref);
@@ -157,6 +163,7 @@ public class PostgresDB {
 		}
 	}
 	
+	@Override
 	public List<Alarm> getAlarms(Timestamp eventdt) {
 		try {
 			session = sqlSessionFactory.openSession();
@@ -169,6 +176,7 @@ public class PostgresDB {
 		}
 	}
 	
+	@Override
 	public List<Alarm> getAlarmsConfirm(Timestamp confirmdt) {
 		try {
 			session = sqlSessionFactory.openSession();
@@ -181,6 +189,7 @@ public class PostgresDB {
 		}
 	}
 	
+	@Override
 	public Map<Integer, ConfTree> getConfTreeMap() {
 		try {
 			session = sqlSessionFactory.openSession();
@@ -192,28 +201,31 @@ public class PostgresDB {
 			session.close();
 		}
 	}
-	
-	public Map<String, TSysParam> getTSysParamMap(String paramname) {
+
+	@Override
+	public List<TSysParam> getTSysParam() {
 		try {
 			session = sqlSessionFactory.openSession();
-			return session.getMapper(IMapper.class).getTSysParamMap(paramname);
+			return session.getMapper(IMapper.class).getTSysParam();
 		} catch (Exception e) {
-			System.out.println("getTSysParamMap");
+			System.out.println("getTSysParam");
 			return null;
 		} finally {
 			session.close();
 		}
 	}
-	
-	public List<TViewParam> getTViewParam(String objdenom, String paramdenom, int userref) {
+
+	@Override
+	public List<TViewParam> getTViewParam() {
 		try {
 			session = sqlSessionFactory.openSession();
-			return session.getMapper(IMapper.class).getTViewParam(objdenom, paramdenom, userref);
+			return session.getMapper(IMapper.class).getTViewParam();
 		} catch (Exception e) {
-			System.out.println("getTViewParam");
+			System.out.println("getTSysParam");
 			return null;
 		} finally {
 			session.close();
 		}
 	}
+
 }

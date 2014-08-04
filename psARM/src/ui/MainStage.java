@@ -21,7 +21,7 @@ import javafx.stage.Stage;
 public class MainStage extends Stage {
 
 	private static final String DEFAULT_SCHEME = "ПС-110 кВ 'Блок-4'";
-	private static ClientPowerSys psClient = new ClientPowerSys();
+	public static ClientPowerSys psClient = new ClientPowerSys();
 	public static Map<Integer, Tsignal> signals = psClient.getTsignalsMap();
 	public static ListView<String> lvTree;
 	public static BorderPane bpScheme;
@@ -38,14 +38,6 @@ public class MainStage extends Stage {
 			setTitle("PowerSys ARM");
 
 			bpScheme = controller.getBpScheme();
-			
-//			SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-//			Timestamp dt = new Timestamp(new Date().getTime());
-//			try {
-//				dt = new Timestamp(formatter.parse(formatter.format(new Date())).getTime());
-//			} catch (ParseException e) {
-//				e.printStackTrace();
-//			}
 
 			Map<Integer, ConfTree> confTree = psClient.getConfTreeMap();
 			for (Tsignal sign : signals.values()) {
@@ -58,11 +50,8 @@ public class MainStage extends Stage {
 				sign.setLocation(location);
 			}
 
-//			Main.pdb.getAlarms(dt).forEach(a -> { controller.getAlarmsController().addAlarm(a); });
-			long st = System.currentTimeMillis();
-			psClient.getAlarmsCurrentDay().forEach(a -> { controller.getAlarmsController().addAlarm(a);});
-			System.out.println(System.currentTimeMillis() - st);
-			
+			psClient.getAlarmsCurrentDay().forEach(a -> { controller.getAlarmsController().addAlarm(a); });
+
 			setScheme(DEFAULT_SCHEME);
 			controller.getSpTreeController().expandSchemes();
 			controller.getSpTreeController().addContMenu();
@@ -73,6 +62,9 @@ public class MainStage extends Stage {
 	}
 	
 	public static void setScheme(String schemeName) {
+		controller.getToolBarController().setTsLastDate(0);
+		controller.getToolBarController().updateLabel("");
+		
 		if (schemeName == null) {
 			Main.mainScheme = new Scheme();
 		} else {

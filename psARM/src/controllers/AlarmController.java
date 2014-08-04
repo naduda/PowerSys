@@ -1,6 +1,7 @@
 package controllers;
 
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.stream.Collectors;
 import model.Alarm;
 import model.TSysParam;
 import model.TViewParam;
-import ui.Main;
+import ui.MainStage;
 import ui.Scheme;
 import ui.alarm.AlarmTableItem;
 import javafx.beans.binding.Bindings;
@@ -30,7 +31,7 @@ import javafx.util.Callback;
 public class AlarmController implements Initializable{
 
 	private List<TViewParam> viewParams;
-	private final Map<String, TSysParam> sysParams = Main.pdb.getTSysParamMap("ALARM_PRIORITY");
+	private Map<String, TSysParam> sysParams;
 	
 	private final ObservableList<AlarmTableItem> data = FXCollections.observableArrayList();	
 	private final FilteredList<AlarmTableItem> filteredData = new FilteredList<>(data, p -> true);
@@ -56,8 +57,13 @@ public class AlarmController implements Initializable{
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		System.out.println("initialize AlarmController " + tvAlarms);
-		
+		try {
+			sysParams = MainStage.psClient.getTSysParam("ALARM_PRIORITY");
+			viewParams = MainStage.psClient.getTViewParam("LOG_STATE", "COLOR", -1);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
 		List<String> list = new ArrayList<>();
 		sysParams.values().forEach(it -> {list.add(it.getParamdescr());});
 		ObservableList<String> obList = FXCollections.observableList(list);
@@ -70,7 +76,6 @@ public class AlarmController implements Initializable{
 			tableColumn.setCellValueFactory(p -> Bindings.selectString(p.getValue(), tableColumn.getId()));
 		}
 		
-		viewParams = Main.pdb.getTViewParam("LOG_STATE", "COLOR", -1);
 		tvAlarms.setRowFactory(new Callback<TableView<AlarmTableItem>, TableRow<AlarmTableItem>>() {			
 			@Override
 			public TableRow<AlarmTableItem> call(TableView<AlarmTableItem> param) {
@@ -116,4 +121,5 @@ public class AlarmController implements Initializable{
 			System.out.println("No " + a.getEventdt());
 		}
 	}
+
 }

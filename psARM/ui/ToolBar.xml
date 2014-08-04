@@ -38,14 +38,14 @@
 			</ImageView>
 		</graphic>
 	</Button>
-	<Button text="" styleClass="toolBarButton">
+	<Button onAction="#fitVertical" styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/vFit.png"/>
 			</ImageView>
 		</graphic>
 	</Button>
-	<Button text="" styleClass="toolBarButton">
+	<Button onAction="#fitHorizontal" styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/hFit.png"/>

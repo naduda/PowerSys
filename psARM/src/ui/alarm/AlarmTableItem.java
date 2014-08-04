@@ -1,10 +1,10 @@
 package ui.alarm;
 
+import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
-import ui.Main;
 import ui.MainStage;
 import model.Alarm;
 import model.TSysParam;
@@ -13,9 +13,9 @@ import javafx.beans.property.SimpleStringProperty;
 public class AlarmTableItem {
 
 	private final SimpleDateFormat dFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss.SSS");
-	private final Map<String, TSysParam> sysParamsEvent = Main.pdb.getTSysParamMap("ALARM_EVENT");
-	private final Map<String, TSysParam> sysParamsPriority = Main.pdb.getTSysParamMap("ALARM_PRIORITY");
-	private final Map<String, TSysParam> sysParamsLogState = Main.pdb.getTSysParamMap("LOG_STATE");
+	private Map<String, TSysParam> sysParamsEvent;
+	private Map<String, TSysParam> sysParamsPriority;
+	private Map<String, TSysParam> sysParamsLogState;
 	
 	private final SimpleStringProperty pObject;
 	private final SimpleStringProperty pLocation;
@@ -36,6 +36,14 @@ public class AlarmTableItem {
 	private int logState;
 	
 	public AlarmTableItem(Alarm a) {
+		try {
+			sysParamsEvent = MainStage.psClient.getTSysParam("ALARM_EVENT");
+			sysParamsPriority = MainStage.psClient.getTSysParam("ALARM_PRIORITY");
+			sysParamsLogState = MainStage.psClient.getTSysParam("LOG_STATE");
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		
 		a.setpObject(MainStage.signals.get(a.getObjref()).getNamesignal());
 		a.setpLocation(MainStage.signals.get(a.getObjref()).getLocation());
 		

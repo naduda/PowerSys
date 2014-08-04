@@ -1,6 +1,9 @@
 package graphicObject;
 
+import java.rmi.RemoteException;
+
 import ui.Main;
+import ui.MainStage;
 import xml.ShapeX;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -41,6 +44,11 @@ public class Disconnector extends AShape {
 	@Override
 	public void setTS(int val) {
 		super.setTS(val);
-		Main.pdb.setTS(Integer.parseInt(getId()), val, Main.mainScheme.getIdScheme());
+//		Main.pdb.setTS(Integer.parseInt(getId()), val, Main.mainScheme.getIdScheme());
+		try {
+			MainStage.psClient.setTS(Integer.parseInt(getId()), val, Main.mainScheme.getIdScheme());
+		} catch (RemoteException | NumberFormatException e) {
+			e.printStackTrace();
+		}
 	}
 }

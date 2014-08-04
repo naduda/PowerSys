@@ -1,7 +1,10 @@
 package model;
 
-public class TSysParam {
+import java.io.Serializable;
 
+public class TSysParam implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private int paramtype;
 	private String paramname;
 	private String val;

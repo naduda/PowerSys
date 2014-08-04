@@ -1,6 +1,10 @@
 package model;
 
-public class TViewParam {
+import java.io.Serializable;
+
+public class TViewParam implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private int userref;
 	private String objdenom;
 	private String objref;

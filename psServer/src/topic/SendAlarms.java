@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import actualdata.LastData;
+
 import com.sun.messaging.ConnectionFactory;
 
 import jdbc.PostgresDB;
@@ -35,6 +37,7 @@ public class SendAlarms extends ASender {
 
 					msgObject.setObject(a);
 					producer.send(topic, msgObject);
+					LastData.addAlarm(a);
 				}
 				previos = ls;
 			}
@@ -46,7 +49,7 @@ public class SendAlarms extends ASender {
 	
 			}
 		}
-			return null;
-		}
+		return dt;
+	}
 	
 }

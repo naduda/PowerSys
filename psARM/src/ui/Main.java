@@ -7,14 +7,11 @@ import javafx.concurrent.Task;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import jdbc.PostgresDB;
 
 public class Main extends Application {
 
 	private static final int TIMEOUT_TI_SEC = 11;
 	private static final int TIMEOUT_TS_SEC = 600;
-//	public static final PostgresDB pdb = new PostgresDB("10.1.3.17", "3700", "dimitrovEU");
-	public static final PostgresDB pdb = new PostgresDB("193.254.232.107", "5451", "dimitrovoEU", "postgres", "askue");
 
 	private final Stage mainStage = new MainStage("./ui/Main.xml");
 	public static Scheme mainScheme;
@@ -60,6 +57,7 @@ public class Main extends Application {
         
 		stage = mainStage;
         stage.show();
+        MainStage.controller.showHideAlarmPanel();
         
         Events events = new Events();
         stage.setOnCloseRequest(event -> { events.exitProgram(); });

@@ -1,6 +1,10 @@
 package model;
 
-public class LinkedValue {
+import java.io.Serializable;
+
+public class LinkedValue implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private int idsignal;
 	private double val;
 	

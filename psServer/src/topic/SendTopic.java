@@ -4,7 +4,10 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.jms.JMSContext;
 import javax.jms.JMSException;
@@ -13,6 +16,7 @@ import javax.jms.ObjectMessage;
 import javax.jms.TopicPublisher;
 
 import jdbc.PostgresDB;
+import model.DvalTI;
 import model.Tsignal;
 import actualdata.LastData;
 
@@ -63,7 +67,14 @@ public class SendTopic implements Runnable {
 			e.printStackTrace();
 		}
 
-		pdb.getAlarms(dt).forEach(a -> {LastData.addAlarm(a);});
+		pdb.getAlarms(dt).forEach(a -> { LastData.addAlarm(a); });
+		LastData.setTsysparmams(pdb.getTSysParam());
+		LastData.setTviewparams(pdb.getTViewParam());
+		//ti.setVal(ti.getVal() * signals.get(ti.getSignalref()).getKoef());
+		List<DvalTI> oldTIs = pdb.getOldTI().stream().filter(it -> it != null).collect(Collectors.toList());
+		oldTIs.forEach(ti -> { ti.setVal(ti.getVal() * signals.get(ti.getSignalref()).getKoef()); });
+		LastData.setOldTI(oldTIs);
+		LastData.setOldTS(pdb.getOldTS());
 		
 		new Thread(new SendDValTI(factory, jConn, "DvalTI", signals, getPdb()), "SendDValTI_Thread").start();
 		new Thread(new SendDValTS(factory, jConn, "DvalTS", getPdb()), "SendDValTS_Thread").start();
@@ -78,6 +89,14 @@ public class SendTopic implements Runnable {
 	}
 	
 	public void setConnectionParams(String dbServer, String dbName, String dbUser, String dbPassword) {
+		if (dbServer.equals("1")) {
+			this.dbServer = "localhost";
+			this.dbPort = "5432";
+			this.dbName = "PowerSys_Donetsk_25";
+			this.dbUser = "postgres";
+			this.dbPassword = "12345678";
+			return;
+		}
 		if (dbServer.indexOf(":") != -1) {
 			this.dbServer = dbServer.split(":")[0];
 			this.dbPort = dbServer.split(":")[1];

@@ -53,8 +53,8 @@ public class Controller {
 	
 	private double oldAlarmsHeight;
 	private boolean isHide = false;
-	@FXML
-	private void showAlarm(ActionEvent event) {
+	
+	public void showHideAlarmPanel() {
 		SplitPane sp = ((SplitPane)bpAlarms.getParent().getParent());
 		System.out.println(sp.getDividerPositions()[0] + " - " + isHide);
 		if (isHide) {
@@ -66,21 +66,33 @@ public class Controller {
 		isHide = !isHide;
 	}
 	
+	@FXML
+	private void showAlarm(ActionEvent event) {
+		showHideAlarmPanel();
+	}
+	
 	public void updateTI(DvalTI ti) {
 		DigitalDevice tt = Main.mainScheme.getDigitalDeviceById(ti.getSignalref() + "");
 		if (tt == null) return;
 		
 		tt.setLastDataDate(ti.getServdt());
 		tt.setText(tt.getDecimalFormat().format(ti.getVal()));
-		toolBarController.updateLabel(df.format(ti.getServdt()));
+		if (ti.getServdt().getTime() > toolBarController.getTsLastDate()) {
+			toolBarController.updateLabel(df.format(ti.getServdt()));
+			toolBarController.setTsLastDate(ti.getServdt().getTime());
+		}
 	}
 	
-	public void updateTI(Scheme mainScheme, LinkedValue lv) {
-		DigitalDevice tt = mainScheme.getDigitalDeviceById(lv.getIdsignal() + "");
+	public void updateTI(Scheme mainScheme, DvalTI ti) {
+		DigitalDevice tt = mainScheme.getDigitalDeviceById(ti.getSignalref() + "");
 		if (tt == null) return;
 
 		tt.setLastDataDate(new Date(System.currentTimeMillis() - 10000));
-		tt.setText(tt.getDecimalFormat().format(lv.getVal()));
+		tt.setText(tt.getDecimalFormat().format(ti.getVal()));
+		if (ti.getServdt().getTime() > toolBarController.getTsLastDate()) {
+			toolBarController.updateLabel(df.format(ti.getServdt()));
+			toolBarController.setTsLastDate(ti.getServdt().getTime());
+		}
 	}
 
 	public void updateTS(DvalTS ts) {

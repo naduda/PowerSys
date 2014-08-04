@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import actualdata.LastData;
+
 import com.sun.messaging.ConnectionFactory;
 
 import jdbc.PostgresDB;
@@ -26,8 +28,7 @@ public class SendDValTI extends ASender {
 	}
 	
 	@Override
-	public Timestamp senderMessage(Timestamp dt) {
-		
+	public Timestamp senderMessage(Timestamp dt) {		
 		try {
 			ls = pdb.getLastTI(dt);
 	
@@ -46,14 +47,18 @@ public class SendDValTI extends ASender {
 					}
 					msgObject.setObject(ti);
 					producer.send(topic, msgObject);
+					LastData.getOldTI().get(ti.getSignalref()).setVal(ti.getVal());
 				}
 			}
 		} catch (Exception e) {
 			try {
-				if (ls == null) Thread.sleep(60000); //Connection broken
-				System.out.println(new Date());
-				e.printStackTrace();
-				System.exit(0);
+				if (ls == null) {
+					Thread.sleep(60000); //Connection broken
+					System.out.println(new Date());
+				} else {
+					e.printStackTrace();
+					System.exit(0);
+				}
 			} catch (InterruptedException e1) {
 	
 			}

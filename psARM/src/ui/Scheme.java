@@ -12,9 +12,12 @@ import graphicObject.ShapeFX;
 import graphicObject.TC;
 import graphicObject.VCar;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +26,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import model.DvalTI;
 import model.LinkedValue;
 import xml.Document;
 import xml.ShapeX;
@@ -43,6 +47,7 @@ import javafx.scene.text.TextAlignment;
 public class Scheme extends ScrollPane {
 	
 	private final Group root = new Group();
+	private final Group rootScheme = new Group();
 	private List<Integer> signalsTI;
 	private List<Integer> signalsTS;
 	public static AShape selectedShape;
@@ -52,10 +57,12 @@ public class Scheme extends ScrollPane {
 	private String bgColor = "-fx-background: gray;";
 	
 	public Scheme() {
-		setContent(root);
+		setContent(rootScheme);
 		setStyle(bgColor);
 		Events events = new Events();
 		setOnScroll(event -> { events.setOnScroll(event); });
+		
+		rootScheme.getChildren().add(root);
 	}
 	
 	public Scheme(String fileName) {
@@ -86,19 +93,29 @@ public class Scheme extends ScrollPane {
 			}
 		});
 		
-//		Map<Integer, LinkedValue> oldTI = Main.pdb.getOldTI();
-//		Map<Integer, LinkedValue> oldTS = Main.pdb.getOldTS();
-//		
-//		for (LinkedValue lv : oldTI.values()) {
-//			MainStage.controller.updateTI(this, lv);
-//		}
-//
-//		for (LinkedValue lv : oldTS.values()) {
-//			MainStage.controller.updateTS(this, lv);
-//		}
+		try {
+			List<DvalTI> oldTI = MainStage.psClient.getOldTI();
+			Map<Integer, LinkedValue> oldTS = MainStage.psClient.getOldTS();
+			
+			for (DvalTI ti : oldTI) {
+				MainStage.controller.updateTI(this, ti);
+			}
+
+			for (LinkedValue lv : oldTS.values()) {
+				MainStage.controller.updateTS(this, lv);
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 
 		bgColor = String.format("-fx-background: %s;", doc.getPage().getFillColor());
 		setStyle(bgColor);
+		
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double kx = screenSize.getWidth() * 0.9 / doc.getPage().getWidth();
+		double ky = screenSize.getHeight() * 0.8 / doc.getPage().getHeight();
+		root.setScaleX(kx < ky ? kx : ky);
+		root.setScaleY(kx < ky ? kx : ky);
 	}
 	
 	@Override
@@ -331,6 +348,10 @@ public class Scheme extends ScrollPane {
 
 	public void setSchemeName(String schemeName) {
 		this.schemeName = schemeName;
+	}
+	
+	public Group getRoot() {
+		return root;
 	}
 	//	--------------------------------------------------------------
 	private final class Events {

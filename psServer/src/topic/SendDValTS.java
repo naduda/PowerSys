@@ -3,6 +3,8 @@ package topic;
 import java.sql.Timestamp;
 import java.util.List;
 
+import actualdata.LastData;
+
 import com.sun.messaging.ConnectionFactory;
 
 import jdbc.PostgresDB;
@@ -29,6 +31,7 @@ public class SendDValTS extends ASender {
 
 					msgObject.setObject(ts);
 					producer.send(topic, msgObject);
+					LastData.getOldTS().get(ts.getSignalref()).setVal(ts.getVal());
 				}
 			}
 		} catch (Exception e) {

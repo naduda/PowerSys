@@ -15,6 +15,8 @@ import model.Tsignal;
 
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 
 public interface IMapper {
@@ -22,15 +24,18 @@ public interface IMapper {
 	@MapKey("idsignal")
 	Map<Integer, Tsignal> getTsignalsMap();
 	
-	@Select("select * from t_signal where idsignal = #{id}")
-	Tsignal getTsignalById(int id);
-	
 	@Select("select * from d_valti where servdt > #{servdt} order by servdt desc")
 	List<DvalTI> getLastTI(Timestamp servdt);
 	
-	@Select("select idsignal, (getlast_ti(idsignal, null, 0)).val from t_signal where typesignalref = 1")
-	@MapKey("idsignal")
-	Map<Integer, LinkedValue> getOldTI();
+	@Select("select (getlast_ti(idsignal, null, 0)).* from t_signal where typesignalref = 1")
+	@Results(value = {
+			@Result(property="signalref", column="id"),
+			@Result(property="val", column="val"),
+			@Result(property="dt", column="dt"),
+			@Result(property="rcode", column="rcode"),
+			@Result(property="servdt", column="servdt")
+	})
+	List<DvalTI> getOldTI();
 
 	@Select("select * from d_valts where servdt > #{servdt} order by servdt desc")
 	List<DvalTS> getLastTS(Timestamp servdt);
@@ -58,10 +63,9 @@ public interface IMapper {
 	@MapKey("idnode")
 	Map<Integer, ConfTree> getConfTreeMap();
 	
-	@Select("select * from t_sysparam where paramname = #{paramname}")
-	@MapKey("val")
-	Map<String, TSysParam> getTSysParamMap(String paramname);
+	@Select("select * from t_sysparam")
+	List<TSysParam> getTSysParam();
 	
-	@Select("select * from t_viewparam where objdenom = #{objdenom} and paramdenom = #{paramdenom} and userref = #{userref}")
-	List<TViewParam> getTViewParam(@Param("objdenom") String objdenom, @Param("paramdenom") String paramdenom, @Param("userref") int userref);
+	@Select("select * from t_viewparam")
+	List<TViewParam> getTViewParam();
 }

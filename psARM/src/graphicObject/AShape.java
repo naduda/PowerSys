@@ -56,6 +56,7 @@ public abstract class AShape extends Group {
 	
 	public AShape(ShapeX sh) {
 		this();
+		
 		lineWidth = sh.getLineWeight();
 		lineColor = Scheme.getColor(sh.getLineColor());
 		fillColor = Scheme.getColor(sh.getFillColor());
@@ -90,7 +91,7 @@ public abstract class AShape extends Group {
 	    
 	    setRotate(sh.getAngle());
 	    setLayoutX(sh.getX());
-	    setLayoutY(sh.getY());	    
+	    setLayoutY(sh.getY());
 	    setScaleX(sh.getZoomX());
 	    setScaleY(sh.getZoomY());
 	}

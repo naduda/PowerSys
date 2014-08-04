@@ -9,6 +9,10 @@ import java.util.Map;
 
 import model.Alarm;
 import model.ConfTree;
+import model.DvalTI;
+import model.LinkedValue;
+import model.TSysParam;
+import model.TViewParam;
 import model.Tsignal;
 import powersys.IPowersys;
 
@@ -51,6 +55,41 @@ public class ClientPowerSys implements IPowersys {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	public Map<String, TSysParam> getTSysParam(String paramname) throws RemoteException {
+		try {
+			return myServer.getTSysParam(paramname);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<TViewParam> getTViewParam(String objdenom, String paramdenom, int userref) throws RemoteException {
+		try {
+			return myServer.getTViewParam(objdenom, paramdenom, userref);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public void setTS(int idsignal, double val, int schemeref) throws RemoteException {
+		myServer.setTS(idsignal, val, schemeref);
+	}
+
+	@Override
+	public List<DvalTI> getOldTI() throws RemoteException {
+		return myServer.getOldTI();
+	}
+
+	@Override
+	public Map<Integer, LinkedValue> getOldTS() throws RemoteException {
+		return myServer.getOldTS();
 	}
 	
 } 
