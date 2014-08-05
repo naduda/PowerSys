@@ -29,4 +29,9 @@ public class MenuBarController {
         	}
         }
 	}
+	
+	@FXML
+	private void exit(ActionEvent event) {
+		Controller.exitProgram();
+	}
 }

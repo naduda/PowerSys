@@ -31,11 +31,17 @@ public class SendDValTS extends ASender {
 
 					msgObject.setObject(ts);
 					producer.send(topic, msgObject);
-					LastData.getOldTS().get(ts.getSignalref()).setVal(ts.getVal());
+					DvalTS oldTS = LastData.getOldTS().get(ts.getSignalref());
+					if (oldTS != null) {
+						oldTS.setVal(ts.getVal());
+					} else {
+						LastData.getOldTS().put(ts.getSignalref(), ts);
+					}
 				}
 			}
 		} catch (Exception e) {
 			System.err.println("SendDValTS");
+			e.printStackTrace();
 			try {
 				if (ls == null) Thread.sleep(60000); //Connection broken
 			} catch (InterruptedException e1) {

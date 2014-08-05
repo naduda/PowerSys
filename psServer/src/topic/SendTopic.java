@@ -4,9 +4,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.jms.JMSContext;
@@ -17,6 +15,7 @@ import javax.jms.TopicPublisher;
 
 import jdbc.PostgresDB;
 import model.DvalTI;
+import model.DvalTS;
 import model.Tsignal;
 import actualdata.LastData;
 
@@ -67,14 +66,18 @@ public class SendTopic implements Runnable {
 			e.printStackTrace();
 		}
 
+		LastData.setSignals(pdb.getTsignalsMap());
+		LastData.setConfTree(pdb.getConfTreeMap());
+		
 		pdb.getAlarms(dt).forEach(a -> { LastData.addAlarm(a); });
 		LastData.setTsysparmams(pdb.getTSysParam());
 		LastData.setTviewparams(pdb.getTViewParam());
-		//ti.setVal(ti.getVal() * signals.get(ti.getSignalref()).getKoef());
-		List<DvalTI> oldTIs = pdb.getOldTI().stream().filter(it -> it != null).collect(Collectors.toList());
-		oldTIs.forEach(ti -> { ti.setVal(ti.getVal() * signals.get(ti.getSignalref()).getKoef()); });
+		Map<Integer, DvalTI> oldTIs = pdb.getOldTI().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTI::getSignalref, obj -> obj));
+		oldTIs.values().forEach(ti -> { ti.setVal(ti.getVal() * signals.get(ti.getSignalref()).getKoef()); });
 		LastData.setOldTI(oldTIs);
-		LastData.setOldTS(pdb.getOldTS());
+		Map<Integer, DvalTS> oldTSs = pdb.getOldTS().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTS::getSignalref, obj -> obj));
+		oldTSs.values().forEach(ti -> { ti.setVal(ti.getVal() * signals.get(ti.getSignalref()).getKoef()); });
+		LastData.setOldTS(oldTSs);
 		
 		new Thread(new SendDValTI(factory, jConn, "DvalTI", signals, getPdb()), "SendDValTI_Thread").start();
 		new Thread(new SendDValTS(factory, jConn, "DvalTS", getPdb()), "SendDValTS_Thread").start();

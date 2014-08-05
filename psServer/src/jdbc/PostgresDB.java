@@ -22,7 +22,6 @@ import model.Alarm;
 import model.ConfTree;
 import model.DvalTI;
 import model.DvalTS;
-import model.LinkedValue;
 import model.TSysParam;
 import model.TViewParam;
 import model.Tsignal;
@@ -139,7 +138,7 @@ public class PostgresDB implements IMapper {
 	}
 	
 	@Override
-	public Map<Integer, LinkedValue> getOldTS() {
+	public List<DvalTS> getOldTS() {
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getOldTS();

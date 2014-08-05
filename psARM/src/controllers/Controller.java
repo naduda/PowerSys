@@ -13,10 +13,10 @@ import ui.Main;
 import ui.Scheme;
 import model.DvalTI;
 import model.DvalTS;
-import model.LinkedValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyCode;
@@ -69,18 +69,12 @@ public class Controller {
 	@FXML
 	private void showAlarm(ActionEvent event) {
 		showHideAlarmPanel();
+		Button btn = (Button) event.getSource();
+		btn.setText(isHide ? "showAlarms" : "hideAlarms");
 	}
 	
 	public void updateTI(DvalTI ti) {
-		DigitalDevice tt = Main.mainScheme.getDigitalDeviceById(ti.getSignalref() + "");
-		if (tt == null) return;
-		
-		tt.setLastDataDate(ti.getServdt());
-		tt.setText(tt.getDecimalFormat().format(ti.getVal()));
-		if (ti.getServdt().getTime() > toolBarController.getTsLastDate()) {
-			toolBarController.updateLabel(df.format(ti.getServdt()));
-			toolBarController.setTsLastDate(ti.getServdt().getTime());
-		}
+		updateTI(Main.mainScheme, ti);
 	}
 	
 	public void updateTI(Scheme mainScheme, DvalTI ti) {
@@ -96,7 +90,11 @@ public class Controller {
 	}
 
 	public void updateTS(DvalTS ts) {
-		Group tt = Main.mainScheme.getDeviceById(ts.getSignalref() + "");		
+		updateTS(Main.mainScheme, ts);
+	}
+	
+	public void updateTS(Scheme mainScheme, DvalTS ts) {
+		Group tt = mainScheme.getDeviceById(ts.getSignalref() + "");		
 		if (tt == null) return;
 		
 		if (tt.getClass().getName().toLowerCase().endsWith("disconnector")) {
@@ -107,26 +105,12 @@ public class Controller {
 			dcg.changeTS((int)ts.getVal());
 		} else if (tt.getClass().getName().toLowerCase().endsWith("breaker")) {
 			Breaker br = (Breaker) tt;
-			br.setLastDataDate(ts.getServdt());
+			br.setLastDataDate(new Date(System.currentTimeMillis() - 10000));
 			br.changeTS((int)ts.getVal());
 		}
-		toolBarController.updateLabel(df.format(ts.getServdt()));
-	}
-	
-	public void updateTS(Scheme mainScheme, LinkedValue lv) {
-		Group tt = mainScheme.getDeviceById(lv.getIdsignal() + "");		
-		if (tt == null) return;
-		
-		if (tt.getClass().getName().toLowerCase().endsWith("disconnector")) {
-			Disconnector dc = (Disconnector) tt;
-			dc.changeTS((int)lv.getVal());
-		} else if (tt.getClass().getName().toLowerCase().endsWith("disconnectorgrnd")) {
-			DisConnectorGRND dcg = (DisConnectorGRND) tt;
-			dcg.changeTS((int)lv.getVal());
-		} else if (tt.getClass().getName().toLowerCase().endsWith("breaker")) {
-			Breaker br = (Breaker) tt;
-			br.setLastDataDate(new Date(System.currentTimeMillis() - 10000));
-			br.changeTS((int)lv.getVal());
+		if (ts.getServdt().getTime() > toolBarController.getTsLastDate()) {
+			toolBarController.updateLabel(df.format(ts.getServdt()));
+			toolBarController.setTsLastDate(ts.getServdt().getTime());
 		}
 	}
 	

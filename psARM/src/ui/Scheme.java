@@ -12,8 +12,6 @@ import graphicObject.ShapeFX;
 import graphicObject.TC;
 import graphicObject.VCar;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,7 +25,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import model.DvalTI;
-import model.LinkedValue;
+import model.DvalTS;
+import ua.pr.common.ToolsPrLib;
 import xml.Document;
 import xml.ShapeX;
 import javafx.geometry.Bounds;
@@ -48,8 +47,8 @@ public class Scheme extends ScrollPane {
 	
 	private final Group root = new Group();
 	private final Group rootScheme = new Group();
-	private List<Integer> signalsTI;
-	private List<Integer> signalsTS;
+	private final List<Integer> signalsTI = new ArrayList<>();
+	private final List<Integer> signalsTS = new ArrayList<>();
 	public static AShape selectedShape;
 	private int idScheme = 0;
 	private String schemeName;
@@ -77,9 +76,6 @@ public class Scheme extends ScrollPane {
 			System.err.println("Error in EntityFromXML.getObject(...). " + e);
 		}
 		
-		signalsTI = new ArrayList<>();
-		signalsTS = new ArrayList<>();
-		
 		Document doc = (Document) result;
 		setSchemeName(doc.getPage().getName());
 		
@@ -88,21 +84,25 @@ public class Scheme extends ScrollPane {
 				if (shapeX.getType().toLowerCase().equals("group")) {
 					paintGroup(root, shapeX, true);
 				} else {
-					paintShape(root, shapeX, true);
+					try {
+						paintShape(root, shapeX, true);
+					} catch (Exception e) {
+						System.err.println("Error paintShape " + shapeX.getId());
+					}
 				}
 			}
 		});
 		
 		try {
-			List<DvalTI> oldTI = MainStage.psClient.getOldTI();
-			Map<Integer, LinkedValue> oldTS = MainStage.psClient.getOldTS();
+			Map<Integer, DvalTI> oldTI = MainStage.psClient.getOldTI();
+			Map<Integer, DvalTS> oldTS = MainStage.psClient.getOldTS();
 			
-			for (DvalTI ti : oldTI) {
+			for (DvalTI ti : oldTI.values()) {
 				MainStage.controller.updateTI(this, ti);
 			}
 
-			for (LinkedValue lv : oldTS.values()) {
-				MainStage.controller.updateTS(this, lv);
+			for (DvalTS ts : oldTS.values()) {
+				MainStage.controller.updateTS(this, ts);
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -111,11 +111,11 @@ public class Scheme extends ScrollPane {
 		bgColor = String.format("-fx-background: %s;", doc.getPage().getFillColor());
 		setStyle(bgColor);
 		
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		double kx = screenSize.getWidth() * 0.9 / doc.getPage().getWidth();
-		double ky = screenSize.getHeight() * 0.8 / doc.getPage().getHeight();
-		root.setScaleX(kx < ky ? kx : ky);
-		root.setScaleY(kx < ky ? kx : ky);
+//		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//		double kx = screenSize.getWidth() * 0.9 / doc.getPage().getWidth();
+//		double ky = screenSize.getHeight() * 0.8 / doc.getPage().getHeight();
+//		root.setScaleX(kx < ky ? kx : ky);
+//		root.setScaleY(kx < ky ? kx : ky);
 	}
 	
 	@Override
@@ -180,21 +180,35 @@ public class Scheme extends ScrollPane {
 			gr.getChildren().add(text);
 			return;
 		}
+		if ("container".equals(sh.getType().toLowerCase())) {
+			String schemeName = sh.getLink();
+			Group conteyner = new Scheme(ToolsPrLib.getFullPath("./schemes/" + schemeName + ".xml")).getRoot();
+			conteyner.setTranslateX(sh.getX());
+			conteyner.setTranslateY(sh.getY());
+			gr.getChildren().add(conteyner);
+			return;
+		}
 		if ("gdisconnector".equals(sh.getType().toLowerCase())) {
 			Disconnector dd = new Disconnector(sh);
 			signalsTS.add(Integer.parseInt(dd.getId()));
 			gr.getChildren().add(dd);
 			return;
 		}
+		if ("gdisconnectorod".equals(sh.getType().toLowerCase())) {
+			Disconnector dd = new Disconnector(sh, true);
+			signalsTS.add(Integer.parseInt(dd.getId()));
+			gr.getChildren().add(dd);
+			return;
+		}
 		if ("gdisconnectorgrnd".equals(sh.getType().toLowerCase())) {
 			DisConnectorGRND dd = new DisConnectorGRND(sh);
-			signalsTS.add(Integer.parseInt(dd.getId()));
+			signalsTS.add(Integer.parseInt(dd.getId().equals("") ? "0" : dd.getId()));
 			gr.getChildren().add(dd);
 			return;
 		}
 		if ("gbreaker".equals(sh.getType().toLowerCase())) {
 			Breaker dd = new Breaker(sh);
-			signalsTS.add(Integer.parseInt(dd.getId()));
+			signalsTS.add(Integer.parseInt(dd.getId().equals("") ? "0" : dd.getId()));
 			gr.getChildren().add(dd);
 			return;
 		}
@@ -262,11 +276,11 @@ public class Scheme extends ScrollPane {
 					sh.setY(sh.getY() + sh.getHeight());
 					sh.setHeight(-sh.getHeight());
 				}
-				if (sh.getWidth() < AShape.ONE_MM) {
+				if (sh.getWidth() < 4) {
 					sh.setWidth(sh.getLineWeight() * 3);
 					sh.setX(sh.getX() - sh.getLineWeight());
 				}
-				if (sh.getHeight() < AShape.ONE_MM) {
+				if (sh.getHeight() < 4) {
 					sh.setHeight(sh.getLineWeight() * 3);
 					sh.setY(sh.getY() - sh.getLineWeight());
 				}
@@ -311,7 +325,7 @@ public class Scheme extends ScrollPane {
 		try {
 			tt = (DigitalDevice) root.lookup("#" + id);
 		} catch (Exception e) {
-			System.err.println("getDigitalDeviceById ...");
+			System.err.println("getDigitalDeviceById ... " + id);
 		}
 		return tt;
 	}

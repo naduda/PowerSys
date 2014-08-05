@@ -8,7 +8,10 @@ import model.Tsignal;
 import ui.MainStage;
 import ui.Scheme;
 import xml.ShapeX;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Group;
@@ -34,8 +37,8 @@ public abstract class AShape extends Group {
 	}
 	private static final double RECT_LINE_WIDTH = 3;
 	private static final double MOUSE_DURATION_MILLS = 250;	
+	private final Timeline timeline = new Timeline();
 	
-	public static final int ONE_MM = 4;
 	public final Map<Integer, Tsignal> signals = new HashMap<Integer, Tsignal>();
 	public final Rectangle rect = new Rectangle();
 	public final Group shapes = new Group();
@@ -52,6 +55,12 @@ public abstract class AShape extends Group {
 		rect.getStrokeDashArray().addAll(2d, 5d);
 		rect.setStrokeWidth(RECT_LINE_WIDTH);
 		rect.setFill(Color.TRANSPARENT);
+
+		timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.setAutoReverse(true);
+		final KeyValue kv = new KeyValue(rect.strokeProperty(), Color.BLACK);
+		final KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
+		timeline.getKeyFrames().add(kf);
 	}
 	
 	public AShape(ShapeX sh) {
@@ -120,10 +129,12 @@ public abstract class AShape extends Group {
 	public void updateSignal(int sec) {
 		if (lastDataDate == null) return;
 		if ((System.currentTimeMillis() - lastDataDate.getTime()) < sec * 1000) {
-			rect.setStroke(Color.TRANSPARENT);	
+			rect.setStroke(Color.TRANSPARENT);
+			timeline.stop();
 		} else {
 			rect.getStrokeDashArray().clear();
 			rect.setStroke(Color.WHITE);
+			timeline.play();
 		}
 	}
 	

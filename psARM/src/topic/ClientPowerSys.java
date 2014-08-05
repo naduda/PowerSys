@@ -10,7 +10,7 @@ import java.util.Map;
 import model.Alarm;
 import model.ConfTree;
 import model.DvalTI;
-import model.LinkedValue;
+import model.DvalTS;
 import model.TSysParam;
 import model.TViewParam;
 import model.Tsignal;
@@ -24,7 +24,8 @@ public class ClientPowerSys implements IPowersys {
 		try {
 			myServer = (IPowersys) Naming.lookup("rmi://localhost:1099/PowerSysService");
 		} catch (NotBoundException | RemoteException | MalformedURLException e) {
-			e.printStackTrace();
+			System.err.println("PowerSysService is stoped");
+			System.exit(0);
 		}
 	}
 
@@ -83,12 +84,12 @@ public class ClientPowerSys implements IPowersys {
 	}
 
 	@Override
-	public List<DvalTI> getOldTI() throws RemoteException {
+	public Map<Integer, DvalTI> getOldTI() throws RemoteException {
 		return myServer.getOldTI();
 	}
 
 	@Override
-	public Map<Integer, LinkedValue> getOldTS() throws RemoteException {
+	public Map<Integer, DvalTS> getOldTS() throws RemoteException {
 		return myServer.getOldTS();
 	}
 	

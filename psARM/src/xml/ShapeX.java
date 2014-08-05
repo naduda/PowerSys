@@ -55,6 +55,8 @@ public class ShapeX {
 	private String precision;	
 	@XmlAttribute(name="linePattern")
 	private int linePattern;
+	@XmlAttribute(name="link")
+	private String link;
 
 	@XmlElement(name="shape")
 	private List<ShapeX> shapes;
@@ -249,5 +251,13 @@ public class ShapeX {
 
 	public void setLinePattern(int linePattern) {
 		this.linePattern = linePattern;
+	}
+
+	public String getLink() {
+		return link;
+	}
+
+	public void setLink(String link) {
+		this.link = link;
 	}
 }

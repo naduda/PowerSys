@@ -54,7 +54,7 @@ public class AlarmController implements Initializable{
 	private void kvitAll(ActionEvent event) {
 		System.out.println("kvitAll");
 	}
-
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {

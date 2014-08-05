@@ -24,7 +24,9 @@ public class Main extends Application {
 	
 	@Override
 	public void start(Stage stage) throws Exception {	
-
+		stage = mainStage;
+        stage.show();
+        
         final Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
@@ -54,10 +56,6 @@ public class Main extends Application {
         	
         };
         new Thread(taskTS, "UpdateTimeOut_TS").start();
-        
-		stage = mainStage;
-        stage.show();
-        MainStage.controller.showHideAlarmPanel();
         
         Events events = new Events();
         stage.setOnCloseRequest(event -> { events.exitProgram(); });

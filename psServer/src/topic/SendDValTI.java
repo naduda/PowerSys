@@ -47,7 +47,12 @@ public class SendDValTI extends ASender {
 					}
 					msgObject.setObject(ti);
 					producer.send(topic, msgObject);
-					LastData.getOldTI().get(ti.getSignalref()).setVal(ti.getVal());
+					DvalTI oldTI = LastData.getOldTI().get(ti.getSignalref());
+					if (oldTI != null) {
+						oldTI.setVal(ti.getVal());
+					} else {
+						LastData.getOldTI().put(ti.getSignalref(), ti);
+					}
 				}
 			}
 		} catch (Exception e) {

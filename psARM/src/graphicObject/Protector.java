@@ -9,9 +9,10 @@ public class Protector extends AShape {
 
 	private final double SH_WIDTH = rect.getWidth();
 	private final double SH_HEIGHT = rect.getHeight();
-	
+	private final double oneMM = SH_WIDTH / 4;
+			
 	private final Line l1 = new Line(SH_WIDTH/2, 0, SH_WIDTH/2, SH_HEIGHT);
-	private final Rectangle rectB = new Rectangle(0, 4 * ONE_MM, SH_WIDTH, SH_HEIGHT - 8 * ONE_MM);
+	private final Rectangle rectB = new Rectangle(0, 4 * oneMM, SH_WIDTH, SH_HEIGHT - 8 * oneMM);
 	
 	public Protector(ShapeX sh) {
 		super(sh);

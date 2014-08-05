@@ -8,7 +8,6 @@ import model.Alarm;
 import model.ConfTree;
 import model.DvalTI;
 import model.DvalTS;
-import model.LinkedValue;
 import model.TSysParam;
 import model.TViewParam;
 import model.Tsignal;
@@ -40,9 +39,15 @@ public interface IMapper {
 	@Select("select * from d_valts where servdt > #{servdt} order by servdt desc")
 	List<DvalTS> getLastTS(Timestamp servdt);
 	
-	@Select("select idsignal, (getlast_ts(idsignal, null, 0)).val from t_signal where typesignalref = 2")
-	@MapKey("idsignal")
-	Map<Integer, LinkedValue> getOldTS();
+	@Select("select (getlast_ts(idsignal, null, 0)).* from t_signal where typesignalref = 2")
+	@Results(value = {
+			@Result(property="signalref", column="id"),
+			@Result(property="val", column="val"),
+			@Result(property="dt", column="dt"),
+			@Result(property="rcode", column="rcode"),
+			@Result(property="servdt", column="servdt")
+	})
+	List<DvalTS> getOldTS();
 	
 	@Select("select set_ts(#{idsignal}, #{val}, now()::timestamp without time zone, 107, -1, #{schemeref})")
 	Integer setTS(@Param("idsignal") int idsignal, @Param("val") double val, @Param("schemeref") int schemeref);

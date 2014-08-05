@@ -7,10 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-
-
-
 import java.util.stream.Collectors;
 
 import actualdata.LastData;
@@ -19,7 +15,7 @@ import powersys.IPowersys;
 import model.Alarm;
 import model.ConfTree;
 import model.DvalTI;
-import model.LinkedValue;
+import model.DvalTS;
 import model.TSysParam;
 import model.TViewParam;
 import model.Tsignal;
@@ -31,18 +27,18 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	
 	public PowerSys(PostgresDB pdb) throws RemoteException {
 		super();
-		LocateRegistry.createRegistry(1099);
+		LocateRegistry.createRegistry(RMI_PORT);
 		this.pdb = pdb;
 	}
 
 	@Override
 	public Map<Integer, Tsignal> getTsignalsMap() throws RemoteException {
-		return pdb.getTsignalsMap();
+		return LastData.getSignals();
 	}
 
 	@Override
 	public Map<Integer, ConfTree> getConfTreeMap() throws RemoteException {
-		return pdb.getConfTreeMap();
+		return LastData.getConfTree();
 	}
 
 	@Override
@@ -69,12 +65,12 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	}
 
 	@Override
-	public List<DvalTI> getOldTI() throws RemoteException {
+	public Map<Integer, DvalTI> getOldTI() throws RemoteException {
 		return LastData.getOldTI();
 	}
 
 	@Override
-	public Map<Integer, LinkedValue> getOldTS() throws RemoteException {
+	public Map<Integer, DvalTS> getOldTS() throws RemoteException {
 		return LastData.getOldTS();
 	}
 
