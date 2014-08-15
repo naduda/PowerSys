@@ -4,8 +4,6 @@ import controllers.Controller;
 import topic.ReceiveTopic;
 import javafx.application.Application;
 import javafx.concurrent.Task;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -15,8 +13,6 @@ public class Main extends Application {
 
 	private final Stage mainStage = new MainStage("./ui/Main.xml");
 	public static Scheme mainScheme;
-	public static boolean ctrlPressed;
-	public static boolean shiftPressed;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -59,27 +55,12 @@ public class Main extends Application {
         
         Events events = new Events();
         stage.setOnCloseRequest(event -> { events.exitProgram(); });
-        stage.getScene().setOnKeyPressed(event -> { events.setOnKeyPressedReleased(((KeyEvent)event).getCode(), true); });
-        stage.getScene().setOnKeyReleased(event -> { events.setOnKeyPressedReleased(((KeyEvent)event).getCode(), false); });
 	}
 
 //	--------------------------------------------------------------
 	private final class Events {
 		public void exitProgram() {
 			Controller.exitProgram();
-		}
-		
-		public void setOnKeyPressedReleased(KeyCode keyCode, boolean pressedReleased) {
-			switch (keyCode) {
-			case CONTROL:
-				ctrlPressed = pressedReleased;
-				break;
-			case SHIFT:
-				shiftPressed = pressedReleased;
-				break;
-			default:
-				break;
-			}
 		}
 	}
 }

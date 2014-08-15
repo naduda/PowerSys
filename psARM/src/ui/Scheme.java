@@ -32,6 +32,7 @@ import xml.ShapeX;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
@@ -52,6 +53,7 @@ public class Scheme extends ScrollPane {
 	public static AShape selectedShape;
 	private int idScheme = 0;
 	private String schemeName;
+	private double currentVvalue;
 	
 	private String bgColor = "-fx-background: gray;";
 	
@@ -60,13 +62,19 @@ public class Scheme extends ScrollPane {
 		setStyle(bgColor);
 		Events events = new Events();
 		setOnScroll(event -> { events.setOnScroll(event); });
-		
+		setOnKeyPressed(e -> { if (e.getCode() == KeyCode.SHIFT) currentVvalue = getVvalue(); });
+		setOnMouseClicked(e -> {
+			double startW = root.getBoundsInParent().getWidth();		
+            double lX = sceneToLocal(e.getSceneX(), 0).getX() + getHvalue() * (startW - getWidth());
+			System.out.println("lX = " + lX);
+			
+		});
 		rootScheme.getChildren().add(root);
 	}
 	
 	public Scheme(String fileName) {
 		this();
-
+		
 		Object result = null;
 		try {
 			JAXBContext jc = JAXBContext.newInstance(Document.class);
@@ -110,12 +118,6 @@ public class Scheme extends ScrollPane {
 
 		bgColor = String.format("-fx-background: %s;", doc.getPage().getFillColor());
 		setStyle(bgColor);
-		
-//		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//		double kx = screenSize.getWidth() * 0.9 / doc.getPage().getWidth();
-//		double ky = screenSize.getHeight() * 0.8 / doc.getPage().getHeight();
-//		root.setScaleX(kx < ky ? kx : ky);
-//		root.setScaleY(kx < ky ? kx : ky);
 	}
 	
 	@Override
@@ -370,23 +372,36 @@ public class Scheme extends ScrollPane {
 	//	--------------------------------------------------------------
 	private final class Events {
 		public void setOnScroll(ScrollEvent event) {
-			ScrollPane sp = (ScrollPane) event.getSource();
 			double deltaY = event.getDeltaY();
-			if (Main.ctrlPressed) {
+			
+			if (event.isControlDown()) {
 				double zoomFactor = 1.1;
                 if (deltaY < 0) {
-                  zoomFactor = 2.0 - zoomFactor;
+                  zoomFactor = 0.9;
                 }
 
+                double startW = root.getBoundsInParent().getWidth();
+                double startH = root.getBoundsInParent().getHeight();
+                
+                double lX = sceneToLocal(event.getSceneX(), 0).getX() + getHvalue() * (startW - getWidth());
+                double lY = sceneToLocal(0, event.getSceneY()).getY() + getVvalue() * (startH - getHeight());
+                
                 root.setScaleX(root.getScaleX() * zoomFactor);
                 root.setScaleY(root.getScaleY() * zoomFactor);
                 event.consume();
-            } else if (Main.shiftPressed) {
-            	if (deltaY < 0) {
-            		sp.setHvalue(sp.getHvalue() + 0.04);
-	            } else {
-	            	sp.setHvalue(sp.getHvalue() - 0.04);
-	            }
+
+                double newW = root.getBoundsInParent().getWidth();
+                double newH = root.getBoundsInParent().getHeight();
+                double deltaX = newW - startW;
+   
+                deltaX = lX * (deltaX / newW);
+                deltaY = lY * (deltaY / newH);
+
+                setHvalue(getHvalue() + deltaX / (newW - getWidth()));
+                setVvalue(getVvalue() + deltaY / (newH - getHeight()));
+            } else if (event.isShiftDown()) {
+            	setVvalue(currentVvalue);
+            	setHvalue(deltaY < 0 ? getHvalue() + 0.05 : getHvalue() - 0.05);
             }
 		}
 	}

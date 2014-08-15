@@ -23,12 +23,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.util.Callback;
 
-public class AlarmController implements Initializable{
+public class AlarmController implements Initializable {
 
 	private List<TViewParam> viewParams;
 	private Map<String, TSysParam> sysParams;
@@ -70,11 +69,22 @@ public class AlarmController implements Initializable{
 
 		cbPriority.getItems().addAll(obList);
 		cbPriority.setValue(cbPriority.getItems().get(0));
+		cbPriority.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(a -> {
+            	if (cbPriority.getItems().indexOf(newValue) == 0) { //Priority = Any
+            		return true;
+            	} else {
+            		String lowerCaseFilter = newValue.toString().toLowerCase();
+            		if (a.getPAlarmPriority().toLowerCase().equals(lowerCaseFilter)) {
+            			return true;
+            		} else {
+            			return false;
+            		}
+            	}
+            });
+        });
 
-		ObservableList<TableColumn<AlarmTableItem, ?>> tColumns = tvAlarms.getColumns();
-		for (TableColumn<AlarmTableItem, ?> tableColumn : tColumns) {
-			tableColumn.setCellValueFactory(p -> Bindings.selectString(p.getValue(), tableColumn.getId()));
-		}
+		tvAlarms.getColumns().forEach(c -> { c.setCellValueFactory(p -> Bindings.selectString(p.getValue(), c.getId())); });
 		
 		tvAlarms.setRowFactory(new Callback<TableView<AlarmTableItem>, TableRow<AlarmTableItem>>() {			
 			@Override
@@ -86,13 +96,12 @@ public class AlarmController implements Initializable{
 	                    String cellStyle = "-fx-control-inner-background: %s;"
 	                    				 + "-fx-accent: derive(-fx-control-inner-background, -40%%);"
 	                    				 + "-fx-cell-hover-color: derive(-fx-control-inner-background, -20%%);";
-	                    if (alarm != null && alarm.getPConfirmDT().equals("")) {
-	                    	
+	                    if (alarm != null && alarm.getPConfirmDT().equals("")) {	
 	                    	String col = viewParams.stream().filter(sp -> sp.getAlarmref() == alarm.getAlarmid()).
 	                    			filter(sp -> Integer.parseInt(sp.getObjref()) == alarm.getLogState()).
 	                    			collect(Collectors.toList()).get(0).getParamval();
 	                    	col = Scheme.getColor(col).toString().substring(0, 8).replace("0x", "#");
-	                    	cellStyle = String.format(cellStyle, col);	                    	
+	                    	cellStyle = String.format(cellStyle, col);
 	                    } else {
 	                    	cellStyle = String.format(cellStyle, "white");
 	                    }

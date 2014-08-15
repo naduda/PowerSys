@@ -1,5 +1,7 @@
 package ui;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -11,6 +13,7 @@ import controllers.Controller;
 import topic.ClientPowerSys;
 import ua.pr.common.ToolsPrLib;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
@@ -39,16 +42,16 @@ public class MainStage extends Stage {
 
 			bpScheme = controller.getBpScheme();
 
-			Map<Integer, ConfTree> confTree = psClient.getConfTreeMap();
-			for (Tsignal sign : signals.values()) {
-				ConfTree ct = confTree.get(sign.getNoderef());
+			Map<Integer, ConfTree> confTree = psClient.getConfTreeMap();			
+			signals.values().forEach(s -> {
+				ConfTree ct = confTree.get(s.getNoderef());
 				String location = ct.getNodename();
 				while (ct.getParentref() > 0) {
 					ct = confTree.get(ct.getParentref());
 					location = location + "/" + ct.getNodename();
 				}
-				sign.setLocation(location);
-			}
+				s.setLocation(location);
+			});
 
 			psClient.getAlarmsCurrentDay().forEach(a -> { controller.getAlarmsController().addAlarm(a); });
 
@@ -74,6 +77,13 @@ public class MainStage extends Stage {
 			controller.getSpTreeController().addScheme(ti);
 	        MainStage.schemes.put(Main.mainScheme.getIdScheme(), Main.mainScheme);
 		}
+		
+		Group root = Main.mainScheme.getRoot();
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double kx = screenSize.getWidth() * 0.85 / root.getBoundsInLocal().getWidth();
+		double ky = screenSize.getHeight() * 0.8 / root.getBoundsInLocal().getHeight();
+		root.setScaleX(kx < ky ? kx : ky);
+		root.setScaleY(kx < ky ? kx : ky);
 		bpScheme.setCenter(Main.mainScheme);
 	}
 }

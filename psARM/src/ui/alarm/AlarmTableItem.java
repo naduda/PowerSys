@@ -53,10 +53,12 @@ public class AlarmTableItem {
     		sAlarmMes = sAlarmMes.substring(sAlarmMes.indexOf("=") + 1, sAlarmMes.indexOf(":"));
     		a.setAlarmmes(sAlarmMes);
     	}
-    	
+
     	a.setpEventType(sysParamsEvent.get("" + a.getEventtype()).getParamdescr());
     	a.setpAlarmPriority(sysParamsPriority.get("" + a.getAlarmpriority()).getParamdescr());
-    	a.setpLogState(sysParamsLogState.get("" + a.getLogstate()).getParamdescr());
+    	
+    	int lState = a.isAlarmuser_ack() ? a.getLogstate() : 10;
+    	a.setpLogState(sysParamsLogState.get("" + lState).getParamdescr());
 		
 		pObject = new SimpleStringProperty(a.getpObject() != null ? a.getpObject() : "");
 		pLocation = new SimpleStringProperty(a.getpLocation() != null ? a.getpLocation() : "");
@@ -74,7 +76,7 @@ public class AlarmTableItem {
 		
 		setEventDT(a.getEventdt());
 		setAlarmid(a.getAlarmid());
-		setLogState(a.getLogstate());
+		setLogState(lState);
 	}
 	
 	public String getPObject() {

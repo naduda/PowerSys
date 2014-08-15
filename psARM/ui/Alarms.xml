@@ -6,7 +6,6 @@
 <?import javafx.scene.image.*?>
 <?import java.lang.*?>
 <?import javafx.collections.*?>
-<?import fxmltableview.*?> 
 <?import javafx.scene.control.cell.*?> 
 
 <Pane fx:id="bpAlarms" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.AlarmController">

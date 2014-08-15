@@ -17,6 +17,7 @@ public class Alarm implements Serializable {
 	private String lognote;
 	private int alarmpriority;
 	private int eventtype;
+	private boolean alarmuser_ack;
 	
 	private int alarmid;
 	private double objval;
@@ -190,6 +191,14 @@ public class Alarm implements Serializable {
 
 	public void setpLogState(String pLogState) {
 		this.pLogState = pLogState;
+	}
+
+	public boolean isAlarmuser_ack() {
+		return alarmuser_ack;
+	}
+
+	public void setAlarmuser_ack(boolean alarmuser_ack) {
+		this.alarmuser_ack = alarmuser_ack;
 	}
 	
 }
