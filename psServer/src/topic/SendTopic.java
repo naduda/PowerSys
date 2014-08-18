@@ -3,8 +3,10 @@ package topic;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 import javax.jms.JMSContext;
@@ -54,37 +56,77 @@ public class SendTopic implements Runnable {
 		
 	}
 	
+	boolean isDataFromDB = false;
 	@Override
 	public void run() {
-		Map<Integer, Tsignal> signals = pdb.getTsignalsMap();
-
-		SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-		Timestamp dt = new Timestamp(new Date().getTime());
-		try {
-			dt = new Timestamp(formatter.parse(formatter.format(new Date())).getTime());
-		} catch (ParseException e) {
-			e.printStackTrace();
+		System.out.println("START at " + LocalDateTime.now());
+		while (!isDataFromDB) {
+			Map<Integer, Tsignal> signals = pdb.getTsignalsMap();
+			LastData.setSignals(signals);
+			isDataFromDB = true;
 		}
+		isDataFromDB = false;
+		System.out.println("signals");
+		
+		while (!isDataFromDB) {
+			LastData.setConfTree(pdb.getConfTreeMap());
+			isDataFromDB = true;
+		}
+		isDataFromDB = false;
+		System.out.println("ConfTree");
+		
+		while (!isDataFromDB) {
+			SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+			Timestamp dt = null;
+			try {
+				dt = new Timestamp(formatter.parse(formatter.format(new Date())).getTime()); // 00 min, 00 sec
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 
-		LastData.setSignals(pdb.getTsignalsMap());
-		LastData.setConfTree(pdb.getConfTreeMap());
+			pdb.getAlarms(dt).forEach(a -> { LastData.addAlarm(a); });
+			isDataFromDB = true;
+		}
+		isDataFromDB = false;
+		System.out.println("Alarms");
 		
-		pdb.getAlarms(dt).forEach(a -> { LastData.addAlarm(a); });
-		LastData.setTsysparmams(pdb.getTSysParam());
-		LastData.setTviewparams(pdb.getTViewParam());
-		Map<Integer, DvalTI> oldTIs = pdb.getOldTI().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTI::getSignalref, obj -> obj));
-		oldTIs.values().forEach(ti -> { ti.setVal(ti.getVal() * signals.get(ti.getSignalref()).getKoef()); });
-		LastData.setOldTI(oldTIs);
-		Map<Integer, DvalTS> oldTSs = pdb.getOldTS().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTS::getSignalref, obj -> obj));
-		oldTSs.values().forEach(ti -> { ti.setVal(ti.getVal() * signals.get(ti.getSignalref()).getKoef()); });
-		LastData.setOldTS(oldTSs);
+		while (!isDataFromDB) {
+			LastData.setTsysparmams(pdb.getTSysParam());
+			isDataFromDB = true;
+		}
+		isDataFromDB = false;
+		System.out.println("SysParam");
 		
-		new Thread(new SendDValTI(factory, jConn, "DvalTI", signals, getPdb()), "SendDValTI_Thread").start();
+		while (!isDataFromDB) {
+			LastData.setTviewparams(pdb.getTViewParam());
+			isDataFromDB = true;
+		}
+		isDataFromDB = false;
+		System.out.println("ViewParam");
+		
+		while (!isDataFromDB) {
+			Map<Integer, DvalTI> oldTIs = pdb.getOldTI().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTI::getSignalref, obj -> obj));
+			oldTIs.values().forEach(ti -> { ti.setVal(ti.getVal() * LastData.getSignals().get(ti.getSignalref()).getKoef()); });
+			LastData.setOldTI(oldTIs);
+			isDataFromDB = true;
+		}
+		isDataFromDB = false;
+		System.out.println("oldTI");
+		
+		while (!isDataFromDB) {
+			Map<Integer, DvalTS> oldTSs = pdb.getOldTS().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTS::getSignalref, obj -> obj));
+			oldTSs.values().forEach(ti -> { ti.setVal(ti.getVal() * LastData.getSignals().get(ti.getSignalref()).getKoef()); });
+			LastData.setOldTS(oldTSs);
+			isDataFromDB = true;
+		}
+		System.out.println("oldTS");
+		
+		new Thread(new SendDValTI(factory, jConn, "DvalTI", LastData.getSignals(), getPdb()), "SendDValTI_Thread").start();
 		new Thread(new SendDValTS(factory, jConn, "DvalTS", getPdb()), "SendDValTS_Thread").start();
 		new Thread(new SendAlarms(factory, jConn, "Alarms", false, getPdb()), "SendAlarms_Thread").start();
 		new Thread(new SendAlarms(factory, jConn, "Alarms", true, getPdb()), "SendAlarmsConfirm_Thread").start();	
 		
-		System.out.println("Send ...");
+		System.out.println("Send... " + LocalDateTime.now());
 	}
 	
 	public PostgresDB getPdb() {
@@ -101,8 +143,9 @@ public class SendTopic implements Runnable {
 			return;
 		}
 		if (dbServer.indexOf(":") != -1) {
-			this.dbServer = dbServer.split(":")[0];
-			this.dbPort = dbServer.split(":")[1];
+			StringTokenizer st = new StringTokenizer(dbServer, ":");
+			this.dbServer = st.nextToken();
+			this.dbPort = st.nextToken();
 		} else {
 			this.dbServer = dbServer;
 			this.dbPort = "5432";

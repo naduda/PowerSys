@@ -2,6 +2,7 @@ package controllers;
 
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,10 @@ import model.TViewParam;
 import ui.MainStage;
 import ui.Scheme;
 import ui.alarm.AlarmTableItem;
+import javafx.animation.PauseTransition;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -26,9 +30,11 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.util.Callback;
+import javafx.util.Duration;
 
 public class AlarmController implements Initializable {
 
+	private static final double MOUSE_DURATION_MILLS = 250;
 	private List<TViewParam> viewParams;
 	private Map<String, TSysParam> sysParams;
 	
@@ -86,6 +92,23 @@ public class AlarmController implements Initializable {
 
 		tvAlarms.getColumns().forEach(c -> { c.setCellValueFactory(p -> Bindings.selectString(p.getValue(), c.getId())); });
 		
+		Duration maxTimeBetweenSequentialClicks = Duration.millis(MOUSE_DURATION_MILLS);
+        PauseTransition clickTimer = new PauseTransition(maxTimeBetweenSequentialClicks);
+        final IntegerProperty sequentialClickCount = new SimpleIntegerProperty(0);
+        clickTimer.setOnFinished(event -> {
+            int count = sequentialClickCount.get();
+            if (count == 2) {
+            	confirmAlarm();
+            }
+
+            sequentialClickCount.set(0);
+        });
+        
+        tvAlarms.setOnMouseClicked(event -> {
+	    	sequentialClickCount.set(sequentialClickCount.get() + 1);
+            clickTimer.playFromStart();
+		});
+		
 		tvAlarms.setRowFactory(new Callback<TableView<AlarmTableItem>, TableRow<AlarmTableItem>>() {			
 			@Override
 			public TableRow<AlarmTableItem> call(TableView<AlarmTableItem> param) {
@@ -96,7 +119,7 @@ public class AlarmController implements Initializable {
 	                    String cellStyle = "-fx-control-inner-background: %s;"
 	                    				 + "-fx-accent: derive(-fx-control-inner-background, -40%%);"
 	                    				 + "-fx-cell-hover-color: derive(-fx-control-inner-background, -20%%);";
-	                    if (alarm != null && alarm.getPConfirmDT().equals("")) {	
+	                    if (alarm != null && alarm.getPConfirmDT().equals("")) {
 	                    	String col = viewParams.stream().filter(sp -> sp.getAlarmref() == alarm.getAlarmid()).
 	                    			filter(sp -> Integer.parseInt(sp.getObjref()) == alarm.getLogState()).
 	                    			collect(Collectors.toList()).get(0).getParamval();
@@ -115,6 +138,13 @@ public class AlarmController implements Initializable {
 //      Bind the SortedList comparator to the TableView comparator.
         sortedData.comparatorProperty().bind(tvAlarms.comparatorProperty());
         tvAlarms.setItems(sortedData);
+	}
+	
+	private void confirmAlarm() {
+		AlarmTableItem ati = tvAlarms.getSelectionModel().getSelectedItem();
+		if (ati != null) {
+			System.out.println(LocalDateTime.now());
+		}
 	}
 	
 	public void addAlarm(Alarm a) {

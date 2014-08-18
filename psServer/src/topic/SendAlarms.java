@@ -38,6 +38,7 @@ public class SendAlarms extends ASender {
 					msgObject.setObject(a);
 					producer.send(topic, msgObject);
 					LastData.addAlarm(a);
+					System.out.println(a);
 				}
 				previos = ls;
 			}
