@@ -78,7 +78,7 @@ public class MainStage extends Stage {
 	        MainStage.schemes.put(Main.mainScheme.getIdScheme(), Main.mainScheme);
 		}
 		
-		Group root = Main.mainScheme.getRoot();
+		Group root = (Group) Main.mainScheme.getRoot();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double kx = screenSize.getWidth() * 0.85 / root.getBoundsInLocal().getWidth();
 		double ky = screenSize.getHeight() * 0.8 / root.getBoundsInLocal().getHeight();

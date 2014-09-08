@@ -9,6 +9,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import svg2fx.Convert;
+import svg2fx.fxObjects.EShape;
 import ui.Main;
 import ui.Scheme;
 import model.DvalTI;
@@ -78,15 +80,21 @@ public class Controller {
 	}
 	
 	public void updateTI(Scheme mainScheme, DvalTI ti) {
-		DigitalDevice tt = mainScheme.getDigitalDeviceById(ti.getSignalref() + "");
-		if (tt == null) return;
-
-		tt.setLastDataDate(new Date(System.currentTimeMillis() - 10000));
-		tt.setText(tt.getDecimalFormat().format(ti.getVal()));
-		if (ti.getServdt().getTime() > toolBarController.getTsLastDate()) {
-			toolBarController.updateLabel(df.format(ti.getServdt()));
-			toolBarController.setTsLastDate(ti.getServdt().getTime());
-		}
+//		DigitalDevice tt = mainScheme.getDigitalDeviceById(ti.getSignalref() + "");
+//		if (tt == null) return;
+//
+//		tt.setLastDataDate(new Date(System.currentTimeMillis() - 10000));
+//		tt.setText(tt.getDecimalFormat().format(ti.getVal()));
+//		if (ti.getServdt().getTime() > toolBarController.getTsLastDate()) {
+//			toolBarController.updateLabel(df.format(ti.getServdt()));
+//			toolBarController.setTsLastDate(ti.getServdt().getTime());
+//		}
+		
+		Convert.listSignals.stream().filter(f -> f.getKey().equals(ti.getSignalref())).forEach(s -> {
+			Group tt = mainScheme.getDeviceById(s.getValue());
+			System.out.println(s.getValue());
+		});
+		
 	}
 
 	public void updateTS(DvalTS ts) {
@@ -94,24 +102,10 @@ public class Controller {
 	}
 	
 	public void updateTS(Scheme mainScheme, DvalTS ts) {
-		Group tt = mainScheme.getDeviceById(ts.getSignalref() + "");		
-		if (tt == null) return;
-		
-		if (tt.getClass().getName().toLowerCase().endsWith("disconnector")) {
-			Disconnector dc = (Disconnector) tt;
-			dc.changeTS((int)ts.getVal());
-		} else if (tt.getClass().getName().toLowerCase().endsWith("disconnectorgrnd")) {
-			DisConnectorGRND dcg = (DisConnectorGRND) tt;
-			dcg.changeTS((int)ts.getVal());
-		} else if (tt.getClass().getName().toLowerCase().endsWith("breaker")) {
-			Breaker br = (Breaker) tt;
-			br.setLastDataDate(new Date(System.currentTimeMillis() - 10000));
-			br.changeTS((int)ts.getVal());
-		}
-		if (ts.getServdt().getTime() > toolBarController.getTsLastDate()) {
-			toolBarController.updateLabel(df.format(ts.getServdt()));
-			toolBarController.setTsLastDate(ts.getServdt().getTime());
-		}
+		Convert.listSignals.stream().filter(f -> f.getKey().equals(ts.getSignalref())).forEach(s -> {
+			EShape tt = mainScheme.getDeviceById(s.getValue());
+			tt.setVal(ts.getVal());	
+		});
 	}
 	
 	public static void updateSignal(int idSigal, int type_, int sec) {

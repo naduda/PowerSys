@@ -32,7 +32,7 @@ public class ToolBarController {
 	}
 	
 	public void fitSchemeVertical() {
-		Group root = Main.mainScheme.getRoot();
+		Group root = (Group) Main.mainScheme.getRoot();
 		double k = MainStage.bpScheme.getHeight() * 0.95 / root.getBoundsInLocal().getHeight();
 		root.setScaleY(k);
 		root.setScaleX(k);
@@ -44,7 +44,7 @@ public class ToolBarController {
 	}
 	
 	public void fitSchemeHorizontal() {
-		Group root = Main.mainScheme.getRoot();
+		Group root = (Group) Main.mainScheme.getRoot();
 		double k = MainStage.bpScheme.getWidth() * 0.95 / root.getBoundsInLocal().getWidth();
 		root.setScaleY(k);
 		root.setScaleX(k);

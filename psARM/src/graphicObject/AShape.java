@@ -6,7 +6,7 @@ import java.util.Map;
 
 import model.Tsignal;
 import ui.MainStage;
-import ui.Scheme;
+import ui.Scheme3;
 import xml.ShapeX;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -67,8 +67,8 @@ public abstract class AShape extends Group {
 		this();
 		
 		lineWidth = sh.getLineWeight();
-		lineColor = Scheme.getColor(sh.getLineColor());
-		fillColor = Scheme.getColor(sh.getFillColor());
+		lineColor = Scheme3.getColor(sh.getLineColor());
+		fillColor = Scheme3.getColor(sh.getFillColor());
 		
 		rect.setWidth(sh.getWidth());
 		rect.setHeight(sh.getHeight());
@@ -113,14 +113,14 @@ public abstract class AShape extends Group {
 	}
 	
 	public void setSelection(boolean isSelected) {
-		if (this.equals(Scheme.selectedShape) && isSelected) return;
+		if (this.equals(Scheme3.selectedShape) && isSelected) return;
 		if (isSelected) {
 			rect.setStroke(Color.BLUE);
 			rect.getStrokeDashArray().addAll(2d, 5d);
-			if (Scheme.selectedShape != null) {
-				Scheme.selectedShape.setSelection(false);
+			if (Scheme3.selectedShape != null) {
+				Scheme3.selectedShape.setSelection(false);
 			}
-			Scheme.selectedShape = this;
+			Scheme3.selectedShape = this;
 		} else {
 			rect.setStroke(Color.TRANSPARENT);
 		}
