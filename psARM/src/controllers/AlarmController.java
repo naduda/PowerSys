@@ -120,11 +120,16 @@ public class AlarmController implements Initializable {
 	                    				 + "-fx-accent: derive(-fx-control-inner-background, -40%%);"
 	                    				 + "-fx-cell-hover-color: derive(-fx-control-inner-background, -20%%);";
 	                    if (alarm != null && alarm.getPConfirmDT().equals("")) {
-	                    	String col = viewParams.stream().filter(sp -> sp.getAlarmref() == alarm.getAlarmid()).
-	                    			filter(sp -> Integer.parseInt(sp.getObjref()) == alarm.getLogState()).
-	                    			collect(Collectors.toList()).get(0).getParamval();
-	                    	col = Scheme.getColor(col).toString().substring(0, 8).replace("0x", "#");
-	                    	cellStyle = String.format(cellStyle, col);
+							try {
+								List<TViewParam> fVP = viewParams.stream().filter(sp -> sp.getAlarmref() == alarm.getAlarmid()).
+										filter(sp -> Integer.parseInt(sp.getObjref()) == alarm.getLogState()).
+										collect(Collectors.toList());
+								String col = fVP.size() > 0 ? fVP.get(0).getParamval() : "0x00000000";
+								col = Scheme.getColor(col).toString().substring(0, 8).replace("0x", "#");
+								cellStyle = String.format(cellStyle, col);
+							} catch (NumberFormatException e) {
+								cellStyle = String.format(cellStyle, "white");
+							}	
 	                    } else {
 	                    	cellStyle = String.format(cellStyle, "white");
 	                    }

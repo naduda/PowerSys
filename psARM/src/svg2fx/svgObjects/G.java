@@ -147,6 +147,7 @@ public class G extends AClassSVG {
 			texts.forEach(e -> {
 				group.getChildren().add(e.getNode(svg));
 			});
+			group.setId("text");
 		}
 		
 		if (group.getChildren().size() == 1) {

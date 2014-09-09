@@ -18,6 +18,8 @@ public class CP {
 	private String id;
 	@XmlAttribute(name="idTS", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
 	private String idTS;
+	@XmlAttribute(name="Precision", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private String precision;
 	
 	@Override
 	public String toString() {
@@ -82,5 +84,16 @@ public class CP {
 
 	public void setIdTS(String idTS) {
 		this.idTS = idTS;
+	}
+
+	public String getPrecision() {
+		if (precision != null && precision.toLowerCase().startsWith("vt")) {
+			return precision.substring(precision.indexOf("(") + 1, precision.indexOf(")"));
+		}
+		return precision;
+	}
+
+	public void setPrecision(String precision) {
+		this.precision = precision;
 	}
 }

@@ -2,6 +2,7 @@ package svg2fx.fxObjects;
 
 import java.util.StringTokenizer;
 
+import ui.Scheme;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
@@ -25,7 +26,7 @@ public abstract class AShape extends Group {
 	private final Timeline timeline = new Timeline();
 	
 	private final Rectangle rect = new Rectangle();
-	private DoubleProperty value = new SimpleDoubleProperty();
+	private DoubleProperty valueProp = new SimpleDoubleProperty();
 	
 	public AShape() {
 		//Пунктирна лінія
@@ -57,7 +58,7 @@ public abstract class AShape extends Group {
             clickTimer.playFromStart();
 		});
 	    
-	    value.addListener((observable, oldValue, newValue) -> {onValueChange((Double) newValue);});
+	    valueProp.addListener((observable, oldValue, newValue) -> {onValueChange((Double) newValue);});
 	}
 			
 	public AShape(Node g) {
@@ -77,6 +78,11 @@ public abstract class AShape extends Group {
 		if (isSelected) {
 			rect.setStroke(Color.BLUE);
 			rect.getStrokeDashArray().addAll(2d, 5d);
+			
+			if (Scheme.selectedShape != null) {
+				Scheme.selectedShape.setSelection(false);
+			}
+			Scheme.selectedShape = this;
 		} else {
 			rect.setStroke(Color.TRANSPARENT);
 		}
@@ -125,7 +131,7 @@ public abstract class AShape extends Group {
 		return Color.valueOf(colorName.toUpperCase());
 	}
 
-	public DoubleProperty getValue() {
-		return value;
+	public DoubleProperty getValueProp() {
+		return valueProp;
 	}
 }

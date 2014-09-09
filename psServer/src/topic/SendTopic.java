@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
@@ -16,8 +17,12 @@ import javax.jms.ObjectMessage;
 import javax.jms.TopicPublisher;
 
 import jdbc.PostgresDB;
+import model.Alarm;
+import model.ConfTree;
 import model.DvalTI;
 import model.DvalTS;
+import model.TSysParam;
+import model.TViewParam;
 import model.Tsignal;
 import actualdata.LastData;
 
@@ -63,14 +68,15 @@ public class SendTopic implements Runnable {
 		while (!isDataFromDB) {
 			Map<Integer, Tsignal> signals = pdb.getTsignalsMap();
 			LastData.setSignals(signals);
-			isDataFromDB = true;
+			isDataFromDB = signals == null ? false : true;
 		}
 		isDataFromDB = false;
 		System.out.println("signals");
 		
 		while (!isDataFromDB) {
-			LastData.setConfTree(pdb.getConfTreeMap());
-			isDataFromDB = true;
+			Map<Integer, ConfTree> ctm = pdb.getConfTreeMap();
+			LastData.setConfTree(ctm);
+			isDataFromDB = ctm == null ? false : true;
 		}
 		isDataFromDB = false;
 		System.out.println("ConfTree");
@@ -84,22 +90,25 @@ public class SendTopic implements Runnable {
 				e.printStackTrace();
 			}
 
-			pdb.getAlarms(dt).forEach(a -> { LastData.addAlarm(a); });
-			isDataFromDB = true;
+			List<Alarm> alsm = pdb.getAlarms(dt);
+			alsm.forEach(a -> { LastData.addAlarm(a); });
+			isDataFromDB = alsm == null ? false : true;
 		}
 		isDataFromDB = false;
 		System.out.println("Alarms");
 		
 		while (!isDataFromDB) {
-			LastData.setTsysparmams(pdb.getTSysParam());
-			isDataFromDB = true;
+			List<TSysParam> spm = pdb.getTSysParam();
+			LastData.setTsysparmams(spm);
+			isDataFromDB = spm == null ? false : true;
 		}
 		isDataFromDB = false;
 		System.out.println("SysParam");
 		
 		while (!isDataFromDB) {
-			LastData.setTviewparams(pdb.getTViewParam());
-			isDataFromDB = true;
+			List<TViewParam> tvpm = pdb.getTViewParam();
+			LastData.setTviewparams(tvpm);
+			isDataFromDB = tvpm == null ? false : true;
 		}
 		isDataFromDB = false;
 		System.out.println("ViewParam");
@@ -108,7 +117,7 @@ public class SendTopic implements Runnable {
 			Map<Integer, DvalTI> oldTIs = pdb.getOldTI().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTI::getSignalref, obj -> obj));
 			oldTIs.values().forEach(ti -> { ti.setVal(ti.getVal() * LastData.getSignals().get(ti.getSignalref()).getKoef()); });
 			LastData.setOldTI(oldTIs);
-			isDataFromDB = true;
+			isDataFromDB = oldTIs == null ? false : true;
 		}
 		isDataFromDB = false;
 		System.out.println("oldTI");
@@ -117,7 +126,7 @@ public class SendTopic implements Runnable {
 			Map<Integer, DvalTS> oldTSs = pdb.getOldTS().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTS::getSignalref, obj -> obj));
 			oldTSs.values().forEach(ti -> { ti.setVal(ti.getVal() * LastData.getSignals().get(ti.getSignalref()).getKoef()); });
 			LastData.setOldTS(oldTSs);
-			isDataFromDB = true;
+			isDataFromDB = oldTSs == null ? false : true;
 		}
 		System.out.println("oldTS");
 		

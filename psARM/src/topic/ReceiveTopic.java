@@ -104,7 +104,7 @@ public class ReceiveTopic implements MessageListener, Runnable {
 		    	            @Override public void run() {
 		    	                Platform.runLater(new Runnable() {
 		    	                    @Override public void run() {
-		    	                    	MainStage.controller.updateTS((DvalTS) obj);
+		    	                    	MainStage.controller.updateTI((DvalTS) obj);
 		    	                    }
 		    	                });
 		    	            }

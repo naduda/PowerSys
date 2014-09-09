@@ -1,8 +1,5 @@
 package ui;
 
-import graphicObject.AShape;
-import graphicObject.DigitalDevice;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +8,7 @@ import java.util.Map;
 import model.DvalTI;
 import model.DvalTS;
 import svg2fx.Convert;
+import svg2fx.fxObjects.AShape;
 import svg2fx.fxObjects.EShape;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -38,12 +36,12 @@ public class Scheme extends ScrollPane {
 		Events events = new Events();
 		setOnScroll(event -> { events.setOnScroll(event); });
 		setOnKeyPressed(e -> { if (e.getCode() == KeyCode.SHIFT) currentVvalue = getVvalue(); });
-		setOnMouseClicked(e -> {
-			double startW = root.getBoundsInParent().getWidth();		
-            double lX = sceneToLocal(e.getSceneX(), 0).getX() + getHvalue() * (startW - getWidth());
-			System.out.println("lX = " + lX);
-			
-		});
+//		setOnMouseClicked(e -> {
+//			double startW = root.getBoundsInParent().getWidth();		
+//            double lX = sceneToLocal(e.getSceneX(), 0).getX() + getHvalue() * (startW - getWidth());
+//			System.out.println("lX = " + lX);
+//			
+//		});
 	}
 	
 	public Scheme(String fileName) {
@@ -63,7 +61,7 @@ public class Scheme extends ScrollPane {
 			}
 
 			for (DvalTS ts : oldTS.values()) {
-				MainStage.controller.updateTS(this, ts);
+				MainStage.controller.updateTI(this, ts);
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -99,16 +97,6 @@ public class Scheme extends ScrollPane {
 		    dec >>= 4;
 	    }
 	    return hexBuilder.toString(); 
-	}
-	
-	public DigitalDevice getDigitalDeviceById(String id) {
-		DigitalDevice tt = null;
-		try {
-			tt = (DigitalDevice) root.lookup("#" + id);
-		} catch (Exception e) {
-			System.err.println("getDigitalDeviceById ... " + id);
-		}
-		return tt;
 	}
 	
 	public EShape getDeviceById(String id) {

@@ -41,7 +41,7 @@ public class Convert extends Application {
 				gData.put(nameCP, p.getVal());
 				if (p.getVal() != null) {
 					if (nameCP.toLowerCase().equals("id") || nameCP.toLowerCase().equals("idts")) {
-						listSignals.add(new LinkedValue(Integer.parseInt(p.getVal()), group.getId()));
+						listSignals.add(new LinkedValue(Integer.parseInt(p.getVal()), group.getId(), nameCP));
 					}
 				}
 			}); 
@@ -51,19 +51,30 @@ public class Convert extends Application {
 		boolean isInRootFinal = !isInRoot && !wasInRoot;
 		List<G> listG = g.getListG();
 		if (listG != null) {
-			listG.forEach(itGroup -> {				
-				group.getChildren().add(getFXgroup(itGroup, isInRootFinal, svg));
+			listG.forEach(itGroup -> {	
+				Node n = getFXgroup(itGroup, isInRootFinal, svg);
+				group.setId("text".equals(n.getId()) ? n.getId() : null);
+				group.getChildren().add(n);
 			});
 			if (isInRoot) {
-				return g.transformed(new EShape(group), g.getTransform());
+				EShape eSh = new EShape(group);
+				eSh.setTextShape("text".equals(group.getId()));
+				eSh.setId(g.getTitle().replace(".", "_"));
+				return g.transformed(eSh, g.getTransform());
 			} else {
 				return g.transformed(group, g.getTransform());
 			}
-		} else {			
-			group.getChildren().add(g.getNode(svg));
+		} else {
+			Node n = g.getNode(svg);
+			group.getChildren().add(n);
+			group.setId("text".equals(n.getId()) ? n.getId() : null);
+			
 			if (isInRoot) {
-				return new EShape(group);
-			} else {
+				EShape eSh = new EShape(group);
+				eSh.setTextShape("text".equals(group.getId()));
+				eSh.setId(g.getTitle().replace(".", "_"));
+				return eSh;
+			} else {				
 				return group;
 			}
 		}
