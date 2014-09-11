@@ -2,7 +2,7 @@ package controllers;
 
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +27,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.util.Callback;
@@ -41,6 +43,9 @@ public class AlarmController implements Initializable {
 	private final ObservableList<AlarmTableItem> data = FXCollections.observableArrayList();	
 	private final FilteredList<AlarmTableItem> filteredData = new FilteredList<>(data, p -> true);
 	private final SortedList<AlarmTableItem> sortedData = new SortedList<>(filteredData);
+    private TableColumn<AlarmTableItem, String> sortColumnState = null;
+    private TableColumn<AlarmTableItem, String> sortColumnPriority = null;
+    private TableColumn<AlarmTableItem, String> sortColumnEventDT = null;
 	
 	@FXML TableView<AlarmTableItem> tvAlarms;
 	@FXML ChoiceBox<String> cbPriority;
@@ -60,6 +65,12 @@ public class AlarmController implements Initializable {
 		System.out.println("kvitAll");
 	}
 	
+	@FXML
+	private void filterColumnClick(ActionEvent event) {
+		System.out.println("filterColumnClick");
+	}
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
@@ -90,7 +101,18 @@ public class AlarmController implements Initializable {
             });
         });
 
-		tvAlarms.getColumns().forEach(c -> { c.setCellValueFactory(p -> Bindings.selectString(p.getValue(), c.getId())); });
+		tvAlarms.getColumns().forEach(c -> {
+			c.setCellValueFactory(p -> Bindings.selectString(p.getValue(), c.getId()));
+			if (c.getId().equals("pLogState")) {
+				sortColumnState = (TableColumn<AlarmTableItem, String>) c;
+			}
+			if (c.getId().equals("pAlarmPriority")) {
+				sortColumnPriority = (TableColumn<AlarmTableItem, String>) c;
+			}
+			if (c.getId().equals("pEventDT")) {
+				sortColumnEventDT = (TableColumn<AlarmTableItem, String>) c;
+			}
+		});
 		
 		Duration maxTimeBetweenSequentialClicks = Duration.millis(MOUSE_DURATION_MILLS);
         PauseTransition clickTimer = new PauseTransition(maxTimeBetweenSequentialClicks);
@@ -105,6 +127,7 @@ public class AlarmController implements Initializable {
         });
         
         tvAlarms.setOnMouseClicked(event -> {
+        	System.out.println(event.getTarget());
 	    	sequentialClickCount.set(sequentialClickCount.get() + 1);
             clickTimer.playFromStart();
 		});
@@ -142,13 +165,27 @@ public class AlarmController implements Initializable {
 		
 //      Bind the SortedList comparator to the TableView comparator.
         sortedData.comparatorProperty().bind(tvAlarms.comparatorProperty());
-        tvAlarms.setItems(sortedData);
+        
+        sortColumnState.setSortType(SortType.DESCENDING);
+		sortColumnPriority.setSortType(SortType.ASCENDING);
+		sortColumnEventDT.setSortType(SortType.DESCENDING);
+		
+		tvAlarms.getSortOrder().addAll(sortColumnState, sortColumnPriority, sortColumnEventDT);
+		tvAlarms.setItems(sortedData);
+        
 	}
 	
 	private void confirmAlarm() {
 		AlarmTableItem ati = tvAlarms.getSelectionModel().getSelectedItem();
 		if (ati != null) {
-			System.out.println(LocalDateTime.now());
+			try {
+				MainStage.psClient.confirmAlarm(ati.getAlarm().getRecorddt(), ati.getAlarm().getEventdt(), 
+						ati.getAlarm().getObjref(), new Timestamp(System.currentTimeMillis()), "",
+						ati.getAlarm().getUserref() == 0 ? -1 : ati.getAlarm().getUserref());
+			} catch (RemoteException e) {
+				System.err.println("error in confirmAlarm");
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -162,6 +199,7 @@ public class AlarmController implements Initializable {
 			data.remove(it);
 			addAlarm(a);
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println("No " + a.getEventdt());
 		}
 	}

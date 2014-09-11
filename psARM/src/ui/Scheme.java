@@ -36,21 +36,31 @@ public class Scheme extends ScrollPane {
 		Events events = new Events();
 		setOnScroll(event -> { events.setOnScroll(event); });
 		setOnKeyPressed(e -> { if (e.getCode() == KeyCode.SHIFT) currentVvalue = getVvalue(); });
-//		setOnMouseClicked(e -> {
-//			double startW = root.getBoundsInParent().getWidth();		
-//            double lX = sceneToLocal(e.getSceneX(), 0).getX() + getHvalue() * (startW - getWidth());
-//			System.out.println("lX = " + lX);
-//			
-//		});
 	}
 	
 	public Scheme(String fileName) {
 		this();
 		
 		setSchemeName(fileName);
+		setIdScheme(1);
 		
 		root = (Group) Convert.getNodeBySVG("d:/01_4.svg");
 		rootScheme.getChildren().add(root);
+		
+		Convert.listSignals.forEach(e -> {
+			int typeSignal = MainStage.signals.get(e.getKey()).getTypesignalref();
+			
+			switch (typeSignal) {
+			case 1:
+				signalsTI.add(e.getKey());
+				break;
+			case 2:
+				signalsTS.add(e.getKey());
+				break;
+			default:
+				break;
+			}
+		});
 		
 		try {
 			Map<Integer, DvalTI> oldTI = MainStage.psClient.getOldTI();

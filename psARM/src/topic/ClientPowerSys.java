@@ -4,6 +4,8 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +57,7 @@ public class ClientPowerSys implements IPowersys {
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return new ArrayList<Alarm>();
 	}
 
 	@Override
@@ -91,6 +93,11 @@ public class ClientPowerSys implements IPowersys {
 	@Override
 	public Map<Integer, DvalTS> getOldTS() throws RemoteException {
 		return myServer.getOldTS();
+	}
+
+	@Override
+	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) throws RemoteException {
+		myServer.confirmAlarm(recorddt, eventdt, objref, confirmdt, lognote, userref);
 	}
 	
 } 

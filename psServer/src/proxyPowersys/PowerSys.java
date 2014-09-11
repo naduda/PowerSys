@@ -3,10 +3,10 @@ package proxyPowersys;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import java.util.stream.Collectors;
 
 import actualdata.LastData;
@@ -70,8 +70,13 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	}
 
 	@Override
-	public Map<Integer, DvalTS> getOldTS() throws RemoteException {
+	public Map<Integer, DvalTS> getOldTS() {
 		return LastData.getOldTS();
+	}
+
+	@Override
+	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) {
+		pdb.confirmAlarm(recorddt, eventdt, objref, confirmdt, lognote, userref);
 	}
 
 }

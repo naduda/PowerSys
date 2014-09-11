@@ -19,8 +19,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 
 public class Controller {
-	
-	public static final DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	private final DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	
 	@FXML private ToolBarController toolBarController;
 	@FXML private MenuBarController menuBarController;
@@ -74,24 +73,18 @@ public class Controller {
 		Convert.listSignals.stream().filter(f -> f.getKey().equals(ti.getSignalref())).forEach(s -> {
 			EShape tt = mainScheme.getDeviceById(s.getValue());
 			tt.setValue(ti.getVal(), s.getTypeSignal());
+			
+			toolBarController.updateLabel(df.format(ti.getServdt()));
+			//toolBarController.setTsLastDate(ti.getServdt().getTime());
 		});	
 	}
 	
 	public static void updateSignal(int idSigal, int type_, int sec) {
-//		Object tt = type_ == 1 ? Main.mainScheme.getDigitalDeviceById(idSigal + "") : Main.mainScheme.getDeviceById(idSigal + "");
-//		if (tt == null) return;
-//
-//		if (tt.getClass().getName().toLowerCase().endsWith("disconnector")) {
-//
-//		} else if (tt.getClass().getName().toLowerCase().endsWith("disconnectorgrnd")) {
-//
-//		} else if (tt.getClass().getName().toLowerCase().endsWith("breaker")) {
-//			Breaker dd = (Breaker) tt;
-//			dd.updateSignal(sec);
-//		} else if (tt.getClass().getName().toLowerCase().endsWith("digitaldevice")) {
-//			DigitalDevice dd = (DigitalDevice) tt;
-//			dd.updateSignal(sec);
-//		}
+		Convert.listSignals.stream().filter(f -> f.getKey().equals(idSigal)).forEach(s -> {
+			EShape tt = Main.mainScheme.getDeviceById(s.getValue());
+			if (tt == null) return;
+			tt.updateSignal(sec);
+		});
 	}
 
 	public TreeController getSpTreeController() {

@@ -10,7 +10,6 @@ import javafx.scene.control.Label;
 public class ToolBarController {
 
 	@FXML private Label lLastDate;
-	private long tsLastDate;
 	
 	@FXML 
 	protected void testAction(ActionEvent event) {
@@ -49,13 +48,4 @@ public class ToolBarController {
 		root.setScaleY(k);
 		root.setScaleX(k);
 	}
-
-	public long getTsLastDate() {
-		return tsLastDate;
-	}
-
-	public void setTsLastDate(long tsLastDate) {
-		this.tsLastDate = tsLastDate;
-	}
-
 }

@@ -4,30 +4,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-
 
 import svg2fx.fxObjects.EShape;
 import svg2fx.svgObjects.G;
 import svg2fx.svgObjects.SVG;
-import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
-import javafx.stage.Stage;
 
-public class Convert extends Application {
+public class Convert {
 	
 	public static ScriptEngineManager manager = new ScriptEngineManager();
 	public static ScriptEngine engine = manager.getEngineByName("JavaScript");
 	public static List<LinkedValue> listSignals = new ArrayList<>();
-	
-	public static void main(String[] args) {
-		launch(args);
-	}
 	
 	private static boolean wasInRoot = false;
 	private static Node getFXgroup(G g, boolean isInRoot, SVG svg) {
@@ -58,7 +48,6 @@ public class Convert extends Application {
 			});
 			if (isInRoot) {
 				EShape eSh = new EShape(group);
-				eSh.setTextShape("text".equals(group.getId()));
 				eSh.setId(g.getTitle().replace(".", "_"));
 				return g.transformed(eSh, g.getTransform());
 			} else {
@@ -71,7 +60,6 @@ public class Convert extends Application {
 			
 			if (isInRoot) {
 				EShape eSh = new EShape(group);
-				eSh.setTextShape("text".equals(group.getId()));
 				eSh.setId(g.getTitle().replace(".", "_"));
 				return eSh;
 			} else {				
@@ -85,23 +73,5 @@ public class Convert extends Application {
 		SVG svg = (SVG)efx.getObject(filePath, SVG.class);
 		
 		return getFXgroup(svg.getG(), false, svg);
-	}
-	
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		double start = System.currentTimeMillis();
-		
-		Node group = getNodeBySVG("d:/01_4.svg");
-		
-		Group g = new Group();
-		g.getChildren().add(group);
-		//group.getTransforms().add(new Scale(4, 4));
-		
-        ScrollPane sp = new ScrollPane();
-        sp.setContent(g);
-        
-        primaryStage.setScene(new Scene(sp, 500, 500));
-        primaryStage.show();
-        System.out.println(System.currentTimeMillis() - start);
 	}
 }

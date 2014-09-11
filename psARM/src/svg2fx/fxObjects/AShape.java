@@ -1,5 +1,6 @@
 package svg2fx.fxObjects;
 
+import java.util.Date;
 import java.util.StringTokenizer;
 
 import ui.Scheme;
@@ -27,6 +28,7 @@ public abstract class AShape extends Group {
 	
 	private final Rectangle rect = new Rectangle();
 	private DoubleProperty valueProp = new SimpleDoubleProperty();
+	private Date lastDataDate;
 	
 	public AShape() {
 		//Пунктирна лінія
@@ -127,11 +129,27 @@ public abstract class AShape extends Group {
 		n.setTranslateY(deg > 0 ? -sY : sY);
 	}
 	
+	public void updateSignal(int sec) {
+		if (lastDataDate == null) return;
+		if ((System.currentTimeMillis() - lastDataDate.getTime()) < sec * 1000) {
+			rect.setStroke(Color.TRANSPARENT);
+			timeline.stop();
+		} else {
+			rect.getStrokeDashArray().clear();
+			rect.setStroke(Color.WHITE);
+			//timeline.play();
+		}
+	}
+	
 	public Paint getColorByName(String colorName) {
 		return Color.valueOf(colorName.toUpperCase());
 	}
 
 	public DoubleProperty getValueProp() {
 		return valueProp;
+	}
+
+	public void setLastDataDate(Date lastDataDate) {
+		this.lastDataDate = lastDataDate;
 	}
 }

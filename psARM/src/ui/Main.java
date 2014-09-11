@@ -10,8 +10,6 @@ public class Main extends Application {
 
 	private static final int TIMEOUT_TI_SEC = 11;
 	private static final int TIMEOUT_TS_SEC = 600;
-
-	private final Stage mainStage = new MainStage("./ui/Main.xml");
 	public static Scheme mainScheme;
 
 	public static void main(String[] args) {
@@ -20,8 +18,9 @@ public class Main extends Application {
 	
 	@Override
 	public void start(Stage stage) throws Exception {	
-		stage = mainStage;
+		stage = new MainStage("./ui/Main.xml");
         stage.show();
+        MainStage.controller.showHideAlarmPanel();
         
         final Task<Void> task = new Task<Void>() {
 			@Override

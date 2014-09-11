@@ -12,11 +12,14 @@ import model.TSysParam;
 import model.TViewParam;
 import model.Tsignal;
 
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 public interface IMapper {
 	@Select("select * from t_signal")
@@ -55,13 +58,13 @@ public interface IMapper {
 	@Select("select * from "
 			+ "(select *, alarms_for_event(eventtype,objref,objStatus) as alarms "
 			+ "from d_eventlog) as eloginner join t_alarm on alarmid in (alarms) "
-			+ "where recorddt >= #{recorddt} order by recorddt desc")
+			+ "where recorddt > #{recorddt} order by recorddt desc")
 	List<Alarm> getAlarms(Timestamp recorddt);
 	
 	@Select("select * from "
 			+ "(select *, alarms_for_event(eventtype,objref,objStatus) as alarms "
 			+ "from d_eventlog) as eloginner join t_alarm on alarmid in (alarms) "
-			+ "where confirmdt >= #{confirmdt} order by confirmdt desc")
+			+ "where confirmdt > #{confirmdt} order by confirmdt desc")
 	List<Alarm> getAlarmsConfirm(Timestamp confirmdt);
 	
 	@Select("select * from t_conftree")
@@ -73,4 +76,16 @@ public interface IMapper {
 	
 	@Select("select * from t_viewparam")
 	List<TViewParam> getTViewParam();
+	
+	@Update("update d_eventlog set logstate = 2, confirmdt = #{confirmdt}, lognote = #{lognote}, userref = #{userref} "
+			+ "where recorddt = #{recorddt} and  eventdt = #{eventdt} and objref = #{objref}")
+	void confirmAlarm(@Param("recorddt")Timestamp recorddt, @Param("eventdt")Timestamp eventdt, 
+					  @Param("objref")int objref, @Param("confirmdt")Timestamp confirmdt, 
+					  @Param("lognote")String lognote, @Param("userref")int userref);
+	
+	@Delete("delete from t_sysparam where paramname = 'LAST_USR_ACK';")
+	void deleteLastUserAck();
+	
+	@Insert("insert into t_sysparam values ( 3, 'LAST_USR_ACK', extract(epoch FROM now()), 'Время последнего квитирования');")
+	void insertLastUserAck();
 }

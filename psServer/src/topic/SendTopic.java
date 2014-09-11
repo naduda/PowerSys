@@ -132,8 +132,7 @@ public class SendTopic implements Runnable {
 		
 		new Thread(new SendDValTI(factory, jConn, "DvalTI", LastData.getSignals(), getPdb()), "SendDValTI_Thread").start();
 		new Thread(new SendDValTS(factory, jConn, "DvalTS", getPdb()), "SendDValTS_Thread").start();
-		new Thread(new SendAlarms(factory, jConn, "Alarms", false, getPdb()), "SendAlarms_Thread").start();
-		new Thread(new SendAlarms(factory, jConn, "Alarms", true, getPdb()), "SendAlarmsConfirm_Thread").start();	
+		new Thread(new SendAlarms(factory, jConn, "Alarms", getPdb()), "SendAlarms_Thread").start();
 		
 		System.out.println("Send... " + LocalDateTime.now());
 	}

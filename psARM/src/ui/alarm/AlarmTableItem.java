@@ -34,8 +34,10 @@ public class AlarmTableItem {
 	private Timestamp eventDT;
 	private int alarmid;
 	private int logState;
+	private Alarm alarm;
 	
 	public AlarmTableItem(Alarm a) {
+		alarm = a;
 		try {
 			sysParamsEvent = MainStage.psClient.getTSysParam("ALARM_EVENT");
 			sysParamsPriority = MainStage.psClient.getTSysParam("ALARM_PRIORITY");
@@ -134,8 +136,8 @@ public class AlarmTableItem {
     public void setPLogState(String sLogState) {
     	pLogState.set(sLogState);
     }
-    
-    public String getPConfirmDT() {
+
+	public String getPConfirmDT() {
         return pConfirmDT.get();
     }
 
@@ -166,8 +168,8 @@ public class AlarmTableItem {
     public void setPAlarmPriority(String sAlarmPriority) {
     	pAlarmPriority.set(sAlarmPriority);
     }
-    
-    public String getPEventType() {
+
+	public String getPEventType() {
         return pEventType.get();
     }
 
@@ -205,5 +207,13 @@ public class AlarmTableItem {
 
 	public void setLogState(int logState) {
 		this.logState = logState;
+	}
+
+	public Alarm getAlarm() {
+		return alarm;
+	}
+
+	public void setAlarm(Alarm alarm) {
+		this.alarm = alarm;
 	}
 }

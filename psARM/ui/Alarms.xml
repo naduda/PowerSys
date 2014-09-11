@@ -47,6 +47,7 @@
 						<String fx:value="Будь-який" />
 					</value>
 				</ChoiceBox>
+				<Button onAction="#filterColumnClick" text="qqq"/>
 			</ToolBar>
 		</top>
 		<center>

@@ -1,14 +1,9 @@
 package svg2fx.fxObjects;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -18,46 +13,35 @@ import javax.script.ScriptException;
 
 import svg2fx.Convert;
 import svg2fx.SignalState;
+import ui.Main;
+import ui.MainStage;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
 public class EShape extends AShape {
-	
-	public enum typeSignalRef {
-		 TI(1), TS(2), TU(3);
-		 
-		 private int code;
-		 
-		 private typeSignalRef(int c) {
-		   code = c;
-		 }
-		 
-		 public int getCode() {
-		   return code;
-		 }
-	}
-	
-	public boolean isON = false;
 	private SignalState value = new SignalState();
 	
 	private Map<String, Integer> signals = new HashMap<>();
-	private int id;
-	private int idTS;
+	private int id = -1;
+	private int idTS = -1;
 	private boolean textShape;
+	private ScriptClass scripts;
+	private String scriptPath;
 	
 	private HashMap<String, String> custProps;
 	@SuppressWarnings("unchecked")
 	public EShape(Group g) {
 		super(g);
+		setTextShape("text".equals(g.getId()));
 		
 		if (g.getUserData() != null) {
 			custProps = (HashMap<String, String>) g.getUserData();
 			String v = custProps.get("id");
-			setIdSignal(v != null ? Integer.parseInt(v) : 0);
+			id = v != null ? Integer.parseInt(v) : 0;
 			v = custProps.get("idTS");
-			setIdTS(v != null ? Integer.parseInt(v) : 0);
+			idTS = v != null ? Integer.parseInt(v) : 0;
 			v = custProps.get("signals");
 			if (v != null) {
 				StringTokenizer st = new StringTokenizer(v, "|");
@@ -66,15 +50,19 @@ public class EShape extends AShape {
 					signals.put(sign[0], Integer.parseInt(sign[1]));
 				}
 			}
+			
+			if (isTextShape() && id > -1 ) {
+				setValue(0.0, "id");
+			}
 		}
 	}
 	
-	public void changeTS(int val) {
-		isON = val == 0 ? false : true;
-	}
-	
-	public void setTS(boolean val) {
-		isON = !isON;
+	public void setTS(int idSignal, int val) {
+		try {
+			MainStage.psClient.setTS(idSignal, val, Main.mainScheme.getIdScheme());
+		} catch (RemoteException | NumberFormatException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public SignalState getValue() {
@@ -93,6 +81,8 @@ public class EShape extends AShape {
 			String format = precision != null ? precision : "0.0";
 			setTextValue(this, val, format);
 		}
+
+		setLastDataDate(new Date(System.currentTimeMillis()));
 		getValueProp().set(val); //Listener
 	}
 
@@ -123,29 +113,13 @@ public class EShape extends AShape {
 			}
 		}
 	}
-	
-	public Map<String, Integer> getSignals() {
-		return signals;
-	}
-
-	public void setSignals(Map<String, Integer> signals) {
-		this.signals = signals;
-	}
 
 	public int getIdSignal() {
 		return id;
 	}
 
-	public void setIdSignal(int id) {
-		this.id = id;
-	}
-
 	public int getIdTS() {
 		return idTS;
-	}
-
-	public void setIdTS(int idTS) {
-		this.idTS = idTS;
 	}
 
 	public boolean isTextShape() {
@@ -156,47 +130,58 @@ public class EShape extends AShape {
 		this.textShape = textShape;
 	}
 
+	public ScriptClass getScripts() {
+		if (scripts == null) {
+			scripts = new ScriptClass(getScriptPath());
+		}
+		return scripts;
+	}
+
+	public String getScriptPath() {
+		if (custProps != null && custProps.get("Name") != null) {
+			String sName = custProps.get("Name");
+			if (sName.startsWith("DisConnector") || sName.startsWith("Breaker")) {
+				scriptPath = "d:/"+ sName.substring(0, sName.indexOf(".")) +".js";
+			}
+		}
+		return scriptPath;
+	}
+
+	public void setScriptPath(String scriptPath) {
+		this.scriptPath = scriptPath;
+	}
+
 	@Override
 	public void onDoubleClick() {
 		double start = System.currentTimeMillis();
-		if (custProps != null && custProps.get("Name") != null) {
-			String sName = custProps.get("Name");
-			
-			if (sName.startsWith("DisConnector") || sName.startsWith("Breaker")) {
-				try {
-					Convert.engine.eval(new FileReader(new File("d:/"+ sName.substring(0, sName.indexOf(".")) +".js")));
-					Invocable inv = (Invocable) Convert.engine;
-		            inv.invokeFunction("dblClick", this );
-				} catch (FileNotFoundException | ScriptException | NoSuchMethodException e) {
-					System.out.println("Script not found");
-				}
+		
+		try {
+			String script = getScripts().getScriptByName("onDoubleClick");
+			if (script != null) {
+				Convert.engine.eval(script);
+				Invocable inv = (Invocable) Convert.engine;
+	            inv.invokeFunction("onDoubleClick", this );
+	            System.out.println((System.currentTimeMillis() - start) + " mc");
 			}
-			System.out.println((System.currentTimeMillis() - start) + " mc");
+		} catch (ScriptException | NoSuchMethodException e) {
+			System.out.println("Script not found");
 		}
 	}
 
 	@Override
 	public void onValueChange(Double newValue) {
 		double start = System.currentTimeMillis();
-		if (custProps != null && custProps.get("Name") != null) {
-			String sName = custProps.get("Name");
-			
-			if (sName.startsWith("DisConnector") || sName.startsWith("Breaker")) {
-				try {
-					byte[] encoded = Files.readAllBytes(Paths.get("d:/"+ sName.substring(0, sName.indexOf(".")) +".js"));
-					String script = new String(encoded, "utf-8");
-					script = script.replace("[id]", "sh.getValue().getIdValue()");
-					script = script.replace("[idTS]", "sh.getValue().getIdTSValue()");
-					Convert.engine.eval(script);
-					
-					Invocable inv = (Invocable) Convert.engine;
-		            inv.invokeFunction("valueChange", this );
-		            System.out.println(newValue + "/" + getIdTS());
-				} catch (ScriptException | NoSuchMethodException | IOException e) {
-					System.out.println("Script not found or with error ");
-				}
+		
+		try {
+			String script = getScripts().getScriptByName("onValueChange");
+			if (script != null) {
+				Convert.engine.eval(script);
+				Invocable inv = (Invocable) Convert.engine;
+	            inv.invokeFunction("onValueChange", this );
+	            System.out.println((System.currentTimeMillis() - start) + " mc");
 			}
-			System.out.println((System.currentTimeMillis() - start) + " mc");
+		} catch (ScriptException | NoSuchMethodException e) {
+			System.out.println("Script not found");
 		}
 	}
 }

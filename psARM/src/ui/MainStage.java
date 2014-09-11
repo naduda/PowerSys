@@ -52,7 +52,7 @@ public class MainStage extends Stage {
 				}
 				s.setLocation(location);
 			});
-
+			
 			psClient.getAlarmsCurrentDay().forEach(a -> { controller.getAlarmsController().addAlarm(a); });
 
 			setScheme(DEFAULT_SCHEME);
@@ -65,7 +65,6 @@ public class MainStage extends Stage {
 	}
 	
 	public static void setScheme(String schemeName) {
-		controller.getToolBarController().setTsLastDate(0);
 		controller.getToolBarController().updateLabel("");
 		
 		if (schemeName == null) {

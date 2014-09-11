@@ -2,6 +2,7 @@ package powersys;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -25,4 +26,5 @@ public interface IPowersys extends Remote {
 	public void setTS(int idsignal, double val, int schemeref) throws RemoteException;
 	public Map<Integer, DvalTI> getOldTI() throws RemoteException;
 	public Map<Integer, DvalTS> getOldTS() throws RemoteException;
+	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) throws RemoteException;
 } 

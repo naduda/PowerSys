@@ -227,4 +227,28 @@ public class PostgresDB implements IMapper {
 		}
 	}
 
+	@Override
+	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) {
+		try {
+			session = sqlSessionFactory.openSession(true);
+			session.getMapper(IMapper.class).confirmAlarm(recorddt, eventdt, objref, confirmdt, lognote, userref);
+			session.getMapper(IMapper.class).deleteLastUserAck();
+			session.getMapper(IMapper.class).insertLastUserAck();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public void deleteLastUserAck() {
+		
+	}
+
+	@Override
+	public void insertLastUserAck() {
+		
+	}
+
 }
