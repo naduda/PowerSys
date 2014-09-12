@@ -54,18 +54,18 @@
 			<TableView fx:id="tvAlarms" styleClass="table" maxHeight="${bpAlarms.height - tbAlarms.height}">
 				<columns>
 					<TableColumn id="pObject" text="Об'єкт" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pLocation" text="Розміщення" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pAlarmName" text="Сигналізація" minWidth="${tvAlarms.width/15}"/>
+					<TableColumn id="pLocation" text="Розміщення" minWidth="${tvAlarms.width/15}" />
+					<TableColumn id="pAlarmName" text="Сигналізація" minWidth="${tvAlarms.width/15}" />
 					<TableColumn id="pRecordDT" text="Дата збереження" minWidth="${tvAlarms.width/15}"/>
 					<TableColumn id="pEventDT" text="Дата події" minWidth="${tvAlarms.width/15}"/>
 					<TableColumn id="pAlarmMes" text="Повідомлення" minWidth="${tvAlarms.width/15}"/>
 					<TableColumn id="pLogState" text="Стан" minWidth="${tvAlarms.width/15}"/>
 					<TableColumn id="pConfirmDT" text="Дата квітування" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pUserRef" text="Користувач" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pLogNote" text="Примітка" minWidth="${tvAlarms.width/15}"/>
+					<TableColumn id="pUserRef" text="Користувач" minWidth="${tvAlarms.width/15}" visible="false"/>
+					<TableColumn id="pLogNote" text="Примітка" minWidth="${tvAlarms.width/15}" visible="false"/>
 					<TableColumn id="pAlarmPriority" text="Пріоритет" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pEventType" text="Тип події" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pSchemeObject" text="Об'єкт схеми" minWidth="${tvAlarms.width/15}"/>
+					<TableColumn id="pEventType" text="Тип події" minWidth="${tvAlarms.width/15}" visible="false"/>
+					<TableColumn id="pSchemeObject" text="Об'єкт схеми" minWidth="${tvAlarms.width/15}" visible="false"/>
 				</columns>
 			</TableView>
 		</center>

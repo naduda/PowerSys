@@ -101,6 +101,18 @@ public abstract class AShape extends Group {
 		return ret;
 	}
 	
+	public void getAllNodes(Group g, String path) {
+		int i = 0;
+		for(Node c : g.getChildren()) { 
+			if (c instanceof Group) {
+				getAllNodes((Group) c, path + "/" + i);
+			} else {
+				System.out.println((path + "/" + i) + " :::: " + c);
+			}
+			i++;
+		}
+	}
+	
 	public abstract void onDoubleClick();
 	
 	public abstract void onValueChange(Double newValue);

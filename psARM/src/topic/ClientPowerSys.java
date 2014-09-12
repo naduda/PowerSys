@@ -99,5 +99,4 @@ public class ClientPowerSys implements IPowersys {
 	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) throws RemoteException {
 		myServer.confirmAlarm(recorddt, eventdt, objref, confirmdt, lognote, userref);
 	}
-	
 } 

@@ -140,9 +140,9 @@ public class EShape extends AShape {
 	public String getScriptPath() {
 		if (custProps != null && custProps.get("Name") != null) {
 			String sName = custProps.get("Name");
-			if (sName.startsWith("DisConnector") || sName.startsWith("Breaker")) {
+			//if (sName.startsWith("DisConnector") || sName.startsWith("Breaker")) {
 				scriptPath = "d:/"+ sName.substring(0, sName.indexOf(".")) +".js";
-			}
+			//}
 		}
 		return scriptPath;
 	}
@@ -167,7 +167,7 @@ public class EShape extends AShape {
 			System.out.println("Script not found");
 		}
 	}
-
+	
 	@Override
 	public void onValueChange(Double newValue) {
 		double start = System.currentTimeMillis();

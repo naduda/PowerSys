@@ -32,7 +32,7 @@ public class ScriptClass {
 				functions.put(funcName, func);
 			}
 		} catch (IOException e) {
-			System.err.println("public ScriptClass(String filePath)");
+			System.err.println("public ScriptClass(String filePath) " + filePath);
 		}		
 	}
 

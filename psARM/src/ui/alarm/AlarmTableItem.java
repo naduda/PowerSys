@@ -1,7 +1,6 @@
 package ui.alarm;
 
 import java.rmi.RemoteException;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
@@ -31,13 +30,9 @@ public class AlarmTableItem {
 	private final SimpleStringProperty pEventType;
 	private final SimpleStringProperty pSchemeObject;
 	
-	private Timestamp eventDT;
-	private int alarmid;
-	private int logState;
 	private Alarm alarm;
 	
 	public AlarmTableItem(Alarm a) {
-		alarm = a;
 		try {
 			sysParamsEvent = MainStage.psClient.getTSysParam("ALARM_EVENT");
 			sysParamsPriority = MainStage.psClient.getTSysParam("ALARM_PRIORITY");
@@ -60,6 +55,7 @@ public class AlarmTableItem {
     	a.setpAlarmPriority(sysParamsPriority.get("" + a.getAlarmpriority()).getParamdescr());
     	
     	int lState = a.isAlarmuser_ack() ? a.getLogstate() : 10;
+    	a.setLogstate(lState);
     	a.setpLogState(sysParamsLogState.get("" + lState).getParamdescr());
 		
 		pObject = new SimpleStringProperty(a.getpObject() != null ? a.getpObject() : "");
@@ -76,9 +72,7 @@ public class AlarmTableItem {
 		pEventType = new SimpleStringProperty(a.getpEventType() != null ? a.getpEventType() : "");
 		pSchemeObject = new SimpleStringProperty("");
 		
-		setEventDT(a.getEventdt());
-		setAlarmid(a.getAlarmid());
-		setLogState(lState);
+		setAlarm(a);
 	}
 	
 	public String getPObject() {
@@ -184,30 +178,6 @@ public class AlarmTableItem {
     public void setPSchemeObject(String sSchemeObject) {
     	pSchemeObject.set(sSchemeObject);
     }
-
-	public Timestamp getEventDT() {
-		return eventDT;
-	}
-
-	public void setEventDT(Timestamp eventDT) {
-		this.eventDT = eventDT;
-	}
-
-	public int getAlarmid() {
-		return alarmid;
-	}
-
-	public void setAlarmid(int alarmid) {
-		this.alarmid = alarmid;
-	}
-
-	public int getLogState() {
-		return logState;
-	}
-
-	public void setLogState(int logState) {
-		this.logState = logState;
-	}
 
 	public Alarm getAlarm() {
 		return alarm;
