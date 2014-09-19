@@ -22,6 +22,8 @@ import model.Alarm;
 import model.ConfTree;
 import model.DvalTI;
 import model.DvalTS;
+import model.LinkedValue;
+import model.SPunit;
 import model.TSysParam;
 import model.TViewParam;
 import model.Tsignal;
@@ -250,5 +252,71 @@ public class PostgresDB implements IMapper {
 	public void insertLastUserAck() {
 		
 	}
+	
+	@Override
+	public void confirmAlarmAll(String lognote, int userref) {
+		try {
+			session = sqlSessionFactory.openSession(true);
+			session.getMapper(IMapper.class).confirmAlarmAll(lognote, userref);
+			session.getMapper(IMapper.class).deleteLastUserAck();
+			session.getMapper(IMapper.class).insertLastUserAck();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+	}
 
+	@Override
+	public List<LinkedValue> getData(int signalref) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getData(signalref);
+		} catch (Exception e) {
+			System.out.println("getData");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public Map<Integer, SPunit> getSPunitMap() {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getSPunitMap();
+		} catch (Exception e) {
+			System.err.println("getSPunitMap");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public List<LinkedValue> getDataIntegr(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getDataIntegr(idSignal, dtBeg, dtEnd, period);
+		} catch (Exception e) {
+			System.out.println("getDataIntegr");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public List<LinkedValue> getDataArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getDataArc(idSignal, dtBeg, dtEnd);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getDataArc");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
 }

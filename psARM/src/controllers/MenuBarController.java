@@ -14,7 +14,7 @@ public class MenuBarController {
 	
 	@FXML
 	private void openScheme(ActionEvent event) {
-		FileChooser.ExtensionFilter extentionFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
+		FileChooser.ExtensionFilter extentionFilter = new FileChooser.ExtensionFilter("SVG files (*.svg)", "*.svg");
 		fileChooser.getExtensionFilters().add(extentionFilter);
 
 		File userDirectory = new File(ToolsPrLib.getFullPath("./schemes"));

@@ -8,6 +8,8 @@ import model.Alarm;
 import model.ConfTree;
 import model.DvalTI;
 import model.DvalTS;
+import model.LinkedValue;
+import model.SPunit;
 import model.TSysParam;
 import model.TViewParam;
 import model.Tsignal;
@@ -22,6 +24,10 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 public interface IMapper {
+	@Select("select * from sp_unit")
+	@MapKey("idunit")
+	Map<Integer, SPunit> getSPunitMap();
+	
 	@Select("select * from t_signal")
 	@MapKey("idsignal")
 	Map<Integer, Tsignal> getTsignalsMap();
@@ -88,4 +94,18 @@ public interface IMapper {
 	
 	@Insert("insert into t_sysparam values ( 3, 'LAST_USR_ACK', extract(epoch FROM now()), 'Время последнего квитирования');")
 	void insertLastUserAck();
+	
+	@Update("update d_eventlog set logstate = 2, confirmdt = now(), lognote = #{lognote}, userref = #{userref} "
+			+ "where logstate = 1")
+	void confirmAlarmAll(@Param("lognote")String lognote, @Param("userref")int userref);
+	
+	@Select("select dt, val from d_valti where signalref = #{signalref} order by dt")
+	List<LinkedValue> getData(int signalref);
+	
+	@Select("select dt, val from d_arcvalti where signalref = #{signalref} and dt > #{dtBeg} and dt < #{dtEnd} order by dt")
+	List<LinkedValue> getDataArc(@Param("signalref")int signalref, @Param("dtBeg")Timestamp dtBeg, @Param("dtEnd")Timestamp dtEnd);
+	
+	@Select("select dt, val from f_valti(#{id}, #{dtbeg}, #{dtend}, #{inter}) order by dt")
+	List<LinkedValue> getDataIntegr(@Param("id") int idSignal, @Param("dtbeg") Timestamp dtBeg, 
+			@Param("dtend") Timestamp dtEnd, @Param("inter") int period);
 }

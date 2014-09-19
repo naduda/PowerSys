@@ -10,6 +10,8 @@ import model.Alarm;
 import model.ConfTree;
 import model.DvalTI;
 import model.DvalTS;
+import model.LinkedValue;
+import model.SPunit;
 import model.TSysParam;
 import model.TViewParam;
 import model.Tsignal;
@@ -27,4 +29,10 @@ public interface IPowersys extends Remote {
 	public Map<Integer, DvalTI> getOldTI() throws RemoteException;
 	public Map<Integer, DvalTS> getOldTS() throws RemoteException;
 	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) throws RemoteException;
+	public void confirmAlarmAll(String lognote, int userref) throws RemoteException;
+	public Map<Integer, SPunit> getSPunitMap() throws RemoteException;
+	
+	public List<LinkedValue> getData(int idSignal) throws RemoteException;
+	public List<LinkedValue> getDataArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd) throws RemoteException;
+	public List<LinkedValue> getDataIntegr(int idSignal, int period) throws RemoteException;
 } 

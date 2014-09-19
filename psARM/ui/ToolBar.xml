@@ -74,7 +74,7 @@
 			</ImageView>
 		</graphic>
 	</Button>
-	<MenuBar>
+	<!--MenuBar>
 		<menus>
 			<Menu text="">
 				<graphic>
@@ -87,12 +87,19 @@
 				<items>
 					<MenuItem text="Таблиця і графік"/>
 					<MenuItem text="Таблиця"/>
-					<MenuItem text="Графік"/>
+					<MenuItem text="Графік" onAction="#showChart"/>
 					<MenuItem text="Відкрити з бази"/>
 				</items>
 			</Menu>
 		</menus>
-	</MenuBar>
+	</MenuBar-->
+	<Button text="" onAction="#showChart" styleClass="toolBarButton">
+		<graphic>
+			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+				<Image url="@../Icon/trend16.png"/>
+			</ImageView>
+		</graphic>
+	</Button>
 	<Separator/>
 	<Button text="" styleClass="toolBarButton">
 		<graphic>

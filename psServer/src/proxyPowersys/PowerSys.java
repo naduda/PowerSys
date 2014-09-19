@@ -16,6 +16,8 @@ import model.Alarm;
 import model.ConfTree;
 import model.DvalTI;
 import model.DvalTS;
+import model.LinkedValue;
+import model.SPunit;
 import model.TSysParam;
 import model.TViewParam;
 import model.Tsignal;
@@ -78,6 +80,31 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) {
 		pdb.confirmAlarm(recorddt, eventdt, objref, confirmdt, lognote, userref);
 	}
+	
+	@Override
+	public void confirmAlarmAll(String lognote, int userref) {
+		pdb.confirmAlarmAll(lognote, userref);
+	}
 
+	@Override
+	public List<LinkedValue> getData(int idSignal) throws RemoteException {
+		return pdb.getData(idSignal);
+	}
+
+	@Override
+	public Map<Integer, SPunit> getSPunitMap() throws RemoteException {
+		return LastData.getSpunits();
+	}
+
+	@Override
+	public List<LinkedValue> getDataIntegr(int idSignal, int period) throws RemoteException {
+		return pdb.getDataIntegr(idSignal, new Timestamp(System.currentTimeMillis() - 24*60*60*1000), 
+				new Timestamp(System.currentTimeMillis()), period);
+	}
+
+	@Override
+	public List<LinkedValue> getDataArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
+		return pdb.getDataArc(idSignal, dtBeg, dtEnd);
+	}
 }
  

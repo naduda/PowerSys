@@ -9,6 +9,7 @@ import model.Alarm;
 import model.ConfTree;
 import model.DvalTI;
 import model.DvalTS;
+import model.SPunit;
 import model.TSysParam;
 import model.TViewParam;
 import model.Tsignal;
@@ -18,6 +19,7 @@ public class LastData {
 	private static long lastDT = 0;
 	
 	private static Map<Integer, Tsignal> signals = new HashMap<>();
+	private static Map<Integer, SPunit> spunits = new HashMap<>();
 	private static Map<Integer, ConfTree> confTree = new HashMap<>();
 	private static List<Alarm> alarms = new ArrayList<>();
 	private static List<TSysParam> tsysparmams = new ArrayList<>();
@@ -43,6 +45,14 @@ public class LastData {
 
 	public static void setTsysparmams(List<TSysParam> tsysparmams) {
 		LastData.tsysparmams = tsysparmams;
+	}
+
+	public static Map<Integer, SPunit> getSpunits() {
+		return spunits;
+	}
+
+	public static void setSpunits(Map<Integer, SPunit> spunits) {
+		LastData.spunits = spunits;
 	}
 
 	public static List<TViewParam> getTviewparams() {

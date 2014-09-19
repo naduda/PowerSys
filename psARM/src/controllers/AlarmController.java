@@ -28,7 +28,9 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.util.Callback;
@@ -46,6 +48,7 @@ public class AlarmController implements Initializable {
 	
 	@FXML TableView<AlarmTableItem> tvAlarms;
 	@FXML ChoiceBox<String> cbPriority;
+	@FXML MenuButton cbColumns;
 	
 	@FXML
 	private void kvitOne(ActionEvent event) {
@@ -65,21 +68,23 @@ public class AlarmController implements Initializable {
 	
 	@FXML
 	private void kvitAll(ActionEvent event) {
-		System.out.println("kvitAll");
-		data.filtered(f -> f.getAlarm().getLogstate() == 1).forEach(it -> {
-			confirmAlarm(it);
-		});
+		try {
+			MainStage.psClient.confirmAlarmAll("", -1);
+		} catch (RemoteException e) {
+			System.err.println("error in confirmAlarmAll");
+			e.printStackTrace();
+		}
 	}
 	
 	@FXML
 	private void filterColumnClick(ActionEvent event) {
-		System.out.println("filterColumnClick");
 		tvAlarms.getSortOrder().clear();
 		ObservableList<AlarmTableItem> copyData = FXCollections.observableArrayList();
 		copyData.addAll(data);
 		data.removeAll(data);
 		copyData.sort(new DefaultSorting());
 		data.addAll(copyData);
+		System.out.println(Scheme.selectedShape.getIdSignal());
 	}
 	
 	@Override
@@ -165,6 +170,20 @@ public class AlarmController implements Initializable {
 //      Bind the SortedList comparator to the TableView comparator.
         sortedData.comparatorProperty().bind(tvAlarms.comparatorProperty());
 		tvAlarms.setItems(sortedData);
+//		-------------------------------------------------------------------------------
+		List<CheckMenuItem> checkItems = new ArrayList<CheckMenuItem>();
+		
+		tvAlarms.getColumns().forEach(c -> {
+			CheckMenuItem it = new CheckMenuItem(c.getText());
+			it.selectedProperty().addListener((observ, val, oldval) -> {
+				c.setVisible(oldval);
+			});
+			it.setSelected(c.isVisible());
+			it.setUserData(c);
+			checkItems.add(it);
+		});
+		
+		cbColumns.getItems().addAll(checkItems);
 	}
 	
 	private void confirmAlarm(AlarmTableItem ati) {		
@@ -217,7 +236,7 @@ public class AlarmController implements Initializable {
 	
 	public void updateAlarm(Alarm a) {
 		try {
-			AlarmTableItem it = data.filtered(item -> item.getAlarm().getEventdt().equals(a.getEventdt())).get(0);
+			AlarmTableItem it = data.filtered(item -> item.getAlarm().getEventdt().equals(a.getEventdt())).get(0);			
 			data.remove(it);
 			addAlarm(a);
 		} catch (Exception e) {

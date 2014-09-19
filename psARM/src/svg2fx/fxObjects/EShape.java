@@ -13,6 +13,7 @@ import javax.script.ScriptException;
 
 import svg2fx.Convert;
 import svg2fx.SignalState;
+import ua.pr.common.ToolsPrLib;
 import ui.Main;
 import ui.MainStage;
 import javafx.scene.Group;
@@ -34,7 +35,6 @@ public class EShape extends AShape {
 	@SuppressWarnings("unchecked")
 	public EShape(Group g) {
 		super(g);
-		setTextShape("text".equals(g.getId()));
 		
 		if (g.getUserData() != null) {
 			custProps = (HashMap<String, String>) g.getUserData();
@@ -51,6 +51,7 @@ public class EShape extends AShape {
 				}
 			}
 			
+			setTextShape("text".equals(g.getId()) && custProps.get("Value") != null);
 			if (isTextShape() && id > -1 ) {
 				setValue(0.0, "id");
 			}
@@ -81,7 +82,7 @@ public class EShape extends AShape {
 			String format = precision != null ? precision : "0.0";
 			setTextValue(this, val, format);
 		}
-
+		
 		setLastDataDate(new Date(System.currentTimeMillis()));
 		getValueProp().set(val); //Listener
 	}
@@ -138,11 +139,10 @@ public class EShape extends AShape {
 	}
 
 	public String getScriptPath() {
-		if (custProps != null && custProps.get("Name") != null) {
-			String sName = custProps.get("Name");
-			//if (sName.startsWith("DisConnector") || sName.startsWith("Breaker")) {
-				scriptPath = "d:/"+ sName.substring(0, sName.indexOf(".")) +".js";
-			//}
+		if (custProps != null) {
+			String sName = getId().replace("_", ".");
+			sName = sName.indexOf(".") > -1 ? sName.substring(0, sName.indexOf(".")) : sName;
+			scriptPath = ToolsPrLib.getFullPath("./scripts/" + sName + ".js");
 		}
 		return scriptPath;
 	}
@@ -155,8 +155,9 @@ public class EShape extends AShape {
 	public void onDoubleClick() {
 		double start = System.currentTimeMillis();
 		
+		String script = "";
 		try {
-			String script = getScripts().getScriptByName("onDoubleClick");
+			script = getScripts().getScriptByName("onDoubleClick");
 			if (script != null) {
 				Convert.engine.eval(script);
 				Invocable inv = (Invocable) Convert.engine;
@@ -164,7 +165,7 @@ public class EShape extends AShape {
 	            System.out.println((System.currentTimeMillis() - start) + " mc");
 			}
 		} catch (ScriptException | NoSuchMethodException e) {
-			System.out.println("Script not found");
+			System.out.println("Script not found - " + script);
 		}
 	}
 	
@@ -172,8 +173,9 @@ public class EShape extends AShape {
 	public void onValueChange(Double newValue) {
 		double start = System.currentTimeMillis();
 		
+		String script = "";
 		try {
-			String script = getScripts().getScriptByName("onValueChange");
+			script = getScripts().getScriptByName("onValueChange");
 			if (script != null) {
 				Convert.engine.eval(script);
 				Invocable inv = (Invocable) Convert.engine;
@@ -181,7 +183,7 @@ public class EShape extends AShape {
 	            System.out.println((System.currentTimeMillis() - start) + " mc");
 			}
 		} catch (ScriptException | NoSuchMethodException e) {
-			System.out.println("Script not found");
+			System.out.println("Script not found - " + script);
 		}
 	}
 }

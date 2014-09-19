@@ -47,7 +47,10 @@
 						<String fx:value="Будь-який" />
 					</value>
 				</ChoiceBox>
-				<Button onAction="#filterColumnClick" text="qqq"/>
+				<Separator/>
+				<Separator/>
+				<Button onAction="#filterColumnClick" text="DefaultSorting"/>
+				<MenuButton fx:id="cbColumns" text = "Columns"/>
 			</ToolBar>
 		</top>
 		<center>

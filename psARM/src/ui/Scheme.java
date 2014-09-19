@@ -8,7 +8,6 @@ import java.util.Map;
 import model.DvalTI;
 import model.DvalTS;
 import svg2fx.Convert;
-import svg2fx.fxObjects.AShape;
 import svg2fx.fxObjects.EShape;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -23,7 +22,7 @@ public class Scheme extends ScrollPane {
 	private final Group rootScheme = new Group();
 	private final List<Integer> signalsTI = new ArrayList<>();
 	private final List<Integer> signalsTS = new ArrayList<>();
-	public static AShape selectedShape;
+	public static EShape selectedShape;
 	private int idScheme = 0;
 	private String schemeName;
 	private double currentVvalue;
@@ -41,24 +40,28 @@ public class Scheme extends ScrollPane {
 	public Scheme(String fileName) {
 		this();
 		
-		setSchemeName(fileName);
+		setSchemeName(fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf(".")));
 		setIdScheme(1);
 		
-		root = (Group) Convert.getNodeBySVG("d:/01_4.svg");
+		root = (Group) Convert.getNodeBySVG(fileName);
 		rootScheme.getChildren().add(root);
 		
 		Convert.listSignals.forEach(e -> {
-			int typeSignal = MainStage.signals.get(e.getKey()).getTypesignalref();
-			
-			switch (typeSignal) {
-			case 1:
-				signalsTI.add(e.getKey());
-				break;
-			case 2:
-				signalsTS.add(e.getKey());
-				break;
-			default:
-				break;
+			try {
+				int typeSignal = MainStage.signals.get(e.getKey()).getTypesignalref();
+				
+				switch (typeSignal) {
+				case 1:
+					signalsTI.add(e.getKey());
+					break;
+				case 2:
+					signalsTS.add(e.getKey());
+					break;
+				default:
+					break;
+				}
+			} catch (Exception e1) {
+				System.err.println(e.getKey());
 			}
 		});
 		

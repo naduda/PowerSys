@@ -14,7 +14,7 @@ public class StartServer {
 			PowerSys ps = new PowerSys(pdb);
 			Naming.rebind(IPowersys.bindString, ps);
 			
-			System.out.println("<PowerSysService> server is ready.");
+			System.out.println("<PowerSysService> server is ready. " + IPowersys.bindString);
 			
 		} catch (RemoteException | MalformedURLException e) {
 			System.out.println(e.getMessage());

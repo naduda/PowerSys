@@ -3,9 +3,14 @@ package controllers;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import javax.xml.bind.JAXBException;
+
+import state.ProgramSettings;
+import state.WindowState;
 import svg2fx.Convert;
 import svg2fx.fxObjects.EShape;
 import ui.Main;
+import ui.MainStage;
 import ui.Scheme;
 import model.DvalTI;
 import javafx.event.ActionEvent;
@@ -17,6 +22,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Window;
 
 public class Controller {
 	private final DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
@@ -27,9 +33,19 @@ public class Controller {
 	@FXML private AlarmController bpAlarmsController;	
 	@FXML private Pane bpAlarms;
 	@FXML private BorderPane bpScheme;
+	@FXML private SplitPane vSplitPane;
 	
 	public static void exitProgram() {
-		System.out.println("exit");
+		Window w = Main.mainScheme.getScene().getWindow();
+		WindowState ws = new WindowState(w.getX(), w.getY(), w.getWidth(), w.getHeight());
+		ws.setAlarmDividerPositions(MainStage.controller.getAlarmSplitPane().getDividers().get(0).getPosition());
+		ProgramSettings ps = new ProgramSettings(ws);
+		ps.setDefaultScheme("setDefaultScheme");
+		try {
+			ps.saveToFile(Main.FILE_SETTINGS);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
 		System.exit(0);
 	}
 	
@@ -48,7 +64,7 @@ public class Controller {
 	private boolean isHide = false;
 	
 	public void showHideAlarmPanel() {
-		SplitPane sp = ((SplitPane)bpAlarms.getParent().getParent());
+		SplitPane sp = getAlarmSplitPane();
 		if (isHide) {
 			sp.setDividerPositions(oldAlarmsHeight);
 		} else {
@@ -56,6 +72,10 @@ public class Controller {
 			sp.setDividerPositions(1);
 		}
 		isHide = !isHide;
+	}
+	
+	public SplitPane getAlarmSplitPane() {
+		return vSplitPane;
 	}
 	
 	@FXML
@@ -105,5 +125,5 @@ public class Controller {
 
 	public BorderPane getBpScheme() {
 		return bpScheme;
-	}	
+	}
 }

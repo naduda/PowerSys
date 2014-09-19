@@ -60,6 +60,7 @@ public abstract class AShape extends Group {
             clickTimer.playFromStart();
 		});
 	    
+	    valueProp.set(-88888.888888);
 	    valueProp.addListener((observable, oldValue, newValue) -> {onValueChange((Double) newValue);});
 	}
 			
@@ -76,15 +77,16 @@ public abstract class AShape extends Group {
 		setId(g.getId());
 	}
 	
-	private void setSelection(boolean isSelected) {
+	public void setSelection(boolean isSelected) {
 		if (isSelected) {
-			rect.setStroke(Color.BLUE);
-			rect.getStrokeDashArray().addAll(2d, 5d);
-			
 			if (Scheme.selectedShape != null) {
 				Scheme.selectedShape.setSelection(false);
 			}
-			Scheme.selectedShape = this;
+			
+			rect.setStroke(Color.BLUE);
+			rect.getStrokeDashArray().addAll(2d, 5d);
+			
+			Scheme.selectedShape = (EShape) this;
 		} else {
 			rect.setStroke(Color.TRANSPARENT);
 		}
@@ -144,7 +146,9 @@ public abstract class AShape extends Group {
 	public void updateSignal(int sec) {
 		if (lastDataDate == null) return;
 		if ((System.currentTimeMillis() - lastDataDate.getTime()) < sec * 1000) {
-			rect.setStroke(Color.TRANSPARENT);
+			if ((Color.WHITE).equals(rect.getStroke())) {
+				rect.setStroke(Color.TRANSPARENT);
+			}
 			timeline.stop();
 		} else {
 			rect.getStrokeDashArray().clear();

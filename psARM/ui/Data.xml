@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.*?>
+<?import model.LinkedValue?>
+<?import javafx.scene.control.DatePicker?>
+
+<BorderPane fx:id="bpData" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.DataController">
+	<padding>
+		<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+	</padding>
+
+	<top>
+		<ToolBar>
+			<ChoiceBox fx:id="cbIntegration">
+				<items>
+					<FXCollections fx:factory="observableArrayList">
+						<LinkedValue val="Миттєві значення" dt="0"/>
+						<LinkedValue val="1 хвилина" dt="1"/>
+						<LinkedValue val="5 хвилина" dt="5"/>
+						<LinkedValue val="10 хвилина" dt="10"/>
+						<LinkedValue val="30 хвилина" dt="30"/>
+						<LinkedValue val="60 хвилина" dt="60"/>
+					</FXCollections>
+				</items>
+			</ChoiceBox>
+			<Separator/>
+			<Label text="Період: з "/>
+			<DatePicker fx:id="dpBegin" prefWidth="100"/>
+			<ComboBox fx:id="cbHourBegin"/>
+			<Label text="г. по "/>
+			<DatePicker fx:id="dpEnd" prefWidth="100"/>
+			<ComboBox fx:id="cbHourEnd"/>
+			<Label text="г."/>
+		</ToolBar>
+	</top>
+
+	<center>
+		<TabPane side="BOTTOM">
+			<tabs>
+				<Tab fx:id="tTable" text="Таблиця" closable="false">
+					<content>
+						<TableView fx:id="tvChart" styleClass="table">
+							<columns>
+								<TableColumn id="pDate" text="Дата" minWidth="150"/>
+								<TableColumn id="pValue" text="Значення" minWidth="100" />
+							</columns>
+						</TableView>
+					</content>
+				</Tab>
+				<Tab fx:id="tChart" text="Графік" closable="false"/>
+			</tabs>
+		</TabPane>
+	</center>
+
+</BorderPane>

@@ -21,6 +21,7 @@ import model.Alarm;
 import model.ConfTree;
 import model.DvalTI;
 import model.DvalTS;
+import model.SPunit;
 import model.TSysParam;
 import model.TViewParam;
 import model.Tsignal;
@@ -72,6 +73,14 @@ public class SendTopic implements Runnable {
 		}
 		isDataFromDB = false;
 		System.out.println("signals");
+		
+		while (!isDataFromDB) {
+			Map<Integer, SPunit> spunit = pdb.getSPunitMap();
+			LastData.setSpunits(spunit);
+			isDataFromDB = spunit == null ? false : true;
+		}
+		isDataFromDB = false;
+		System.out.println("sp_units");
 		
 		while (!isDataFromDB) {
 			Map<Integer, ConfTree> ctm = pdb.getConfTreeMap();
@@ -146,6 +155,7 @@ public class SendTopic implements Runnable {
 			this.dbServer = "localhost";
 			this.dbPort = "5432";
 			this.dbName = "PowerSys_Donetsk_25";
+			this.dbName = "Zaporizh";
 			this.dbUser = "postgres";
 			this.dbPassword = "12345678";
 			return;

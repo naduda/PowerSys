@@ -3,6 +3,7 @@ package ui;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,23 +22,24 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class MainStage extends Stage {
-
-	private static final String DEFAULT_SCHEME = "ПС-110 кВ 'Блок-4'";
+public class MainStage extends Stage implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
+	private static final String DEFAULT_SCHEME = "ПС 35 кВ 'Казачья'";
 	public static ClientPowerSys psClient = new ClientPowerSys();
 	public static Map<Integer, Tsignal> signals = psClient.getTsignalsMap();
 	public static ListView<String> lvTree;
 	public static BorderPane bpScheme;
 	public static Map<Integer, Scheme> schemes = new HashMap<>();
 	public static Controller controller;
-
+	
 	public MainStage(String pathXML) {
 		try {
 			FXMLLoader loader = new FXMLLoader(new URL("file:/" + ToolsPrLib.getFullPath("./ui/Main.xml")));
 			Parent root = loader.load();
 			controller = loader.getController();
 
-			Scene scene = new Scene(root);      
+			Scene scene = new Scene(root);
 			setTitle("PowerSys ARM");
 
 			bpScheme = controller.getBpScheme();
@@ -70,7 +72,7 @@ public class MainStage extends Stage {
 		if (schemeName == null) {
 			Main.mainScheme = new Scheme();
 		} else {
-			Main.mainScheme = new Scheme(ToolsPrLib.getFullPath("./schemes/" + schemeName + ".xml"));
+			Main.mainScheme = new Scheme(ToolsPrLib.getFullPath("./schemes/" + schemeName + ".svg"));
 
 			TreeItem<Scheme> ti = new TreeItem<>(Main.mainScheme);
 			controller.getSpTreeController().addScheme(ti);

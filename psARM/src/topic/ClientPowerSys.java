@@ -13,6 +13,8 @@ import model.Alarm;
 import model.ConfTree;
 import model.DvalTI;
 import model.DvalTS;
+import model.LinkedValue;
+import model.SPunit;
 import model.TSysParam;
 import model.TViewParam;
 import model.Tsignal;
@@ -98,5 +100,30 @@ public class ClientPowerSys implements IPowersys {
 	@Override
 	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) throws RemoteException {
 		myServer.confirmAlarm(recorddt, eventdt, objref, confirmdt, lognote, userref);
+	}
+	
+	@Override
+	public void confirmAlarmAll(String lognote, int userref) throws RemoteException {
+		myServer.confirmAlarmAll(lognote, userref);
+	}
+
+	@Override
+	public List<LinkedValue> getData(int idSignal) throws RemoteException {
+		return myServer.getData(idSignal);
+	}
+
+	@Override
+	public Map<Integer, SPunit> getSPunitMap() throws RemoteException {
+		return myServer.getSPunitMap();
+	}
+
+	@Override
+	public List<LinkedValue> getDataIntegr(int idSignal, int period) throws RemoteException {
+		return myServer.getDataIntegr(idSignal, period);
+	}
+
+	@Override
+	public List<LinkedValue> getDataArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
+		return myServer.getDataArc(idSignal, dtBeg, dtEnd);
 	}
 } 
