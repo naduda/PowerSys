@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <settings>
-    <windowstate x="100.0" y="200.0" width="300.0" height="400.0"/>
+    <windowstate x="100.0" y="200.0" width="300.0" height="400.0">
+        <alarmDividerPositions>0.0</alarmDividerPositions>
+        <treeDividerPositions>0.0</treeDividerPositions>
+    </windowstate>
 </settings>

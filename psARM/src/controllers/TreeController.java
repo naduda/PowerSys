@@ -21,17 +21,10 @@ import javafx.util.Callback;
 
 public class TreeController {
 
-	@FXML
-	private Accordion accordTree;
-	
-	@FXML
-	private TreeView<Scheme> tvSchemes;
-	
-	@FXML
-	private TitledPane tpSchemes;
-	
-	@FXML
-	private TreeItem<Scheme> trSchemes;
+	@FXML private Accordion accordTree;
+	@FXML private TreeView<Scheme> tvSchemes;
+	@FXML private TitledPane tpSchemes;
+	@FXML private TreeItem<Scheme> trSchemes;
 	
 	public void addScheme(TreeItem<Scheme> ti) {
 		trSchemes.getChildren().add(ti);

@@ -18,8 +18,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ProgramSettings {
 	@XmlElement(name = "windowstate")
 	private WindowState winState;
-	@XmlElement(name = "defaultScheme")
-	private String defaultScheme;
+	@XmlElement(name = "schemeSettings")
+	private SchemeSettings schemeSettings;
 	
 	public ProgramSettings() {
 		
@@ -36,13 +36,13 @@ public class ProgramSettings {
 	public WindowState getWinState() {
 		return winState;
 	}
-	
-	public String getDefaultScheme() {
-		return defaultScheme;
+
+	public SchemeSettings getSchemeSettings() {
+		return schemeSettings;
 	}
 
-	public void setDefaultScheme(String defaultScheme) {
-		this.defaultScheme = defaultScheme;
+	public void setSchemeSettings(SchemeSettings schemeSettings) {
+		this.schemeSettings = schemeSettings;
 	}
 
 	public void saveToFile(String fileName) throws JAXBException {

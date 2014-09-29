@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import javax.xml.bind.JAXBException;
 
 import state.ProgramSettings;
+import state.SchemeSettings;
 import state.WindowState;
 import svg2fx.Convert;
 import svg2fx.fxObjects.EShape;
@@ -34,13 +35,21 @@ public class Controller {
 	@FXML private Pane bpAlarms;
 	@FXML private BorderPane bpScheme;
 	@FXML private SplitPane vSplitPane;
+	@FXML private SplitPane hSplitPane;
 	
 	public static void exitProgram() {
 		Window w = Main.mainScheme.getScene().getWindow();
 		WindowState ws = new WindowState(w.getX(), w.getY(), w.getWidth(), w.getHeight());
+		
 		ws.setAlarmDividerPositions(MainStage.controller.getAlarmSplitPane().getDividers().get(0).getPosition());
+		ws.setTreeDividerPositions(MainStage.controller.getTreeSplitPane().getDividers().get(0).getPosition());
+		
 		ProgramSettings ps = new ProgramSettings(ws);
-		ps.setDefaultScheme("setDefaultScheme");
+		SchemeSettings ss = new SchemeSettings();
+		ps.setSchemeSettings(ss);
+		ss.setSchemeName(Main.mainScheme.getSchemeName());
+		ss.setSchemeScale(Main.mainScheme.getRoot().getScaleX());
+		
 		try {
 			ps.saveToFile(Main.FILE_SETTINGS);
 		} catch (JAXBException e) {
@@ -69,6 +78,7 @@ public class Controller {
 			sp.setDividerPositions(oldAlarmsHeight);
 		} else {
 			oldAlarmsHeight = sp.getDividerPositions()[0];
+			MainStage.controller.getTreeSplitPane().setDividerPositions(0.1);
 			sp.setDividerPositions(1);
 		}
 		isHide = !isHide;
@@ -76,6 +86,10 @@ public class Controller {
 	
 	public SplitPane getAlarmSplitPane() {
 		return vSplitPane;
+	}
+	
+	public SplitPane getTreeSplitPane() {
+		return hSplitPane;
 	}
 	
 	@FXML

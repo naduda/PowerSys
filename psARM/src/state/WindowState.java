@@ -18,6 +18,7 @@ public class WindowState {
 	private double height;
 	
 	private double alarmDividerPositions;
+	private double treeDividerPositions;
 	
 	public WindowState() {
 		
@@ -68,5 +69,13 @@ public class WindowState {
 
 	public void setAlarmDividerPositions(double alarmDividerPositions) {
 		this.alarmDividerPositions = alarmDividerPositions;
+	}
+
+	public double getTreeDividerPositions() {
+		return treeDividerPositions;
+	}
+
+	public void setTreeDividerPositions(double treeDividerPositions) {
+		this.treeDividerPositions = treeDividerPositions;
 	}
 } 

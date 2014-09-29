@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <settings>
-    <windowstate x="1797.0" y="219.0" width="1129.0" height="690.0">
-        <alarmDividerPositions>0.5</alarmDividerPositions>
+    <windowstate x="1362.0" y="-4.0" width="1928.0" height="1088.0">
+        <alarmDividerPositions>0.8119834710743802</alarmDividerPositions>
+        <treeDividerPositions>0.15172054223149115</treeDividerPositions>
     </windowstate>
-    <defaultScheme>setDefaultScheme</defaultScheme>
+    <schemeSettings>
+        <schemeName>ПС 35 кВ 'Казачья'</schemeName>
+        <schemeScale>0.9405841017300194</schemeScale>
+    </schemeSettings>
 </settings>
