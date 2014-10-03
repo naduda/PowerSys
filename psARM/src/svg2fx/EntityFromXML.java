@@ -12,8 +12,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 public class EntityFromXML {
-	private static final String FEATURE_NAMESPACES = "http://xml.org/sax/features/namespaces";
-    private static final String FEATURE_LOAD_DTD = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+	private final String FEATURE_NAMESPACES = "http://xml.org/sax/features/namespaces";
+    private final String FEATURE_LOAD_DTD = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
 
 	public Object getObject(String xmlFilePath, Class<?> xmlClass) {
 		Object result = null;

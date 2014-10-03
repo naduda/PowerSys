@@ -6,8 +6,9 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import model.LinkedValue;
+import pr.model.LinkedValue;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -24,44 +25,104 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.StringConverter;
 
 public class LineChartContainer extends StackPane {
-	final Rectangle zoomRect = new Rectangle(0, 0, Color.LIGHTSEAGREEN.deriveColor(0, 1, 1, 0.5));
+	private static final double VIDSTUP = 0.05;
+
+	private static final int MAX_COUNT_POINTS = 1000;
+
+	private final Rectangle zoomRect = new Rectangle(0, 0, Color.LIGHTSEAGREEN.deriveColor(0, 1, 1, 0.5));
+	
+	private final DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+	private final DecimalFormat decimalFormat = new DecimalFormat("0.000", decimalFormatSymbols);
+	
+	private final XYChart.Series<Number, Number> series = new XYChart.Series<>();
+	private final NumberAxis xAxis = new NumberAxis(0, 0, 0);
+	private final NumberAxis yAxis = new NumberAxis(0, 0, 0);
+	private final LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+	private List<LinkedValue> dataListAll;
+	
+	private LineChartContainer() {
+		decimalFormatSymbols.setDecimalSeparator('.');
+		decimalFormatSymbols.setGroupingSeparator(' ');
 		
-	private LineChart<Number, Number> lineChart;
-	private double xLowerBound;
-	private double xUpperBound;
-	private double yLowerBound;
-	private double yUpperBound;
+		lineChart.getData().add(series);
+		//lineChart.setCreateSymbols(false);
+		getChildren().add(lineChart);
+		
+		zoomRect.setManaged(false);
+		getChildren().add(zoomRect);
+        
+		setUpZooming(zoomRect, lineChart);
+	}
 	
 	public LineChartContainer(String titleChart, String titleLegend, String xLabel, String yLabel, List<LinkedValue> dataList) {
-		final XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        series.setName(titleLegend);
+		this();
+		
+		series.setName(titleLegend);
+		xAxis.setLabel(xLabel);
+		yAxis.setLabel(yLabel);
+		lineChart.setTitle(titleChart);
         
-        List<LinkedValue> data = new ArrayList<>();
+        setData(dataList);
+	}
+	
+	public void setData(List<LinkedValue> dataList) {
+		dataListAll = dataList;		
+		setData1000(dataList);
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void setData1000(List<LinkedValue> dataList) {
+		series.getData().clear();
+		
+		int koef = dataList.size() > MAX_COUNT_POINTS ? (int) dataList.size() / MAX_COUNT_POINTS : 1;
+		
+		List<LinkedValue> dataList1000 = new ArrayList<LinkedValue>();
+		dataList1000.add(dataList.get(0));
+		
+		while (dataList1000.size() * koef < dataList.size()) {
+			dataList1000.add(dataList.get(dataList1000.size() * koef));
+		}
+		
+		List<LinkedValue> data = new ArrayList<>();
         LinkedValue prevLV = null;
-        for (LinkedValue linkedValue : dataList) {
+        for (LinkedValue linkedValue : dataList1000) {
 			if (prevLV != null) {
 				data.add(new LinkedValue(linkedValue.getDt(), prevLV.getVal()));
 			}
 			prevLV = linkedValue;
 			data.add(linkedValue);
 		}
-        
-        setData(series, data);
-        
-        xLowerBound = data.stream().mapToDouble(e -> ((Timestamp)e.getDt()).getTime()).min().getAsDouble();
-        xUpperBound = data.stream().mapToDouble(e -> ((Timestamp)e.getDt()).getTime()).max().getAsDouble();
+		
+		data.forEach(d -> {
+        	Timestamp ts = (Timestamp) d.getDt();
+        	series.getData().add(new XYChart.Data(ts.getTime(), d.getVal()));
+        });
+		
+		setChartBounds(dataList1000);
+		setToolTips();
+	}
+	
+	private void setChartBounds(List<LinkedValue> dataList) {
+		double xLowerBound = dataList.stream().mapToDouble(e -> ((Timestamp)e.getDt()).getTime()).min().getAsDouble();
+		double xUpperBound = dataList.stream().mapToDouble(e -> ((Timestamp)e.getDt()).getTime()).max().getAsDouble();
         double delta = xUpperBound - xLowerBound;
-        xLowerBound = xLowerBound - delta * 0.01;
-        xUpperBound = xUpperBound + delta * 0.01;
-        yLowerBound = data.stream().mapToDouble(e -> (Double)e.getVal()).min().getAsDouble();
-        yUpperBound = data.stream().mapToDouble(e -> (Double)e.getVal()).max().getAsDouble();
+        xLowerBound = xLowerBound - delta * VIDSTUP;
+        xUpperBound = xUpperBound + delta * VIDSTUP;
+        double yLowerBound = dataList.stream().mapToDouble(e -> (Double)e.getVal()).min().getAsDouble();
+        double yUpperBound = dataList.stream().mapToDouble(e -> (Double)e.getVal()).max().getAsDouble();
         delta = yUpperBound - yLowerBound;
-        yLowerBound = delta == 0 ? yLowerBound * 0.995 : yLowerBound - delta * 0.01;
-        yUpperBound = delta == 0 ? yUpperBound * 1.005 : yUpperBound + delta * 0.01;
+        yLowerBound = delta == 0 ? yLowerBound * 0.995 : yLowerBound - delta * VIDSTUP;
+        yUpperBound = delta == 0 ? yUpperBound * 1.005 : yUpperBound + delta * VIDSTUP;
         
-        final NumberAxis yAxis = new NumberAxis(yLowerBound, yUpperBound, (yUpperBound - yLowerBound) / 10);
-        yAxis.setLabel(yLabel);
-        final NumberAxis xAxis = new NumberAxis(xLowerBound, xUpperBound, (xUpperBound - xLowerBound) / 10);
+        xAxis.setLowerBound(xLowerBound);
+        xAxis.setUpperBound(xUpperBound);
+        xAxis.setTickUnit((xUpperBound - xLowerBound) / 10);
+        
+        yAxis.setLowerBound(yLowerBound);
+        yAxis.setUpperBound(yUpperBound);
+        yAxis.setTickUnit((yUpperBound - yLowerBound) / 10);
+        
+        
         xAxis.setTickLabelFormatter(new StringConverter<Number>() {			
 			@Override
 			public String toString(Number num) {
@@ -73,26 +134,10 @@ public class LineChartContainer extends StackPane {
 				return null;
 			}
 		});
-        xAxis.setLabel(xLabel);
-                
-        lineChart = new LineChart<>(xAxis, yAxis);                
-        lineChart.setTitle(titleChart);
-        //lineChart.setCreateSymbols(false);
         
-        lineChart.getData().add(series);        
-        getChildren().add(lineChart);
-				
-		zoomRect.setManaged(false);
-		getChildren().add(zoomRect);
-        
-		setUpZooming(zoomRect, lineChart);
-		
-		
-		DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
-		decimalFormatSymbols.setDecimalSeparator('.');
-		decimalFormatSymbols.setGroupingSeparator(' ');		
-		DecimalFormat decimalFormat = new DecimalFormat("0.000", decimalFormatSymbols);
-		
+	}
+	
+	private void setToolTips() {
 		lineChart.getData().forEach(s -> {
 			List<Boolean> bool = new ArrayList<>();
 			bool.add(true);
@@ -108,14 +153,6 @@ public class LineChartContainer extends StackPane {
         		bool.add(b);
 			});
 		});
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void setData(XYChart.Series<Number, Number> series, List<LinkedValue> data) {
-		data.forEach(d -> {
-        	Timestamp ts = (Timestamp) d.getDt();
-        	series.getData().add(new XYChart.Data(ts.getTime(), d.getVal()));
-        });
 	}
 	
 	private void setUpZooming(final Rectangle rect, final Node zoomingNode) {
@@ -143,47 +180,29 @@ public class LineChartContainer extends StackPane {
         
         zoomingNode.setOnMouseClicked(event -> {
         	if (event.getClickCount() == 2) {
-        		final NumberAxis xAxis = (NumberAxis)lineChart.getXAxis();
-                xAxis.setLowerBound(xLowerBound);
-                xAxis.setUpperBound(xUpperBound);
-                final NumberAxis yAxis = (NumberAxis)lineChart.getYAxis();
-                yAxis.setLowerBound(yLowerBound);
-                yAxis.setUpperBound(yUpperBound);
-                
-                xAxis.setTickUnit((xAxis.getUpperBound() - xAxis.getLowerBound()) / 10);
-                yAxis.setTickUnit((yAxis.getUpperBound() - yAxis.getLowerBound()) / 10);
-                
-                zoomRect.setWidth(0);
-                zoomRect.setHeight(0);
+        		setData1000(dataListAll);
             }
         });
     }
 	
-	@SuppressWarnings("unchecked")
 	private void doZoom(Rectangle zoomRect, Node chartNode) {
-		LineChart<Number, Number> chart = (LineChart<Number, Number>) chartNode;
-        
-        final NumberAxis yAxis = (NumberAxis) chart.getYAxis();
-        final NumberAxis xAxis = (NumberAxis) chart.getXAxis();
         Point2D xAxisInScene = xAxis.localToScene(0, 0);
         
         Bounds rectInScene = zoomRect.localToScene(zoomRect.getBoundsInLocal());
         double xOffset = rectInScene.getMinX() - xAxisInScene.getX();
-        double yOffset = rectInScene.getMaxY() - xAxisInScene.getY();
-        
         double xAxisScale = xAxis.getScale();
-        double yAxisScale = yAxis.getScale();
+        
+        double beg = xAxis.getLowerBound() + xOffset / xAxisScale;
+        double end = xOffset / xAxisScale + xAxis.getLowerBound() + zoomRect.getWidth() / xAxisScale;
+        
+        List<LinkedValue> visibleData = dataListAll.stream().
+        		filter(f -> ((Timestamp)f.getDt()).getTime() > beg && ((Timestamp)f.getDt()).getTime() < end).
+        		collect(Collectors.toList());
         
         final BooleanBinding disableControls = zoomRect.widthProperty().lessThan(5).or(zoomRect.heightProperty().lessThan(5));
         if (!disableControls.get()) {
-	        xAxis.setLowerBound(xAxis.getLowerBound() + xOffset / xAxisScale);
-	        xAxis.setUpperBound(xAxis.getLowerBound() + zoomRect.getWidth() / xAxisScale);	        
-	        yAxis.setLowerBound(yAxis.getLowerBound() + yOffset / yAxisScale);
-	        yAxis.setUpperBound(yAxis.getLowerBound() - zoomRect.getHeight() / yAxisScale);
+        	setData1000(visibleData);
         }
-        
-        xAxis.setTickUnit((xAxis.getUpperBound() - xAxis.getLowerBound()) / 10);
-        yAxis.setTickUnit((yAxis.getUpperBound() - yAxis.getLowerBound()) / 10);
         
         zoomRect.setWidth(0);
         zoomRect.setHeight(0);        

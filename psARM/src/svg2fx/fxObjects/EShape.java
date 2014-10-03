@@ -11,9 +11,9 @@ import java.util.StringTokenizer;
 import javax.script.Invocable;
 import javax.script.ScriptException;
 
+import pr.common.Utils;
 import svg2fx.Convert;
 import svg2fx.SignalState;
-import ua.pr.common.ToolsPrLib;
 import ui.Main;
 import ui.MainStage;
 import javafx.scene.Group;
@@ -142,7 +142,7 @@ public class EShape extends AShape {
 		if (custProps != null) {
 			String sName = getId().replace("_", ".");
 			sName = sName.indexOf(".") > -1 ? sName.substring(0, sName.indexOf(".")) : sName;
-			scriptPath = ToolsPrLib.getFullPath("./scripts/" + sName + ".js");
+			scriptPath = Utils.getFullPath("./scripts/" + sName + ".js");
 		}
 		return scriptPath;
 	}

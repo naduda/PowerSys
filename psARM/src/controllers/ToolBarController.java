@@ -3,7 +3,7 @@ package controllers;
 import java.io.IOException;
 import java.net.URL;
 
-import ua.pr.common.ToolsPrLib;
+import pr.common.Utils;
 import ui.Main;
 import ui.MainStage;
 import ui.Scheme;
@@ -65,7 +65,7 @@ public class ToolBarController {
 		Stage stage = new Stage();
 		
 		try {
-			FXMLLoader loader = new FXMLLoader(new URL("file:/" + ToolsPrLib.getFullPath("./ui/Data.xml")));
+			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/Data.xml")));
 			Parent root = loader.load();
 			DataController dataController = loader.getController();
 			

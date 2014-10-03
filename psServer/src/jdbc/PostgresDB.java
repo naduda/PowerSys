@@ -18,15 +18,18 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 
-import model.Alarm;
-import model.ConfTree;
-import model.DvalTI;
-import model.DvalTS;
-import model.LinkedValue;
-import model.SPunit;
-import model.TSysParam;
-import model.TViewParam;
-import model.Tsignal;
+import pr.model.Alarm;
+import pr.model.ConfTree;
+import pr.model.DvalTI;
+import pr.model.DvalTS;
+import pr.model.LinkedValue;
+import pr.model.SPunit;
+import pr.model.TSysParam;
+import pr.model.TViewParam;
+import pr.model.Transparant;
+import pr.model.Tsignal;
+import pr.model.TtranspLocate;
+import pr.model.Ttransparant;
 
 public class PostgresDB implements IMapper {
 
@@ -59,7 +62,7 @@ public class PostgresDB implements IMapper {
 	}
 	
 	public PostgresDB (String host, String port, String dbName, String user, String pass) {		
-		try {	
+		try {
 			DriverAdapterCPDS cpds = new DriverAdapterCPDS();
 	        cpds.setDriver("org.postgresql.Driver");
 	        String dbConnect = String.format("jdbc:postgresql://%s:%s/%s", host, port, dbName);
@@ -305,6 +308,19 @@ public class PostgresDB implements IMapper {
 			session.close();
 		}
 	}
+	
+	@Override
+	public List<LinkedValue> getDataIntegrArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getDataIntegrArc(idSignal, dtBeg, dtEnd, period);
+		} catch (Exception e) {
+			System.out.println("getDataIntegrArc");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
 
 	@Override
 	public List<LinkedValue> getDataArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd) {
@@ -314,6 +330,76 @@ public class PostgresDB implements IMapper {
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("getDataArc");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public Object getTransparantById(int idTransparant) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getTransparantById(idTransparant);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getTransparantById");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public Map<Integer, Transparant> getTransparants() {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getTransparants();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getTransparants");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public List<Ttransparant> getTtransparantsActive(int idScheme) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getTtransparantsActive(idScheme);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getTtransparantsActive");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+	
+	@Override
+	public List<Ttransparant> getTtransparantsNew(Timestamp settime) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getTtransparantsNew(settime);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getTtransparantsNew");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public TtranspLocate getTransparantLocate(int trref) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getTransparantLocate(trref);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getTransparantLocate");
 			return null;
 		} finally {
 			session.close();

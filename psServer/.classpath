@@ -8,7 +8,6 @@
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/jms.jar"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/mybatis-3.2.7.jar"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/postgresql-9.3-1101.jdbc4.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/prLibs.jar"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/psCommon.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -5,8 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import ui.MainStage;
-import model.Alarm;
-import model.TSysParam;
+import pr.model.Alarm;
+import pr.model.TSysParam;
 import javafx.beans.property.SimpleStringProperty;
 
 public class AlarmTableItem {

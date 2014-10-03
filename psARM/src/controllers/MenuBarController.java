@@ -2,7 +2,7 @@ package controllers;
 
 import java.io.File;
 
-import ua.pr.common.ToolsPrLib;
+import pr.common.Utils;
 import ui.MainStage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,7 +17,7 @@ public class MenuBarController {
 		FileChooser.ExtensionFilter extentionFilter = new FileChooser.ExtensionFilter("SVG files (*.svg)", "*.svg");
 		fileChooser.getExtensionFilters().add(extentionFilter);
 
-		File userDirectory = new File(ToolsPrLib.getFullPath("./schemes"));
+		File userDirectory = new File(Utils.getFullPath("./schemes"));
 		fileChooser.setInitialDirectory(userDirectory);
 		
 		File file = fileChooser.showOpenDialog(new Stage());

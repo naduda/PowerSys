@@ -2,23 +2,28 @@ package ui;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import model.ConfTree;
-import model.Tsignal;
+import pr.common.Utils;
+import pr.common.WMF2PNG;
+import pr.model.ConfTree;
+import pr.model.Transparant;
+import pr.model.Tsignal;
 import controllers.Controller;
 import topic.ClientPowerSys;
-import ua.pr.common.ToolsPrLib;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -26,16 +31,18 @@ public class MainStage extends Stage implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private static final String DEFAULT_SCHEME = "ПС 35 кВ 'Казачья'";
-	public static ClientPowerSys psClient = new ClientPowerSys();
-	public static Map<Integer, Tsignal> signals = psClient.getTsignalsMap();
+	public static final ClientPowerSys psClient = new ClientPowerSys();
+	public static final Map<Integer, Tsignal> signals = psClient.getTsignalsMap();
 	public static ListView<String> lvTree;
 	public static BorderPane bpScheme;
 	public static Map<Integer, Scheme> schemes = new HashMap<>();
 	public static Controller controller;
+	public static final Map<Integer, Transparant> transpMap = MainStage.psClient.getTransparants();
+	public static final Map<Integer, Image> imageMap = getImageMap();
 	
 	public MainStage(String pathXML) {
 		try {
-			FXMLLoader loader = new FXMLLoader(new URL("file:/" + ToolsPrLib.getFullPath("./ui/Main.xml")));
+			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/Main.xml")));
 			Parent root = loader.load();
 			controller = loader.getController();
 
@@ -56,8 +63,15 @@ public class MainStage extends Stage implements Serializable {
 			});
 			
 			psClient.getAlarmsCurrentDay().forEach(a -> { controller.getAlarmsController().addAlarm(a); });
-
-			setScheme(DEFAULT_SCHEME);
+			
+			try {
+				String schemeName = Main.getProgramSettings().getSchemeSettings().getSchemeName();
+				setScheme(schemeName);
+			} catch (Exception e) {
+				setScheme(DEFAULT_SCHEME);
+				e.printStackTrace();
+			}
+			
 			controller.getSpTreeController().expandSchemes();
 			controller.getSpTreeController().addContMenu();
 			setScene(scene);
@@ -72,7 +86,7 @@ public class MainStage extends Stage implements Serializable {
 		if (schemeName == null) {
 			Main.mainScheme = new Scheme();
 		} else {
-			Main.mainScheme = new Scheme(ToolsPrLib.getFullPath("./schemes/" + schemeName + ".svg"));
+			Main.mainScheme = new Scheme(Utils.getFullPath("./schemes/" + schemeName + ".svg"));
 
 			TreeItem<Scheme> ti = new TreeItem<>(Main.mainScheme);
 			controller.getSpTreeController().addScheme(ti);
@@ -86,5 +100,16 @@ public class MainStage extends Stage implements Serializable {
 		root.setScaleX(kx < ky ? kx : ky);
 		root.setScaleY(kx < ky ? kx : ky);
 		bpScheme.setCenter(Main.mainScheme);
+	}
+	
+	private static Map<Integer, Image> getImageMap() {
+		Map<Integer, Image> ret = new HashMap<>();
+		
+		transpMap.forEach((key, transp) -> {
+			byte[] bytes = (byte[]) transpMap.get(key).getImg();
+			InputStream is = WMF2PNG.convert(new ByteArrayInputStream(bytes), 250);
+			ret.put(key, new Image(is));
+		});
+		return ret;
 	}
 }

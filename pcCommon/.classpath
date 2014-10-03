@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/imq.jar"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/jms.jar"/>
+	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-transcoder.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -4,12 +4,12 @@ import java.io.FileNotFoundException;
 
 import javax.xml.bind.JAXBException;
 
+import pr.common.Utils;
 import controllers.Controller;
 import state.ProgramSettings;
 import state.SchemeSettings;
 import state.WindowState;
 import topic.ReceiveTopic;
-import ua.pr.common.ToolsPrLib;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -20,7 +20,7 @@ public class Main extends Application {
 
 	private static final int TIMEOUT_TI_SEC = 35;
 	private static final int TIMEOUT_TS_SEC = 600;
-	public static final String FILE_SETTINGS = ToolsPrLib.getFullPath("./Settings.xml");
+	public static final String FILE_SETTINGS = Utils.getFullPath("./Settings.xml");
 	private static ProgramSettings ps;
 	public static Scheme mainScheme;	
 

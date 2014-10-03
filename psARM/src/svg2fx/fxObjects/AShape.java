@@ -1,8 +1,11 @@
 package svg2fx.fxObjects;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.Date;
 import java.util.StringTokenizer;
 
+import pr.common.Utils;
 import ui.Scheme;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -12,8 +15,12 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
@@ -26,6 +33,8 @@ public abstract class AShape extends Group {
 	private static final double MOUSE_DURATION_MILLS = 250;	
 	private final Timeline timeline = new Timeline();
 	
+	private ContextMenu contextMenu;
+	
 	private final Rectangle rect = new Rectangle();
 	private DoubleProperty valueProp = new SimpleDoubleProperty();
 	private Date lastDataDate;
@@ -35,6 +44,21 @@ public abstract class AShape extends Group {
 		rect.getStrokeDashArray().addAll(2d, 5d);
 		rect.setStrokeWidth(RECT_LINE_WIDTH);
 		rect.setFill(Color.TRANSPARENT);
+	    
+	    try {
+			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/ShapeContextMenu.xml")));
+			contextMenu = loader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	    
+	    rect.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	        @Override
+	        public void handle(MouseEvent t) {
+	            if(t.getButton().toString().equals("SECONDARY"))
+	            	contextMenu.show(rect, t.getScreenX(), t.getSceneY());
+	        }
+	    });
 
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.setAutoReverse(true);

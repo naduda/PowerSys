@@ -11,16 +11,19 @@ import java.util.stream.Collectors;
 
 import actualdata.LastData;
 import jdbc.PostgresDB;
-import powersys.IPowersys;
-import model.Alarm;
-import model.ConfTree;
-import model.DvalTI;
-import model.DvalTS;
-import model.LinkedValue;
-import model.SPunit;
-import model.TSysParam;
-import model.TViewParam;
-import model.Tsignal;
+import pr.powersys.IPowersys;
+import pr.model.Alarm;
+import pr.model.ConfTree;
+import pr.model.DvalTI;
+import pr.model.DvalTS;
+import pr.model.LinkedValue;
+import pr.model.SPunit;
+import pr.model.TSysParam;
+import pr.model.TViewParam;
+import pr.model.Transparant;
+import pr.model.Tsignal;
+import pr.model.TtranspLocate;
+import pr.model.Ttransparant;
 
 public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	private static final long serialVersionUID = 1L;
@@ -97,14 +100,43 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	}
 
 	@Override
-	public List<LinkedValue> getDataIntegr(int idSignal, int period) throws RemoteException {
-		return pdb.getDataIntegr(idSignal, new Timestamp(System.currentTimeMillis() - 24*60*60*1000), 
-				new Timestamp(System.currentTimeMillis()), period);
+	public List<LinkedValue> getDataIntegr(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) throws RemoteException {
+		return pdb.getDataIntegr(idSignal, dtBeg, dtEnd, period);
+	}
+	
+	@Override
+	public List<LinkedValue> getDataIntegrArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) throws RemoteException {
+		return pdb.getDataIntegrArc(idSignal, dtBeg, dtEnd, period);
 	}
 
 	@Override
 	public List<LinkedValue> getDataArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
 		return pdb.getDataArc(idSignal, dtBeg, dtEnd);
+	}
+
+	@Override
+	public Object getTransparantById(int idTransparant) throws RemoteException {
+		return pdb.getTransparantById(idTransparant);
+	}
+
+	@Override
+	public Map<Integer, Transparant> getTransparants() throws RemoteException {
+		return LastData.getTransparants();
+	}
+
+	@Override
+	public List<Ttransparant> getTtransparantsActive(int idScheme) throws RemoteException {
+		return pdb.getTtransparantsActive(idScheme);
+	}
+
+	@Override
+	public TtranspLocate getTransparantLocate(int trref) throws RemoteException {
+		return pdb.getTransparantLocate(trref);
+	}
+
+	@Override
+	public List<Ttransparant> getTtransparantsNew(Timestamp settime) throws RemoteException {
+		return pdb.getTtransparantsNew(settime);
 	}
 }
  

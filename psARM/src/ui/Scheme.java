@@ -5,18 +5,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import model.DvalTI;
-import model.DvalTS;
+import pr.model.DvalTI;
+import pr.model.DvalTS;
+import pr.model.TtranspLocate;
+import pr.model.Ttransparant;
 import svg2fx.Convert;
 import svg2fx.fxObjects.EShape;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Shape;
 
 public class Scheme extends ScrollPane {
+	
+	private static final double KOEF = 0.78;
 	
 	private Group root;
 	private final Group rootScheme = new Group();
@@ -76,6 +83,8 @@ public class Scheme extends ScrollPane {
 			for (DvalTS ts : oldTS.values()) {
 				MainStage.controller.updateTI(this, ts);
 			}
+			
+			setTransparants();
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -121,6 +130,46 @@ public class Scheme extends ScrollPane {
 		}
 		return tt;
 	}
+	
+	private void setTransparants() throws RemoteException {
+		List<Ttransparant> tTransparants = MainStage.psClient.getTtransparantsActive(getIdScheme());
+		if (tTransparants != null) {
+			tTransparants.forEach(t -> {
+				try {
+					TtranspLocate transpLocate = MainStage.psClient.getTransparantLocate(t.getIdtr());
+					addTransparant(t.getTp(), transpLocate.getX(), transpLocate.getY(), transpLocate.getH());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+		}
+	}
+	
+	public void addTransparant(int idTransparant, double xT, double yT, double sizeT) {
+		Shape transparant = createCircle(idTransparant, xT, yT, sizeT);
+		root.getChildren().add(transparant);
+	}
+	
+	private Shape createCircle(int idTransarant, double xT, double yT, double sizeT) {
+		Circle n = new Circle(xT * KOEF, yT * KOEF, sizeT * KOEF / 2);
+		n.setStroke(Color.TRANSPARENT);
+		n.setFill(new ImagePattern(MainStage.imageMap.get(idTransarant)));
+		
+        n.setOnMouseDragged(event -> {
+        	Point2D p = Main.mainScheme.getRoot().sceneToLocal(event.getSceneX(), event.getSceneY());
+        	
+        	double x = p.getX();
+        	double y = p.getY();
+        	double maxX = MainStage.bpScheme.getWidth();
+        	double maxY = MainStage.bpScheme.getHeight();
+        	double r = n.getRadius();
+        	
+            n.relocate(x < 2 * r ? r : x + r > maxX ? maxX - r : x - r, 
+            		   y < 2 * r ? r : y + r > maxY ? maxY - r : y - r);
+        });
+
+        return n;
+    }
 
 	public List<Integer> getSignalsTI() {
 		return signalsTI;
@@ -146,7 +195,7 @@ public class Scheme extends ScrollPane {
 		this.schemeName = schemeName;
 	}
 	
-	public Node getRoot() {
+	public Group getRoot() {
 		return root;
 	}
 	//	--------------------------------------------------------------

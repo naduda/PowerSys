@@ -4,7 +4,7 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 
-import powersys.IPowersys;
+import pr.powersys.IPowersys;
 import jdbc.PostgresDB;
 
 public class StartServer {

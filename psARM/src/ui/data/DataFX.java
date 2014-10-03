@@ -4,9 +4,9 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import ui.MainStage;
-import model.LinkedValue;
-import model.SPunit;
-import model.Tsignal;
+import pr.model.LinkedValue;
+import pr.model.SPunit;
+import pr.model.Tsignal;
 import javafx.scene.layout.StackPane;
 
 public class DataFX {

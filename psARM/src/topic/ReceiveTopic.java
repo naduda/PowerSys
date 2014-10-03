@@ -1,5 +1,7 @@
 package topic;
 
+import java.rmi.RemoteException;
+
 import javafx.application.Platform;
 
 import javax.jms.Message;
@@ -9,9 +11,11 @@ import javax.jms.Topic;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 
-import model.Alarm;
-import model.DvalTI;
-import model.DvalTS;
+import pr.model.Alarm;
+import pr.model.DvalTI;
+import pr.model.DvalTS;
+import pr.model.TtranspLocate;
+import pr.model.Ttransparant;
 import ui.Main;
 import ui.MainStage;
 
@@ -63,6 +67,10 @@ public class ReceiveTopic implements MessageListener, Runnable {
 			TopicSubscriber subscribertAlarms = session.createSubscriber(tAlarms);						
 			subscribertAlarms.setMessageListener(this);
 			
+			Topic tTransparants = session.createTopic("Transparants");
+			TopicSubscriber subscribertTransparants = session.createSubscriber(tTransparants);						
+			subscribertTransparants.setMessageListener(this);
+			
 			int k = 0;
 			while (isRun) {
 				Thread.sleep(60000);
@@ -88,46 +96,60 @@ public class ReceiveTopic implements MessageListener, Runnable {
 				Object obj = ((ObjectMessage)msg).getObject();
 		    	if (obj.getClass().getName().toLowerCase().endsWith("dvalti")) {
 		    		if (Main.mainScheme != null) {
-		    			new Thread(new Runnable() {
-		    	            @Override public void run() {
-		    	                Platform.runLater(new Runnable() {
-		    	                    @Override public void run() {	    			
-		    			    			MainStage.controller.updateTI((DvalTI) obj);
-		    	                    }
-		    	                });
-		    	            }
-		    	        }, "Update TI").start();		    					    			
+		    			Platform.runLater(new Runnable() {
+    	                    @Override public void run() {	    			
+    			    			MainStage.controller.updateTI((DvalTI) obj);
+    	                    }
+    	                });		    					    			
 		    		}
 		    	} else if (obj.getClass().getName().toLowerCase().endsWith("dvalts")) {
 		    		if (Main.mainScheme != null) {
-		    			new Thread(new Runnable() {
-		    	            @Override public void run() {
-		    	                Platform.runLater(new Runnable() {
-		    	                    @Override public void run() {
-		    	                    	MainStage.controller.updateTI((DvalTS) obj);
-		    	                    }
-		    	                });
-		    	            }
-		    	        }, "Update TS").start();
+		    			Platform.runLater(new Runnable() {
+    	                    @Override public void run() {
+    	                    	MainStage.controller.updateTI((DvalTS) obj);
+    	                    }
+    	                });
 		    			
 			    	}
 		    	} else if (obj.getClass().getName().toLowerCase().endsWith("alarm")) {
 		    		if (Main.mainScheme != null) {
-		    			new Thread(new Runnable() {
-		    	            @Override public void run() {
-		    	                Platform.runLater(new Runnable() {
-		    	                    @Override public void run() {
-		    	                    	Alarm a = (Alarm) obj;
-		    	                    	if (a.getConfirmdt() == null) {
-		    	                    		MainStage.controller.getAlarmsController().addAlarm(a);
-		    	                    	} else {
-		    	                    		MainStage.controller.getAlarmsController().updateAlarm(a);
-		    	                    	}
-		    	                    }
-		    	                });
-		    	            }
-		    	        }, "Update Alarms").start();
+		    			Platform.runLater(new Runnable() {
+    	                    @Override public void run() {
+    	                    	Alarm a = (Alarm) obj;
+    	                    	if (a.getConfirmdt() == null) {
+    	                    		MainStage.controller.getAlarmsController().addAlarm(a);
+    	                    	} else {
+    	                    		MainStage.controller.getAlarmsController().updateAlarm(a);
+    	                    	}
+    	                    }
+    	                });
 		    			
+			    	}
+		    	} else if (obj.getClass().getName().toLowerCase().endsWith("ttransparant")) {
+		    		if (Main.mainScheme != null) {
+		    			Platform.runLater(new Runnable() {
+    	                    @Override public void run() {
+    	                    	try {
+									Ttransparant t = (Ttransparant) obj;
+									TtranspLocate transpLocate = MainStage.psClient.getTransparantLocate(t.getIdtr());
+									int counter = 0;
+									while (transpLocate == null || counter > 20) {
+										try {
+											Thread.sleep(200);
+											transpLocate = MainStage.psClient.getTransparantLocate(t.getIdtr());
+											counter++;
+										} catch (InterruptedException e) {
+											e.printStackTrace();
+										}
+									}
+									if (transpLocate != null) {
+										Main.mainScheme.addTransparant(t.getTp(), transpLocate.getX(), transpLocate.getY(), transpLocate.getH());
+									}
+								} catch (RemoteException e) {
+									e.printStackTrace();
+								}
+    	                    }
+    	                });
 			    	}
 		    	}
 		        

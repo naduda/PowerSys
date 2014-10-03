@@ -5,7 +5,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 
 import javafx.beans.property.SimpleStringProperty;
-import model.LinkedValue;
+import pr.model.LinkedValue;
 
 public class DataWrapper {
 	private final SimpleStringProperty pDate;

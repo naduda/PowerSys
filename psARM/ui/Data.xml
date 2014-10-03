@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.collections.FXCollections?>
 <?import java.lang.*?>
-<?import model.LinkedValue?>
+<?import pr.model.LinkedValue?>
 <?import javafx.scene.control.DatePicker?>
 
 <BorderPane fx:id="bpData" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.DataController">

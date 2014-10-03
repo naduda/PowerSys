@@ -24,15 +24,11 @@ public class UpdateTimeOut implements Runnable {
 				if (Main.mainScheme != null) {
 					List<Integer> signals = type_ == 1 ? Main.mainScheme.getSignalsTI() : Main.mainScheme.getSignalsTS();
 					for (Integer signal : signals) {
-						new Thread(new Runnable() {
-		    	            @Override public void run() {
-		    	                Platform.runLater(new Runnable() {
-		    	                    @Override public void run() {
-		    	                    	Controller.updateSignal(signal, type_, sec);
-		    	                    }
-		    	                });
-		    	            }
-		    	        }, "Update signal " + signal).start();
+						Platform.runLater(new Runnable() {
+    	                    @Override public void run() {
+    	                    	Controller.updateSignal(signal, type_, sec);
+    	                    }
+    	                });
 					}
 				}
 				

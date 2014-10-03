@@ -6738,7 +6738,7 @@
 				<v:cp v:nameU="idSignal" v:lbl="idSignal" v:prompt="" v:type="0" v:format="" v:sortKey="" v:invis="false"
 						v:ask="false" v:langID="1049" v:cal="0" v:val="VT4(001100284)"/>
 				<v:cp v:nameU="id" v:lbl="id" v:prompt="" v:type="0" v:format="" v:sortKey="" v:invis="false" v:ask="false"
-						v:langID="1033" v:cal="0" v:val="VT4(38400866)"/>
+						v:langID="1033" v:cal="0" v:val="VT4(1100284)"/>
 			</v:custProps>
 			<v:userDefs>
 				<v:ud v:nameU="unitsEnergy" v:prompt="Енергія" v:val="VT4(Вт·г;кВт·г;МВт·г;ВАр·г;кВАр·г;МВАр·г)"/>
@@ -6834,7 +6834,7 @@
 				<v:cp v:nameU="idSignal" v:lbl="idSignal" v:prompt="" v:type="0" v:format="" v:sortKey="" v:invis="false"
 						v:ask="false" v:langID="1049" v:cal="0" v:val="VT4(001100287)"/>
 				<v:cp v:nameU="id" v:lbl="id" v:prompt="" v:type="0" v:format="" v:sortKey="" v:invis="false" v:ask="false"
-						v:langID="1033" v:cal="0" v:val="VT4(38400861)"/>
+						v:langID="1033" v:cal="0" v:val="VT4(1100287)"/>
 			</v:custProps>
 			<v:userDefs>
 				<v:ud v:nameU="unitsEnergy" v:prompt="Енергія" v:val="VT4(Вт·г;кВт·г;МВт·г;ВАр·г;кВАр·г;МВАр·г)"/>
@@ -7122,7 +7122,7 @@
 				<v:cp v:nameU="idSignal" v:lbl="idSignal" v:prompt="" v:type="0" v:format="" v:sortKey="" v:invis="false"
 						v:ask="false" v:langID="1049" v:cal="0" v:val="VT4(001100296)"/>
 				<v:cp v:nameU="id" v:lbl="id" v:prompt="" v:type="0" v:format="" v:sortKey="" v:invis="false" v:ask="false"
-						v:langID="1033" v:cal="0" v:val="VT4(38400862)"/>
+						v:langID="1033" v:cal="0" v:val="VT4(1100296)"/>
 			</v:custProps>
 			<v:userDefs>
 				<v:ud v:nameU="unitsEnergy" v:prompt="Енергія" v:val="VT4(Вт·г;кВт·г;МВт·г;ВАр·г;кВАр·г;МВАр·г)"/>

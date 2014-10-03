@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<ContextMenu fx:id="shapeContextMenu" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ShapeController">
+	<items>
+		<MenuItem text="add" onAction="#add"/>
+		<SeparatorMenuItem/>
+		<MenuItem text="Встановити транспарант" onAction="#addTransparant"/>
+	</items>
+</ContextMenu>

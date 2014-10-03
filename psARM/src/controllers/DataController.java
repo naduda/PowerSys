@@ -4,6 +4,7 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -11,7 +12,8 @@ import java.util.ResourceBundle;
 import ui.MainStage;
 import ui.data.DataFX;
 import ui.data.DataWrapper;
-import model.LinkedValue;
+import ui.data.LineChartContainer;
+import pr.model.LinkedValue;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -48,7 +50,13 @@ public class DataController implements Initializable {
 		cbIntegration.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			try {
 				int period = Integer.parseInt(cbIntegration.getSelectionModel().getSelectedItem().getDt().toString());
-				changeTableData(MainStage.psClient.getDataIntegr(getIdSignal(), period));
+				if (tChart.getContent() == null) {
+					changeTableData(MainStage.psClient.getDataIntegr(getIdSignal(), new Timestamp(System.currentTimeMillis() - 24*60*60*1000), 
+							new Timestamp(System.currentTimeMillis()), period));
+				} else {
+					changeTableData(MainStage.psClient.getDataIntegrArc(getIdSignal(), Timestamp.valueOf(dpBegin.getValue().atTime(cbHourBegin.getValue(), 0)), 
+							Timestamp.valueOf(dpEnd.getValue().atTime(cbHourEnd.getValue(), 0)), period));
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -71,7 +79,7 @@ public class DataController implements Initializable {
 		cbHourBegin.setItems(lHoursObs);
 		cbHourBegin.getSelectionModel().selectFirst();
 		cbHourEnd.setItems(lHoursObs);
-		cbHourEnd.getSelectionModel().selectFirst();
+		cbHourEnd.getSelectionModel().select(LocalTime.now().getHour());
 		
 		dpBegin.setOnAction(new DateHandler());
 		dpEnd.setOnAction(new DateHandler());
@@ -84,10 +92,15 @@ public class DataController implements Initializable {
 		@Override
 		public void handle(Event e) {
 			try {
-				changeTableData(MainStage.psClient.getDataArc(idSignal, 
-						Timestamp.valueOf(dpBegin.getValue().atTime(cbHourBegin.getValue(), 0)), 
-						Timestamp.valueOf(dpEnd.getValue().atTime(cbHourEnd.getValue(), 0))));
-				updateContent();
+				List<LinkedValue> newData = cbIntegration.getSelectionModel().getSelectedIndex() == 0 ? 
+						MainStage.psClient.getDataArc(idSignal, 
+								Timestamp.valueOf(dpBegin.getValue().atTime(cbHourBegin.getValue(), 0)),
+								Timestamp.valueOf(dpEnd.getValue().atTime(cbHourEnd.getValue(), 0))) :
+						MainStage.psClient.getDataIntegrArc(getIdSignal(), Timestamp.valueOf(dpBegin.getValue().atTime(cbHourBegin.getValue(), 0)), 
+								Timestamp.valueOf(dpEnd.getValue().atTime(cbHourEnd.getValue(), 0)), 
+								Integer.parseInt(cbIntegration.getSelectionModel().getSelectedItem().getDt().toString()));
+				
+				changeTableData(newData);
 			} catch (RemoteException re) {
 				re.printStackTrace();
 			}
@@ -102,12 +115,12 @@ public class DataController implements Initializable {
 		return tvChart;
 	}
 	
-	public void changeTableData(List<LinkedValue> newData) {
+	private void changeTableData(List<LinkedValue> newData) {		
 		dataChange = newData;
-		dataChange.forEach(v -> {v.setVal((double)v.getVal() * dataFX.getSignal().getKoef());});
+		dataChange.forEach(v -> {v.setVal((double)v.getVal() * dataFX.getSignal().getKoef());});		
 		dataFX.setData(dataChange);
 		
-		updateContent();		
+		updateContent();
 	}
 	
 	public void setDataTable() {
@@ -119,7 +132,7 @@ public class DataController implements Initializable {
 			tvChart.setItems(dataWrapp);
 		}
 	}
-
+	
 	public List<LinkedValue> getData() {
 		return data;
 	}
@@ -140,8 +153,17 @@ public class DataController implements Initializable {
 	}
 	
 	private void updateContent() {
-		setData(dataFX.getData());
-		tChart.setContent(dataFX.getChart());
-		setDataTable();
+		try {
+			setData(dataFX.getData());
+			if (tChart.getContent() == null) {
+				tChart.setContent(dataFX.getChart());
+			} else {
+				LineChartContainer chartContainer = (LineChartContainer) tChart.getContent();
+				chartContainer.setData(data);
+			}
+			setDataTable();
+		} catch (Exception e) {
+			System.out.println("CATCH");
+		}
 	}
 }

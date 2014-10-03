@@ -17,14 +17,16 @@ import javax.jms.ObjectMessage;
 import javax.jms.TopicPublisher;
 
 import jdbc.PostgresDB;
-import model.Alarm;
-import model.ConfTree;
-import model.DvalTI;
-import model.DvalTS;
-import model.SPunit;
-import model.TSysParam;
-import model.TViewParam;
-import model.Tsignal;
+import pr.model.Alarm;
+import pr.model.ConfTree;
+import pr.model.DvalTI;
+import pr.model.DvalTS;
+import pr.model.SPunit;
+import pr.model.TSysParam;
+import pr.model.TViewParam;
+import pr.model.Transparant;
+import pr.model.Tsignal;
+import pr.topic.JMSConnection;
 import actualdata.LastData;
 
 import com.sun.messaging.ConnectionConfiguration;
@@ -65,6 +67,7 @@ public class SendTopic implements Runnable {
 	boolean isDataFromDB = false;
 	@Override
 	public void run() {
+		double start = System.currentTimeMillis();
 		System.out.println("START at " + LocalDateTime.now());
 		while (!isDataFromDB) {
 			Map<Integer, Tsignal> signals = pdb.getTsignalsMap();
@@ -72,7 +75,8 @@ public class SendTopic implements Runnable {
 			isDataFromDB = signals == null ? false : true;
 		}
 		isDataFromDB = false;
-		System.out.println("signals");
+		System.out.println("signals - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		start = System.currentTimeMillis();
 		
 		while (!isDataFromDB) {
 			Map<Integer, SPunit> spunit = pdb.getSPunitMap();
@@ -80,7 +84,8 @@ public class SendTopic implements Runnable {
 			isDataFromDB = spunit == null ? false : true;
 		}
 		isDataFromDB = false;
-		System.out.println("sp_units");
+		System.out.println("sp_units - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		start = System.currentTimeMillis();
 		
 		while (!isDataFromDB) {
 			Map<Integer, ConfTree> ctm = pdb.getConfTreeMap();
@@ -88,7 +93,8 @@ public class SendTopic implements Runnable {
 			isDataFromDB = ctm == null ? false : true;
 		}
 		isDataFromDB = false;
-		System.out.println("ConfTree");
+		System.out.println("ConfTree - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		start = System.currentTimeMillis();
 		
 		while (!isDataFromDB) {
 			SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
@@ -104,7 +110,8 @@ public class SendTopic implements Runnable {
 			isDataFromDB = alsm == null ? false : true;
 		}
 		isDataFromDB = false;
-		System.out.println("Alarms");
+		System.out.println("Alarms - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		start = System.currentTimeMillis();
 		
 		while (!isDataFromDB) {
 			List<TSysParam> spm = pdb.getTSysParam();
@@ -112,7 +119,8 @@ public class SendTopic implements Runnable {
 			isDataFromDB = spm == null ? false : true;
 		}
 		isDataFromDB = false;
-		System.out.println("SysParam");
+		System.out.println("SysParam - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		start = System.currentTimeMillis();
 		
 		while (!isDataFromDB) {
 			List<TViewParam> tvpm = pdb.getTViewParam();
@@ -120,7 +128,8 @@ public class SendTopic implements Runnable {
 			isDataFromDB = tvpm == null ? false : true;
 		}
 		isDataFromDB = false;
-		System.out.println("ViewParam");
+		System.out.println("ViewParam - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		start = System.currentTimeMillis();
 		
 		while (!isDataFromDB) {
 			Map<Integer, DvalTI> oldTIs = pdb.getOldTI().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTI::getSignalref, obj -> obj));
@@ -129,7 +138,8 @@ public class SendTopic implements Runnable {
 			isDataFromDB = oldTIs == null ? false : true;
 		}
 		isDataFromDB = false;
-		System.out.println("oldTI");
+		System.out.println("oldTI - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		start = System.currentTimeMillis();
 		
 		while (!isDataFromDB) {
 			Map<Integer, DvalTS> oldTSs = pdb.getOldTS().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTS::getSignalref, obj -> obj));
@@ -137,11 +147,22 @@ public class SendTopic implements Runnable {
 			LastData.setOldTS(oldTSs);
 			isDataFromDB = oldTSs == null ? false : true;
 		}
-		System.out.println("oldTS");
+		isDataFromDB = false;
+		System.out.println("oldTS - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		start = System.currentTimeMillis();
 		
-		new Thread(new SendDValTI(factory, jConn, "DvalTI", LastData.getSignals(), getPdb()), "SendDValTI_Thread").start();
-		new Thread(new SendDValTS(factory, jConn, "DvalTS", getPdb()), "SendDValTS_Thread").start();
-		new Thread(new SendAlarms(factory, jConn, "Alarms", getPdb()), "SendAlarms_Thread").start();
+		while (!isDataFromDB) {
+			Map<Integer, Transparant> transparants = pdb.getTransparants();
+			LastData.setTransparants(transparants);
+			isDataFromDB = transparants == null ? false : true;
+		}
+		System.out.println("transparants - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		start = System.currentTimeMillis();
+		
+		new Thread(new DValTITopic(factory, jConn, "DvalTI", LastData.getSignals(), getPdb()), "SendDValTI_Thread").start();
+		new Thread(new DValTSTopic(factory, jConn, "DvalTS", getPdb()), "SendDValTS_Thread").start();
+		new Thread(new AlarmsTopic(factory, jConn, "Alarms", getPdb()), "SendAlarms_Thread").start();
+		new Thread(new TransparantsTopic(factory, jConn, "Transparants", getPdb()), "Transparants_Thread").start();
 		
 		System.out.println("Send... " + LocalDateTime.now());
 	}

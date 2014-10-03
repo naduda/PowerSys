@@ -13,7 +13,7 @@ import svg2fx.fxObjects.EShape;
 import ui.Main;
 import ui.MainStage;
 import ui.Scheme;
-import model.DvalTI;
+import pr.model.DvalTI;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -105,10 +105,14 @@ public class Controller {
 	
 	public void updateTI(Scheme mainScheme, DvalTI ti) {		
 		Convert.listSignals.stream().filter(f -> f.getKey().equals(ti.getSignalref())).forEach(s -> {
-			EShape tt = mainScheme.getDeviceById(s.getValue());
-			tt.setValue(ti.getVal(), s.getTypeSignal());
-			
-			toolBarController.updateLabel(df.format(ti.getServdt()));
+			try {
+				EShape tt = mainScheme.getDeviceById(s.getValue());
+				tt.setValue(ti.getVal(), s.getTypeSignal());
+				
+				toolBarController.updateLabel(df.format(ti.getServdt()));
+			} catch (Exception e) {
+				
+			}
 			//toolBarController.setTsLastDate(ti.getServdt().getTime());
 		});	
 	}

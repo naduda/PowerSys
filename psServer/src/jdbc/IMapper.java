@@ -4,15 +4,18 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
-import model.Alarm;
-import model.ConfTree;
-import model.DvalTI;
-import model.DvalTS;
-import model.LinkedValue;
-import model.SPunit;
-import model.TSysParam;
-import model.TViewParam;
-import model.Tsignal;
+import pr.model.Alarm;
+import pr.model.ConfTree;
+import pr.model.DvalTI;
+import pr.model.DvalTS;
+import pr.model.LinkedValue;
+import pr.model.SPunit;
+import pr.model.TSysParam;
+import pr.model.TViewParam;
+import pr.model.Transparant;
+import pr.model.Tsignal;
+import pr.model.TtranspLocate;
+import pr.model.Ttransparant;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -92,7 +95,7 @@ public interface IMapper {
 	@Delete("delete from t_sysparam where paramname = 'LAST_USR_ACK';")
 	void deleteLastUserAck();
 	
-	@Insert("insert into t_sysparam values ( 3, 'LAST_USR_ACK', extract(epoch FROM now()), 'Время последнего квитирования');")
+	@Insert("insert into t_sysparam values ( 3, 'LAST_USR_ACK', extract(epoch FROM now()), 'Р’СЂРµРјСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РєРІРёС‚РёСЂРѕРІР°РЅРёСЏ');")
 	void insertLastUserAck();
 	
 	@Update("update d_eventlog set logstate = 2, confirmdt = now(), lognote = #{lognote}, userref = #{userref} "
@@ -108,4 +111,24 @@ public interface IMapper {
 	@Select("select dt, val from f_valti(#{id}, #{dtbeg}, #{dtend}, #{inter}) order by dt")
 	List<LinkedValue> getDataIntegr(@Param("id") int idSignal, @Param("dtbeg") Timestamp dtBeg, 
 			@Param("dtend") Timestamp dtEnd, @Param("inter") int period);
+	
+	@Select("select dt, val from f_arcvalti(#{id}, #{dtbeg}, #{dtend}, #{inter}) order by dt")
+	List<LinkedValue> getDataIntegrArc(@Param("id") int idSignal, @Param("dtbeg") Timestamp dtBeg, 
+			@Param("dtend") Timestamp dtEnd, @Param("inter") int period);
+	
+	@Select("select img from t_transp_type where idtr = #{idtr}")
+	Object getTransparantById(@Param("idtr")int idTransparant);
+	
+	@Select("select * from t_transp_type")
+	@MapKey("idtr")
+	Map<Integer, Transparant> getTransparants();
+	
+	@Select("select * from t_transparant where schemeref = #{schemeref} and closetime is null")
+	List<Ttransparant> getTtransparantsActive(@Param("schemeref")int idScheme);
+	
+	@Select("select * from t_transparant where settime > #{settime} and closetime is null")
+	List<Ttransparant> getTtransparantsNew(@Param("settime")Timestamp settime);
+	
+	@Select("select * from t_transp_locate where trref = #{trref}")
+	TtranspLocate getTransparantLocate(@Param("trref")int trref);
 }

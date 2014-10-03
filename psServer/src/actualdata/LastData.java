@@ -5,14 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import model.Alarm;
-import model.ConfTree;
-import model.DvalTI;
-import model.DvalTS;
-import model.SPunit;
-import model.TSysParam;
-import model.TViewParam;
-import model.Tsignal;
+import pr.model.Alarm;
+import pr.model.ConfTree;
+import pr.model.DvalTI;
+import pr.model.DvalTS;
+import pr.model.SPunit;
+import pr.model.TSysParam;
+import pr.model.TViewParam;
+import pr.model.Transparant;
+import pr.model.Tsignal;
 
 public class LastData {
 
@@ -26,6 +27,7 @@ public class LastData {
 	private static List<TViewParam> tviewparams = new ArrayList<>();
 	private static Map<Integer, DvalTI> oldTI = new HashMap<>();
 	private static Map<Integer, DvalTS> oldTS = new HashMap<>();
+	private static Map<Integer, Transparant> transparants = new HashMap<>();
 	
 	public static List<Alarm> getAlarms() {
 		return alarms;
@@ -93,5 +95,13 @@ public class LastData {
 
 	public static void setConfTree(Map<Integer, ConfTree> confTree) {
 		LastData.confTree = confTree;
+	}
+
+	public static Map<Integer, Transparant> getTransparants() {
+		return transparants;
+	}
+
+	public static void setTransparants(Map<Integer, Transparant> transparants) {
+		LastData.transparants = transparants;
 	}
 }

@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-import model.Alarm;
-import model.TSysParam;
-import model.TViewParam;
+import pr.model.Alarm;
+import pr.model.TSysParam;
+import pr.model.TViewParam;
 import svg2fx.Convert;
 import ui.MainStage;
 import ui.Scheme;

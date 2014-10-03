@@ -3,7 +3,7 @@ package ui;
 import java.io.IOException;
 import java.net.URL;
 
-import ua.pr.common.ToolsPrLib;
+import pr.common.Utils;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -13,7 +13,7 @@ public class Login extends Stage {
 	
 	public Login(String pathXML) {
 		try {
-			FXMLLoader loader = new FXMLLoader(new URL("file:/" + ToolsPrLib.getFullPath(pathXML)));
+			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath(pathXML)));
 			Parent root = loader.load();
 
 			Scene scene = new Scene(root);      

@@ -3,7 +3,7 @@ package controllers;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import ua.pr.common.ToolsPrLib;
+import pr.common.Utils;
 import ui.Main;
 import ui.MainStage;
 import ui.Scheme;
@@ -54,11 +54,13 @@ public class TreeController {
  
         public SchemeTreeCellImpl() {
         	try {
-				File fImage = new File(ToolsPrLib.getFullPath("./Icon/close.png"));
+				File fImage = new File(Utils.getFullPath("./Icon/close.png"));
 				Image image = new Image(fImage.toURI().toURL().toExternalForm(), IMAGE_SIZE, IMAGE_SIZE, true, false);
-				MenuItem miClose = new MenuItem("Закрити", new ImageView(image));           
+				MenuItem miClose = new MenuItem("Закрити", new ImageView(image));
 				miClose.setOnAction(e -> {
 					MainStage.schemes.remove(((Scheme)getItem()).getIdScheme());
+					Main.mainScheme.getSignalsTI().clear();
+					Main.mainScheme.getSignalsTS().clear();
 					TreeItem<Scheme> selectedItem = (TreeItem<Scheme>)tvSchemes.getSelectionModel().getSelectedItem();
 					trSchemes.getChildren().remove(selectedItem);
 					if (trSchemes.getChildren().size() == 0) {
