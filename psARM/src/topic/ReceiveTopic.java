@@ -3,6 +3,8 @@ package topic;
 import java.rmi.RemoteException;
 
 import javafx.application.Platform;
+import javafx.scene.Group;
+import javafx.scene.shape.Shape;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -103,6 +105,7 @@ public class ReceiveTopic implements MessageListener, Runnable {
     	                });		    					    			
 		    		}
 		    	} else if (obj.getClass().getName().toLowerCase().endsWith("dvalts")) {
+		    		System.out.println(((DvalTS) obj).getVal());
 		    		if (Main.mainScheme != null) {
 		    			Platform.runLater(new Runnable() {
     	                    @Override public void run() {
@@ -131,19 +134,30 @@ public class ReceiveTopic implements MessageListener, Runnable {
     	                    @Override public void run() {
     	                    	try {
 									Ttransparant t = (Ttransparant) obj;
-									TtranspLocate transpLocate = MainStage.psClient.getTransparantLocate(t.getIdtr());
-									int counter = 0;
-									while (transpLocate == null || counter > 20) {
-										try {
-											Thread.sleep(200);
-											transpLocate = MainStage.psClient.getTransparantLocate(t.getIdtr());
-											counter++;
-										} catch (InterruptedException e) {
-											e.printStackTrace();
+									Group root = Main.mainScheme.getRoot();
+									if (t.getClosetime() == null) {
+										TtranspLocate transpLocate = MainStage.psClient.getTransparantLocate(t.getIdtr());
+										if (t.getSettime().equals(t.getLastupdate())) {
+											int counter = 0;
+											while (transpLocate == null || counter > 5) {
+												try {
+													Thread.sleep(500);
+													transpLocate = MainStage.psClient.getTransparantLocate(t.getIdtr());
+													counter++;
+												} catch (InterruptedException e) {
+													e.printStackTrace();
+												}
+											}
+											if (transpLocate != null) {
+												Main.mainScheme.addTransparant(t.getTp(), transpLocate.getX(), 
+														transpLocate.getY(), transpLocate.getH(), t.getIdtr());
+											}
+										} else {
+											Shape trShape = (Shape) root.lookup("#transparant_" + t.getIdtr());
+											trShape.relocate(transpLocate.getX(), transpLocate.getY());
 										}
-									}
-									if (transpLocate != null) {
-										Main.mainScheme.addTransparant(t.getTp(), transpLocate.getX(), transpLocate.getY(), transpLocate.getH());
+									} else {
+										root.getChildren().remove(root.lookup("#transparant_" + t.getIdtr()));
 									}
 								} catch (RemoteException e) {
 									e.printStackTrace();

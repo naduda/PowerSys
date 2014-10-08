@@ -22,6 +22,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
 public class EShape extends AShape {
+	private static final String TEXT_CONST = "text";
+
 	private SignalState value = new SignalState();
 	
 	private Map<String, Integer> signals = new HashMap<>();
@@ -51,7 +53,7 @@ public class EShape extends AShape {
 				}
 			}
 			
-			setTextShape("text".equals(g.getId()) && custProps.get("Value") != null);
+			setTextShape(TEXT_CONST.equals(g.getId()) && custProps.get("Value") != null);
 			if (isTextShape() && id > -1 ) {
 				setValue(0.0, "id");
 			}
@@ -133,7 +135,10 @@ public class EShape extends AShape {
 
 	public ScriptClass getScripts() {
 		if (scripts == null) {
-			scripts = new ScriptClass(getScriptPath());
+			String scriptPath = getScriptPath();
+			if (scriptPath != null) {
+				scripts = new ScriptClass(getScriptPath());
+			}
 		}
 		return scripts;
 	}
@@ -142,6 +147,9 @@ public class EShape extends AShape {
 		if (custProps != null) {
 			String sName = getId().replace("_", ".");
 			sName = sName.indexOf(".") > -1 ? sName.substring(0, sName.indexOf(".")) : sName;
+			if (TEXT_CONST.equals(sName)) {
+				return null;
+			}
 			scriptPath = Utils.getFullPath("./scripts/" + sName + ".js");
 		}
 		return scriptPath;
@@ -171,16 +179,18 @@ public class EShape extends AShape {
 	
 	@Override
 	public void onValueChange(Double newValue) {
+		if (TEXT_CONST.equals(getId())) return;
 		double start = System.currentTimeMillis();
 		
 		String script = "";
 		try {
 			script = getScripts().getScriptByName("onValueChange");
+			
 			if (script != null) {
 				Convert.engine.eval(script);
 				Invocable inv = (Invocable) Convert.engine;
 	            inv.invokeFunction("onValueChange", this );
-	            System.out.println((System.currentTimeMillis() - start) + " mc");
+	            System.out.println((System.currentTimeMillis() - start) + " mc ");
 			}
 		} catch (ScriptException | NoSuchMethodException e) {
 			System.out.println("Script not found - " + script);

@@ -138,5 +138,55 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	public List<Ttransparant> getTtransparantsNew(Timestamp settime) throws RemoteException {
 		return pdb.getTtransparantsNew(settime);
 	}
+
+	@Override
+	public List<Ttransparant> getTtransparantsClosed(Timestamp closetime) throws RemoteException {
+		return pdb.getTtransparantsNew(closetime);
+	}
+
+	@Override
+	public List<Ttransparant> getTtransparantsUpdated(Timestamp lastupdate) throws RemoteException {
+		return pdb.getTtransparantsUpdated(lastupdate);
+	}
+
+	@Override
+	public void insertTtransparant(int idtr, int signref, String objname, int tp, int schemeref) throws RemoteException {
+		pdb.insertTtransparant(idtr, signref, objname, tp, schemeref);
+	}
+
+	@Override
+	public void insertTtranspHistory(int trref, int userref, String txt, int trtype) throws RemoteException {
+		pdb.insertTtranspHistory(trref, userref, txt, trtype);
+	}
+
+	@Override
+	public void deleteTtranspLocate(int trref, int scref) throws RemoteException {
+		pdb.deleteTtranspLocate(trref, scref);
+	}
+
+	@Override
+	public void insertTtranspLocate(int trref, int scref, int x, int y, int h, int w) throws RemoteException {
+		pdb.insertTtranspLocate(trref, scref, x, y, h, w);
+	}
+
+	@Override
+	public int getMaxTranspID() throws RemoteException {
+		return pdb.getMaxTranspID();
+	}
+
+	@Override
+	public void updateTtransparantLastUpdate(int idtr) throws RemoteException {
+		pdb.updateTtransparantLastUpdate(idtr);
+	}
+
+	@Override
+	public void updateTtranspLocate(int trref, int scref, int x, int y, int h, int w) throws RemoteException {
+		pdb.updateTtranspLocate(trref, scref, x, y, h, w);
+	}
+
+	@Override
+	public void updateTtransparantCloseTime(int idtr) throws RemoteException {
+		pdb.updateTtransparantCloseTime(idtr);
+	}
 }
  

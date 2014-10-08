@@ -5,7 +5,6 @@ import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
-
 import pr.model.Alarm;
 import pr.model.ConfTree;
 import pr.model.DvalTI;
@@ -45,4 +44,15 @@ public interface IPowersys extends Remote {
 	public List<Ttransparant> getTtransparantsActive(int idScheme) throws RemoteException;
 	public List<Ttransparant> getTtransparantsNew(Timestamp settime) throws RemoteException;
 	public TtranspLocate getTransparantLocate(int trref) throws RemoteException;
+	public List<Ttransparant> getTtransparantsClosed(Timestamp closetime) throws RemoteException;
+	public List<Ttransparant> getTtransparantsUpdated(Timestamp lastupdate) throws RemoteException;
+	
+	public void insertTtransparant(int idtr, int signref, String objname, int tp, int schemeref) throws RemoteException;
+	public void insertTtranspHistory(int trref, int userref, String txt, int trtype) throws RemoteException;
+	public void deleteTtranspLocate(int trref, int scref) throws RemoteException;
+	public void insertTtranspLocate(int trref, int scref, int x, int y, int h, int w) throws RemoteException;
+	public int getMaxTranspID() throws RemoteException;
+	public void updateTtransparantLastUpdate(int idtr) throws RemoteException;
+	public void updateTtranspLocate(int trref, int scref, int x, int y, int h, int w) throws RemoteException;
+	public void updateTtransparantCloseTime(int idtr) throws RemoteException;
 } 

@@ -29,7 +29,7 @@
 			<ListView fx:id="lvTransparants" styleClass="table" prefHeight="200" />
 			<Label text="Причина встановлення" />
 			<HBox spacing="10" alignment="center">
-				<TextArea text="qqq\nqqqqqqqqq" prefWidth="${lvTransparants.width}" prefHeight="75"/>
+				<TextArea fx:id="txtArea" text="qqq\nqqqqqqqqq" prefWidth="${lvTransparants.width}" prefHeight="75"/>
 			</HBox>
 			<HBox spacing="10" alignment="center">
 				<Label text="Важливість" />

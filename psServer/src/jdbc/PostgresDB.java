@@ -405,4 +405,130 @@ public class PostgresDB implements IMapper {
 			session.close();
 		}
 	}
+
+	@Override
+	public List<Ttransparant> getTtransparantsClosed(Timestamp closetime) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getTtransparantsClosed(closetime);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getTtransparantsClosed");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public List<Ttransparant> getTtransparantsUpdated(Timestamp lastupdate) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getTtransparantsUpdated(lastupdate);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getTtransparantsClosed");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public void insertTtransparant(int idtr, int signref, String objname, int tp, int schemeref) {
+		try {
+			session = sqlSessionFactory.openSession(true);
+			session.getMapper(IMapper.class).insertTtransparant(idtr, signref, objname, tp, schemeref);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public void insertTtranspHistory(int trref, int userref, String txt, int trtype) {
+		try {
+			session = sqlSessionFactory.openSession(true);
+			session.getMapper(IMapper.class).insertTtranspHistory(trref, userref, txt, trtype);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public void deleteTtranspLocate(int trref, int scref) {
+		try {
+			session = sqlSessionFactory.openSession(true);
+			session.getMapper(IMapper.class).deleteTtranspLocate(trref, scref);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public void insertTtranspLocate(int trref, int scref, int x, int y, int h, int w) {
+		try {
+			session = sqlSessionFactory.openSession(true);
+			session.getMapper(IMapper.class).insertTtranspLocate(trref, scref, x, y, h, w);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public int getMaxTranspID() {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getMaxTranspID();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getMaxTranspID");
+			return 0;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public void updateTtranspLocate(int trref, int scref, int x, int y, int h, int w) {
+		try {
+			session = sqlSessionFactory.openSession(true);
+			session.getMapper(IMapper.class).updateTtranspLocate(trref, scref, x, y, h, w);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public void updateTtransparantLastUpdate(int idtr) {
+		try {
+			session = sqlSessionFactory.openSession(true);
+			session.getMapper(IMapper.class).updateTtransparantLastUpdate(idtr);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public void updateTtransparantCloseTime(int idtr) {
+		try {
+			session = sqlSessionFactory.openSession(true);
+			session.getMapper(IMapper.class).updateTtransparantCloseTime(idtr);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+	}
 }

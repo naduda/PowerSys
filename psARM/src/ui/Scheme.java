@@ -1,20 +1,29 @@
 package ui;
 
+import java.io.IOException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import pr.common.Utils;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
 import svg2fx.Convert;
 import svg2fx.fxObjects.EShape;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -22,9 +31,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
 
 public class Scheme extends ScrollPane {
-	
-	private static final double KOEF = 0.78;
-	
 	private Group root;
 	private final Group rootScheme = new Group();
 	private final List<Integer> signalsTI = new ArrayList<>();
@@ -137,7 +143,7 @@ public class Scheme extends ScrollPane {
 			tTransparants.forEach(t -> {
 				try {
 					TtranspLocate transpLocate = MainStage.psClient.getTransparantLocate(t.getIdtr());
-					addTransparant(t.getTp(), transpLocate.getX(), transpLocate.getY(), transpLocate.getH());
+					addTransparant(t.getTp(), transpLocate.getX(), transpLocate.getY(), transpLocate.getH(), t.getIdtr());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -145,31 +151,47 @@ public class Scheme extends ScrollPane {
 		}
 	}
 	
-	public void addTransparant(int idTransparant, double xT, double yT, double sizeT) {
-		Shape transparant = createCircle(idTransparant, xT, yT, sizeT);
-		root.getChildren().add(transparant);
+	public void addTransparant(int idTransparant, double xT, double yT, double sizeT, int ident) {
+		try {
+			Shape transparant = createCircle(idTransparant, xT, yT, sizeT, ident);
+			
+			root.getChildren().add(transparant);
+		} catch (Exception e) {
+			System.out.println(idTransparant + " not found");
+		}
 	}
 	
-	private Shape createCircle(int idTransarant, double xT, double yT, double sizeT) {
-		Circle n = new Circle(xT * KOEF, yT * KOEF, sizeT * KOEF / 2);
+	private Shape createCircle(int idTransarant, double xT, double yT, double sizeT, int ident) {
+		Circle n = new Circle(xT + sizeT / 2, yT + sizeT / 2, sizeT / 2);
 		n.setStroke(Color.TRANSPARENT);
 		n.setFill(new ImagePattern(MainStage.imageMap.get(idTransarant)));
+		n.setId("transparant_" + ident);
+		addContextMenu(n);
 		
-        n.setOnMouseDragged(event -> {
-        	Point2D p = Main.mainScheme.getRoot().sceneToLocal(event.getSceneX(), event.getSceneY());
-        	
-        	double x = p.getX();
-        	double y = p.getY();
-        	double maxX = MainStage.bpScheme.getWidth();
-        	double maxY = MainStage.bpScheme.getHeight();
-        	double r = n.getRadius();
-        	
-            n.relocate(x < 2 * r ? r : x + r > maxX ? maxX - r : x - r, 
-            		   y < 2 * r ? r : y + r > maxY ? maxY - r : y - r);
-        });
+		n.setOnMouseDragged(new TransparantEventHandler());
+        n.setOnMouseReleased(new TransparantEventHandler(ident));
 
         return n;
     }
+	
+	private ContextMenu contextMenu;
+	private void addContextMenu(Shape sh) {
+		try {
+			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/TransparantContextMenu.xml")));
+			contextMenu = loader.load();
+			
+			contextMenu.setId(sh.getId());
+			sh.setOnMouseClicked(new EventHandler<MouseEvent>() {
+		        @Override
+		        public void handle(MouseEvent t) {
+		            if(t.getButton().toString().equals("SECONDARY"))
+		            	contextMenu.show(sh, t.getScreenX(), t.getSceneY());
+		        }
+		    });
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public List<Integer> getSignalsTI() {
 		return signalsTI;
@@ -233,5 +255,49 @@ public class Scheme extends ScrollPane {
             	setHvalue(deltaY < 0 ? getHvalue() + 0.05 : getHvalue() - 0.05);
             }
 		}
+	}
+	
+	private final class TransparantEventHandler implements EventHandler<Event> {
+		private int ident;
+		private double maxX = root.getBoundsInLocal().getMaxX();
+		private double maxY = root.getBoundsInLocal().getMaxY();
+    	
+		public TransparantEventHandler() {
+			
+		}
+		
+		public TransparantEventHandler(int ident) {
+			this();
+			this.ident = ident;
+		}
+		
+		@Override
+		public void handle(Event e) {
+			Circle c = (Circle) e.getSource();
+			double r = c.getRadius();
+			if (e.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
+				Bounds bounds = c.boundsInParentProperty().getValue();
+	        	double x = bounds.getMinX() + r;
+	        	x = x < r ? r : x - r > maxX ? maxX - r : x - r;
+	        	double y = bounds.getMinY() + r;
+	        	y = y < r ? r : y - r > maxY ? maxY - r : y - r;
+	        	
+				try {
+					MainStage.psClient.updateTtranspLocate(ident, Main.mainScheme.getIdScheme(), 
+							(int)x, (int)y, (int)r * 2, (int)r * 2);
+					
+					MainStage.psClient.updateTtransparantLastUpdate(ident);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			} else if (e.getEventType().equals(MouseEvent.MOUSE_DRAGGED)) {
+				Point2D p = Main.mainScheme.getRoot().sceneToLocal(((MouseEvent)e).getSceneX(), ((MouseEvent)e).getSceneY());
+				double x = p.getX();
+	        	double y = p.getY();
+	            c.relocate(x < r ? r : x - r > maxX ? maxX - r : x - r, 
+	            		   y < r ? r : y - r > maxY ? maxY - r : y - r);
+			}
+		}
+		
 	}
 }

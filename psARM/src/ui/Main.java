@@ -22,7 +22,8 @@ public class Main extends Application {
 	private static final int TIMEOUT_TS_SEC = 600;
 	public static final String FILE_SETTINGS = Utils.getFullPath("./Settings.xml");
 	private static ProgramSettings ps;
-	public static Scheme mainScheme;	
+	public static Scheme mainScheme;
+	public static Stage mainStage;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -31,6 +32,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {	
 		stage = new MainStage("./ui/Main.xml");
+		mainStage = stage;
 		ps = ProgramSettings.getFromFile(FILE_SETTINGS);
 		
         final Task<Void> task = new Task<Void>() {

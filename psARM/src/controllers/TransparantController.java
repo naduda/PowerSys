@@ -1,13 +1,10 @@
 package controllers;
 
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-
-
-
-
 
 import pr.model.Transparant;
 import ui.Main;
@@ -23,19 +20,16 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseButton;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class TransparantController implements Initializable {
-	private static final double TRANSPARANT_SIZE = 40;
-	
 	@FXML ListView<Transparant> lvTransparants;
+	@FXML TextArea txtArea;
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -87,34 +81,22 @@ public class TransparantController implements Initializable {
 	}
 	
 	private void addTransparant() {
-		Transparant selectedTransp = lvTransparants.getSelectionModel().getSelectedItem();
-		Shape transparant = createCircle(selectedTransp.getIdtr());
-		Main.mainScheme.getRoot().getChildren().add(transparant);
-		
-		((Stage)lvTransparants.getScene().getWindow()).close();
-	}
-	
-	private Shape createCircle(int idTransarant) {
 		Bounds shBounds = Scheme.selectedShape.getBoundsInParent();
 		Point2D mp = new Point2D(shBounds.getMinX(), shBounds.getMinY());
 		
-		Circle n = new Circle(mp.getX(), mp.getY(), TRANSPARANT_SIZE / 2);
-		n.setStroke(Color.TRANSPARENT);
-		n.setFill(new ImagePattern(MainStage.imageMap.get(idTransarant)));
-		
-        n.setOnMouseDragged(event -> {
-        	Point2D p = Main.mainScheme.getRoot().sceneToLocal(event.getSceneX(), event.getSceneY());
-        	
-        	double x = p.getX();
-        	double y = p.getY();
-        	double maxX = MainStage.bpScheme.getWidth();
-        	double maxY = MainStage.bpScheme.getHeight();
-        	double r = n.getRadius();
-        	
-            n.relocate(x < 2 * r ? r : x + r > maxX ? maxX - r : x - r, 
-            		   y < 2 * r ? r : y + r > maxY ? maxY - r : y - r);
-        });
-
-        return n;
-    }
+		Transparant selectedTransp = lvTransparants.getSelectionModel().getSelectedItem();
+		try {
+			int idtr = MainStage.psClient.getMaxTranspID();
+			MainStage.psClient.insertTtransparant(idtr, 0, "", selectedTransp.getIdtr(), Main.mainScheme.getIdScheme());
+			MainStage.psClient.insertTtranspHistory(idtr, -1, txtArea.getText(), 0);
+			
+			Thread.sleep(1000);
+			
+			MainStage.psClient.deleteTtranspLocate(idtr, Main.mainScheme.getIdScheme());
+			MainStage.psClient.insertTtranspLocate(idtr, Main.mainScheme.getIdScheme(), (int)mp.getX(), (int)mp.getY(), 43, 43);
+		} catch (RemoteException | InterruptedException e) {
+			e.printStackTrace();
+		}
+		((Stage)lvTransparants.getScene().getWindow()).close();
+	}
 }

@@ -163,4 +163,54 @@ public class ClientPowerSys implements IPowersys {
 	public List<Ttransparant> getTtransparantsNew(Timestamp settime) throws RemoteException {
 		return myServer.getTtransparantsNew(settime);
 	}
+
+	@Override
+	public List<Ttransparant> getTtransparantsClosed(Timestamp closetime) throws RemoteException {
+		return myServer.getTtransparantsClosed(closetime);
+	}
+
+	@Override
+	public List<Ttransparant> getTtransparantsUpdated(Timestamp lastupdate) throws RemoteException {
+		return myServer.getTtransparantsUpdated(lastupdate);
+	}
+
+	@Override
+	public void insertTtransparant(int idtr, int signref, String objname, int tp, int schemeref) throws RemoteException {
+		myServer.insertTtransparant(idtr, signref, objname, tp, schemeref);
+	}
+
+	@Override
+	public void insertTtranspHistory(int trref, int userref, String txt, int trtype) throws RemoteException {
+		myServer.insertTtranspHistory(trref, userref, txt, trtype);
+	}
+
+	@Override
+	public void deleteTtranspLocate(int trref, int scref) throws RemoteException {
+		myServer.deleteTtranspLocate(trref, scref);
+	}
+
+	@Override
+	public void insertTtranspLocate(int trref, int scref, int x, int y, int h, int w) throws RemoteException {
+		myServer.insertTtranspLocate(trref, scref, x, y, h, w);
+	}
+
+	@Override
+	public int getMaxTranspID() throws RemoteException {
+		return myServer.getMaxTranspID();
+	}
+
+	@Override
+	public void updateTtransparantLastUpdate(int idtr) throws RemoteException {
+		myServer.updateTtransparantLastUpdate(idtr);
+	}
+
+	@Override
+	public void updateTtranspLocate(int trref, int scref, int x, int y, int h, int w) throws RemoteException {
+		myServer.updateTtranspLocate(trref, scref, x, y, h, w);
+	}
+
+	@Override
+	public void updateTtransparantCloseTime(int idtr) throws RemoteException {
+		myServer.updateTtransparantCloseTime(idtr);
+	}
 } 

@@ -30,7 +30,7 @@ import javafx.util.Duration;
 public abstract class AShape extends Group {
 	
 	private static final double RECT_LINE_WIDTH = 3;
-	private static final double MOUSE_DURATION_MILLS = 250;	
+	private static final double MOUSE_DURATION_MILLS = 250;
 	private final Timeline timeline = new Timeline();
 	
 	private ContextMenu contextMenu;
@@ -38,6 +38,7 @@ public abstract class AShape extends Group {
 	private final Rectangle rect = new Rectangle();
 	private DoubleProperty valueProp = new SimpleDoubleProperty();
 	private Date lastDataDate;
+	private double deadZone;
 	
 	public AShape() {
 		//Пунктирна лінія
@@ -85,7 +86,14 @@ public abstract class AShape extends Group {
 		});
 	    
 	    valueProp.set(-88888.888888);
-	    valueProp.addListener((observable, oldValue, newValue) -> {onValueChange((Double) newValue);});
+	    valueProp.addListener((observable, oldValue, newValue) -> {
+	    	double deadZoneCur = (Double)oldValue == 0 ? 0 : 
+	    		Math.abs(((Double)oldValue - (Double)newValue) * 100 / (Double)oldValue);
+	    	
+	    	if (deadZoneCur >= deadZone) {
+	    		onValueChange((Double) newValue);
+	    	}
+	    });
 	}
 			
 	public AShape(Node g) {
@@ -191,5 +199,9 @@ public abstract class AShape extends Group {
 
 	public void setLastDataDate(Date lastDataDate) {
 		this.lastDataDate = lastDataDate;
+	}
+
+	public void setDeadZone(double deadZone) {
+		this.deadZone = deadZone;
 	}
 }

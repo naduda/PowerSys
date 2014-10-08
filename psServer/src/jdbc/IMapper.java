@@ -131,4 +131,43 @@ public interface IMapper {
 	
 	@Select("select * from t_transp_locate where trref = #{trref}")
 	TtranspLocate getTransparantLocate(@Param("trref")int trref);
+	
+	@Select("select * from t_transparant where closetime > #{closetime}")
+	List<Ttransparant> getTtransparantsClosed(@Param("closetime")Timestamp closetime);
+	
+	@Select("select * from t_transparant where lastupdate > #{lastupdate} and settime != lastupdate and closetime is null")
+	List<Ttransparant> getTtransparantsUpdated(@Param("lastupdate")Timestamp lastupdate);
+	
+//	@Select("insert into t_transparant(idtr, signRef, objName, tp, SchemeRef) "
+//			+ "values (#{idtr}, #{signref}, #{objname}, #{tp}, #{schemeref})")
+	@Select("insert into t_transparant(idtr, signRef, objName, tp, SchemeRef, settime, lastupdate) "
+			+ "values (#{idtr}, #{signref}, #{objname}, #{tp}, #{schemeref}, now(), now())")
+	void insertTtransparant(@Param("idtr")int idtr, @Param("signref")int signref, @Param("objname")String objname, 
+			@Param("tp")int tp, @Param("schemeref")int schemeref);
+	
+	@Select("insert into t_transp_history(trRef, infoType, tm, userRef, txt, trtype) "
+			+ "values (#{trref}, 0, now(), #{userref}, #{txt}, #{trtype})")
+	void insertTtranspHistory(@Param("trref")int trref, @Param("userref")int userref, 
+			@Param("txt")String txt, @Param("trtype")int trtype);
+	
+	@Select("delete from t_transp_locate where trRef=#{trref} and scRef=#{scref}")
+	void deleteTtranspLocate(@Param("trref")int trref, @Param("scref")int scref);
+	
+	@Select("insert into t_transp_locate values (#{trref}, #{scref}, #{x}, #{y}, #{h}, #{w})")
+	void insertTtranspLocate(@Param("trref")int trref, @Param("scref")int scref, 
+			@Param("x")int x, @Param("y")int y, @Param("h")int h, @Param("w")int w);
+	
+	@Select("update t_transp_locate set scref = #{scref}, "
+			+ "x = #{x}, y = #{y}, h = #{h}, w = #{w} where trref = #{trref}")
+	void updateTtranspLocate(@Param("trref")int trref, @Param("scref")int scref, 
+			@Param("x")int x, @Param("y")int y, @Param("h")int h, @Param("w")int w);
+	
+	@Select("update t_transparant set lastupdate = now() where idtr = #{idtr}")
+	void updateTtransparantLastUpdate(@Param("idtr")int idtr);
+	
+	@Select("select max(idtr) + 1 from t_transparant")
+	int getMaxTranspID();
+	
+	@Select("update t_transparant set closetime = now() where idtr = #{idtr}")
+	void updateTtransparantCloseTime(@Param("idtr")int idtr);
 }
