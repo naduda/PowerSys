@@ -27,6 +27,7 @@ import javafx.stage.Window;
 
 public class Controller {
 	private final DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	private static final int WORK_STATUS = 1;
 	
 	@FXML private ToolBarController toolBarController;
 	@FXML private MenuBarController menuBarController;
@@ -121,7 +122,10 @@ public class Controller {
 		Convert.listSignals.stream().filter(f -> f.getKey().equals(idSigal)).forEach(s -> {
 			EShape tt = Main.mainScheme.getDeviceById(s.getValue());
 			if (tt == null) return;
-			tt.updateSignal(sec);
+			int status = MainStage.psClient.getTsignalsMap().get(idSigal).getStatus();
+			if (status == WORK_STATUS) {
+				tt.updateSignal(sec);
+			}
 		});
 	}
 

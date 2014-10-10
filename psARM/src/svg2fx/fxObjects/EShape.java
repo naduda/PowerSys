@@ -5,13 +5,17 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import javax.script.Invocable;
 import javax.script.ScriptException;
 
 import pr.common.Utils;
+import pr.model.SpTuCommand;
+import pr.model.Tsignal;
 import svg2fx.Convert;
 import svg2fx.SignalState;
 import ui.Main;
@@ -195,5 +199,26 @@ public class EShape extends AShape {
 		} catch (ScriptException | NoSuchMethodException e) {
 			System.out.println("Script not found - " + script);
 		}
+	}
+	
+	private int getStateVal(int idSignal, String denom) {
+		try {
+			Tsignal tSignal = MainStage.psClient.getTsignalsMap().get(idSignal);
+			List<SpTuCommand> arr = MainStage.psClient.getSpTuCommand().stream()
+				.filter(f -> f.getObjref() == tSignal.getStateref() && f.getDenom().equals(denom.toUpperCase()))
+				.collect(Collectors.toList());
+			return arr.get(0).getVal();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	public int getStateIdTS(String denom) {
+		return getStateVal(idTS, denom);
+	}
+	
+	public int getStateId(String denom) {
+		return getStateVal(id, denom);
 	}
 }

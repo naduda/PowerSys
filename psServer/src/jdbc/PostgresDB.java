@@ -24,10 +24,12 @@ import pr.model.DvalTI;
 import pr.model.DvalTS;
 import pr.model.LinkedValue;
 import pr.model.SPunit;
+import pr.model.SpTuCommand;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import pr.model.Transparant;
 import pr.model.Tsignal;
+import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
 
@@ -527,6 +529,60 @@ public class PostgresDB implements IMapper {
 			session.getMapper(IMapper.class).updateTtransparantCloseTime(idtr);
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public TtranspHistory getTtranspHistory(int trref) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getTtranspHistory(trref);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getTtranspHistory");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public void updateTtranspHistory(int trref, String txt) {
+		try {
+			session = sqlSessionFactory.openSession(true);
+			session.getMapper(IMapper.class).updateTtranspHistory(trref, txt);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public Ttransparant getTtransparantById(int idtr) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getTtransparantById(idtr);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getTtransparantById");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public List<SpTuCommand> getSpTuCommand() {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getSpTuCommand();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getSpTuCommand");
+			return null;
 		} finally {
 			session.close();
 		}

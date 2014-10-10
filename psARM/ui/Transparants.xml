@@ -29,7 +29,7 @@
 			<ListView fx:id="lvTransparants" styleClass="table" prefHeight="200" />
 			<Label text="Причина встановлення" />
 			<HBox spacing="10" alignment="center">
-				<TextArea fx:id="txtArea" text="qqq\nqqqqqqqqq" prefWidth="${lvTransparants.width}" prefHeight="75"/>
+				<TextArea fx:id="txtArea" text="" prefWidth="${lvTransparants.width}" prefHeight="75"/>
 			</HBox>
 			<HBox spacing="10" alignment="center">
 				<Label text="Важливість" />
@@ -54,7 +54,7 @@
 				<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
 			</padding>
 
-			<Button text="Встановити" onAction="#btnOK"/>
+			<Button fx:id="btnOK" text="Встановити" onAction="#btnOK"/>
 			<Button text="Відхилити" onAction="#btnCancel"/>
 		</HBox>
 	</bottom>

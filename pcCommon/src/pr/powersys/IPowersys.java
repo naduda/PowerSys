@@ -5,16 +5,19 @@ import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+
 import pr.model.Alarm;
 import pr.model.ConfTree;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
 import pr.model.LinkedValue;
 import pr.model.SPunit;
+import pr.model.SpTuCommand;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import pr.model.Transparant;
 import pr.model.Tsignal;
+import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
       
@@ -33,6 +36,7 @@ public interface IPowersys extends Remote {
 	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) throws RemoteException;
 	public void confirmAlarmAll(String lognote, int userref) throws RemoteException;
 	public Map<Integer, SPunit> getSPunitMap() throws RemoteException;
+	public List<SpTuCommand> getSpTuCommand() throws RemoteException;
 	
 	public List<LinkedValue> getData(int idSignal) throws RemoteException;
 	public List<LinkedValue> getDataArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd) throws RemoteException;
@@ -55,4 +59,7 @@ public interface IPowersys extends Remote {
 	public void updateTtransparantLastUpdate(int idtr) throws RemoteException;
 	public void updateTtranspLocate(int trref, int scref, int x, int y, int h, int w) throws RemoteException;
 	public void updateTtransparantCloseTime(int idtr) throws RemoteException;
+	public TtranspHistory getTtranspHistory(int trref) throws RemoteException;
+	public void updateTtranspHistory(int trref, String txt) throws RemoteException;
+	public Ttransparant getTtransparantById(int idtr) throws RemoteException;
 } 

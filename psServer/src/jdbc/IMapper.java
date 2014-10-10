@@ -10,10 +10,12 @@ import pr.model.DvalTI;
 import pr.model.DvalTS;
 import pr.model.LinkedValue;
 import pr.model.SPunit;
+import pr.model.SpTuCommand;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import pr.model.Transparant;
 import pr.model.Tsignal;
+import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
 
@@ -30,6 +32,9 @@ public interface IMapper {
 	@Select("select * from sp_unit")
 	@MapKey("idunit")
 	Map<Integer, SPunit> getSPunitMap();
+	
+	@Select("select * from sp_tu_command")
+	List<SpTuCommand> getSpTuCommand();
 	
 	@Select("select * from t_signal")
 	@MapKey("idsignal")
@@ -170,4 +175,13 @@ public interface IMapper {
 	
 	@Select("update t_transparant set closetime = now() where idtr = #{idtr}")
 	void updateTtransparantCloseTime(@Param("idtr")int idtr);
+	
+	@Select("select * from t_transp_history where trref = #{trref}")
+	TtranspHistory getTtranspHistory(@Param("trref")int trref);
+	
+	@Select("update t_transp_history set txt=#{txt} where trref = #{trref}")
+	void updateTtranspHistory(@Param("trref")int trref, @Param("txt")String txt);
+	
+	@Select("select * from t_transparant where idtr = #{idtr}")
+	Ttransparant getTtransparantById(@Param("idtr")int idtr);
 }

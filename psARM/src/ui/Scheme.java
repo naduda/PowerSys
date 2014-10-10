@@ -6,7 +6,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import pr.common.Utils;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
@@ -143,7 +142,8 @@ public class Scheme extends ScrollPane {
 			tTransparants.forEach(t -> {
 				try {
 					TtranspLocate transpLocate = MainStage.psClient.getTransparantLocate(t.getIdtr());
-					addTransparant(t.getTp(), transpLocate.getX(), transpLocate.getY(), transpLocate.getH(), t.getIdtr());
+					addTransparant(t.getTp(), transpLocate.getX(), transpLocate.getY(), transpLocate.getH(), 
+							t.getIdtr());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -154,7 +154,6 @@ public class Scheme extends ScrollPane {
 	public void addTransparant(int idTransparant, double xT, double yT, double sizeT, int ident) {
 		try {
 			Shape transparant = createCircle(idTransparant, xT, yT, sizeT, ident);
-			
 			root.getChildren().add(transparant);
 		} catch (Exception e) {
 			System.out.println(idTransparant + " not found");
@@ -174,13 +173,13 @@ public class Scheme extends ScrollPane {
         return n;
     }
 	
-	private ContextMenu contextMenu;
 	private void addContextMenu(Shape sh) {
 		try {
 			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/TransparantContextMenu.xml")));
-			contextMenu = loader.load();
+			ContextMenu contextMenu = loader.load();
 			
 			contextMenu.setId(sh.getId());
+			
 			sh.setOnMouseClicked(new EventHandler<MouseEvent>() {
 		        @Override
 		        public void handle(MouseEvent t) {

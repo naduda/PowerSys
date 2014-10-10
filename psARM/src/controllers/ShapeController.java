@@ -5,6 +5,8 @@ import java.net.URL;
 import java.rmi.RemoteException;
 
 import pr.common.Utils;
+import pr.model.TtranspHistory;
+import pr.model.Ttransparant;
 import ui.Main;
 import ui.MainStage;
 import javafx.event.ActionEvent;
@@ -26,31 +28,34 @@ public class ShapeController {
 	
 	@FXML
 	protected void addTransparant(ActionEvent event) {
-		Stage stage = new Stage();
-		
-		try {
-			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/Transparants.xml")));
-			Parent root = loader.load();
-			
-			Scene scene = new Scene(root);
-			stage.setScene(scene);
-			stage.setTitle("Transparant");
-			stage.initModality(Modality.WINDOW_MODAL);
-			stage.initOwner(Main.mainStage);
-		} catch (IOException e) {
-			e.printStackTrace();
+		getTransparantStage("Add transparant").show();
+	}
+	
+	private final Stage transparantStage = new Stage();
+	private TransparantController controller;
+	private Stage getTransparantStage(String title) {
+		if (transparantStage.getScene() == null) {
+			try {
+				FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/Transparants.xml")));
+				Parent root = loader.load();
+				controller = loader.getController();
+				
+				Scene scene = new Scene(root);
+				transparantStage.setScene(scene);
+				transparantStage.initModality(Modality.WINDOW_MODAL);
+				transparantStage.initOwner(Main.mainStage);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		
-	    stage.show();
+		transparantStage.setTitle(title);
+		return transparantStage;
 	}
 	
 	@FXML
 	protected void deleteTransparant(ActionEvent event) {
-		String id = ((MenuItem)event.getSource()).getParentPopup().getId();
-		Shape transp = (Shape) Main.mainScheme.getRoot().lookup("#" + id);
-		
-		id = id.substring(id.indexOf("_") + 1);
-		int trref = Integer.parseInt(id);
+		Shape transp = getSelectedTransparant(event);
+		int trref = getTranspID(transp);
 
 		try {
 			MainStage.psClient.updateTtransparantCloseTime(trref);
@@ -62,8 +67,35 @@ public class ShapeController {
 		}
 	}
 	
+	private Shape getSelectedTransparant(ActionEvent event) {
+		String id = ((MenuItem)event.getSource()).getParentPopup().getId();
+		return (Shape) Main.mainScheme.getRoot().lookup("#" + id);
+	}
+	
+	private int getTranspID(Shape t) {
+		String id = t.getId();
+		id = id.substring(id.indexOf("_") + 1);
+		return Integer.parseInt(id);
+	}
+	
 	@FXML
 	protected void editTransparant(ActionEvent event) {
-		System.out.println("editTransparant clicked");
+		Shape transp = getSelectedTransparant(event);		
+		int trref = getTranspID(transp);
+		try {
+			TtranspHistory transpHistory = MainStage.psClient.getTtranspHistory(trref);
+			Stage stage = getTransparantStage("Edit transparant");
+			controller.setTxtArea(transpHistory.getTxt());
+			controller.setTrref(trref);
+			controller.setTransparant(transp);
+			controller.setEdit(true);
+			controller.setOKtext("Редагувати");
+			Ttransparant tTransparant = MainStage.psClient.getTtransparantById(trref);
+			controller.selectTransparantById(tTransparant.getTp() - 1);
+			controller.disableListView();
+			stage.show();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 }

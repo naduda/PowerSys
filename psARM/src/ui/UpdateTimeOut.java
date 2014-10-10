@@ -6,7 +6,7 @@ import controllers.Controller;
 import javafx.application.Platform;
 
 public class UpdateTimeOut implements Runnable {
-
+	
 	private boolean isRun = true;
 	private int sec;
 	private int type_;
@@ -23,13 +23,14 @@ public class UpdateTimeOut implements Runnable {
 			while (isRun) {
 				if (Main.mainScheme != null) {
 					List<Integer> signals = type_ == 1 ? Main.mainScheme.getSignalsTI() : Main.mainScheme.getSignalsTS();
-					for (Integer signal : signals) {
+					
+					signals.forEach(s -> {
 						Platform.runLater(new Runnable() {
     	                    @Override public void run() {
-    	                    	Controller.updateSignal(signal, type_, sec);
+    	                    	Controller.updateSignal(s, type_, sec);
     	                    }
-    	                });
-					}
+    	                });		
+					});
 				}
 				
 				Thread.sleep(sec * 1000 / 2);

@@ -8,11 +8,13 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import pr.common.Utils;
 import pr.common.WMF2PNG;
 import pr.model.ConfTree;
+import pr.model.SpTuCommand;
 import pr.model.Transparant;
 import pr.model.Tsignal;
 import controllers.Controller;
@@ -37,7 +39,8 @@ public class MainStage extends Stage implements Serializable {
 	public static BorderPane bpScheme;
 	public static Map<Integer, Scheme> schemes = new HashMap<>();
 	public static Controller controller;
-	public static final Map<Integer, Transparant> transpMap = MainStage.psClient.getTransparants();
+	public static final Map<Integer, Transparant> transpMap = psClient.getTransparants();
+	public static final List<SpTuCommand> spTuCommands = psClient.getSpTuCommand();
 	public static final Map<Integer, Image> imageMap = getImageMap();
 	
 	public MainStage(String pathXML) {
