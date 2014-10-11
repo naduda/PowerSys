@@ -60,7 +60,7 @@
 			</ImageView>
 		</graphic>
 	</Button>
-	<Button text="" styleClass="toolBarButton">
+	<Button onAction="#info" text="" styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/info.png"/>

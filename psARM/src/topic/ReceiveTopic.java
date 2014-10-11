@@ -105,7 +105,6 @@ public class ReceiveTopic implements MessageListener, Runnable {
     	                });		    					    			
 		    		}
 		    	} else if (obj.getClass().getName().toLowerCase().endsWith("dvalts")) {
-		    		System.out.println(((DvalTS) obj).getVal());
 		    		if (Main.mainScheme != null) {
 		    			Platform.runLater(new Runnable() {
     	                    @Override public void run() {

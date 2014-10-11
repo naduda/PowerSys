@@ -31,6 +31,11 @@ public class ToolBarController {
 	protected void exitButtonAction(ActionEvent event) {
 		Controller.exitProgram();
 	}
+	
+	@FXML 
+	protected void info(ActionEvent event) {
+		
+	}
 
 	public void updateLabel(String text) {
 		lLastDate.setText(text);

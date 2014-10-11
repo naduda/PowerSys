@@ -14,6 +14,9 @@
     -fx-border: none;
      /* -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );*/
 }
+.toolBarButton:hover{
+    -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), transparent;
+}
 .titled-pane > .title{
    -fx-padding: 0 0 0 -9;
 }

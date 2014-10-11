@@ -5,7 +5,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
@@ -14,7 +13,6 @@ import javax.script.Invocable;
 import javax.script.ScriptException;
 
 import pr.common.Utils;
-import pr.model.SpTuCommand;
 import pr.model.Tsignal;
 import svg2fx.Convert;
 import svg2fx.SignalState;
@@ -204,10 +202,9 @@ public class EShape extends AShape {
 	private int getStateVal(int idSignal, String denom) {
 		try {
 			Tsignal tSignal = MainStage.psClient.getTsignalsMap().get(idSignal);
-			List<SpTuCommand> arr = MainStage.psClient.getSpTuCommand().stream()
+			return MainStage.psClient.getSpTuCommand().stream()
 				.filter(f -> f.getObjref() == tSignal.getStateref() && f.getDenom().equals(denom.toUpperCase()))
-				.collect(Collectors.toList());
-			return arr.get(0).getVal();
+				.collect(Collectors.toList()).get(0).getVal();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -1,8 +1,8 @@
 function onDoubleClick(sh) 
 {
 	//sh.setTS(sh.getIdSignal(), [id] == 0 ? 1 : 0);
-	print(sh.getStateId('on'));
-	print(sh.getStateId('off'));
+	//print(sh.getStateId('on'));
+	//print(sh.getStateId('off'));
 }
 
 function onValueChange(sh) 
