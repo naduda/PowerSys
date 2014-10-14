@@ -6,8 +6,8 @@
 
 <ContextMenu fx:id="transparantContextMenu" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ShapeController">
 	<items>
-		<MenuItem text="Редагувати" onAction="#editTransparant"/>
+		<MenuItem fx:id="miEdit" text="Редагувати" onAction="#editTransparant"/>
 		<SeparatorMenuItem/>
-		<MenuItem text="Зняти транспарант" onAction="#deleteTransparant"/>
+		<MenuItem fx:id="miDelete" text="Зняти транспарант" onAction="#deleteTransparant"/>
 	</items>
 </ContextMenu>

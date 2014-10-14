@@ -19,6 +19,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
@@ -34,13 +35,18 @@ public class TransparantController implements Initializable {
 	@FXML ListView<Transparant> lvTransparants;
 	@FXML TextArea txtArea;
 	@FXML Button btnOK;
+	@FXML Button btnCancel;
+	
+	@FXML Label lListTransp;
+	@FXML Label lReason;
+	@FXML Label lImportance;
 	
 	private boolean edit = false;
 	private int trref;
 	private Shape transparant;
 	
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	public void initialize(URL url, ResourceBundle bundle) {
 		List<Transparant> transpList = new ArrayList<Transparant>(MainStage.transpMap.values());
 		ObservableList<Transparant> items = FXCollections.observableArrayList(transpList);
 		
@@ -59,6 +65,14 @@ public class TransparantController implements Initializable {
 				addTransparant();
 			}
 		});
+	}
+	
+	public void setElementText(ResourceBundle rb) {
+		lListTransp.setText(rb.getString("keyListTransp"));
+		lReason.setText(rb.getString("keyReason"));
+		lImportance.setText(rb.getString("keyImportance"));
+		btnOK.setText(rb.getString("keySet"));
+		btnCancel.setText(rb.getString("keyCancel"));
 	}
 	
 	private class CellStyle extends ListCell<Transparant> {

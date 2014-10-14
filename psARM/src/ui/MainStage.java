@@ -17,6 +17,7 @@ import pr.model.ConfTree;
 import pr.model.SpTuCommand;
 import pr.model.Transparant;
 import pr.model.Tsignal;
+import pr.model.Tuser;
 import controllers.Controller;
 import topic.ClientPowerSys;
 import javafx.fxml.FXMLLoader;
@@ -32,9 +33,9 @@ import javafx.stage.Stage;
 public class MainStage extends Stage implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private static final String DEFAULT_SCHEME = "ПС 35 кВ 'Казачья'";
 	public static final ClientPowerSys psClient = new ClientPowerSys();
 	public static final Map<Integer, Tsignal> signals = psClient.getTsignalsMap();
+	public static final Map<Integer, Tuser> users = psClient.getTuserMap();
 	public static ListView<String> lvTree;
 	public static BorderPane bpScheme;
 	public static Map<Integer, Scheme> schemes = new HashMap<>();
@@ -71,7 +72,7 @@ public class MainStage extends Stage implements Serializable {
 				String schemeName = Main.getProgramSettings().getSchemeSettings().getSchemeName();
 				setScheme(schemeName);
 			} catch (Exception e) {
-				setScheme(DEFAULT_SCHEME);
+				setScheme(null);
 				e.printStackTrace();
 			}
 			
@@ -80,6 +81,7 @@ public class MainStage extends Stage implements Serializable {
 			setScene(scene);
 		} catch (IOException e) {
 			System.err.println("MainStage(String pathXML)");
+			e.printStackTrace();
 		}
 	}
 	

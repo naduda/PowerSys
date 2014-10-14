@@ -32,6 +32,7 @@ import pr.model.Tsignal;
 import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
+import pr.model.Tuser;
 
 public class PostgresDB implements IMapper {
 
@@ -401,7 +402,7 @@ public class PostgresDB implements IMapper {
 			return session.getMapper(IMapper.class).getTransparantLocate(trref);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("getTransparantLocate");
+			System.out.println("getTransparantLocate + trref=" + trref);
 			return null;
 		} finally {
 			session.close();
@@ -582,6 +583,19 @@ public class PostgresDB implements IMapper {
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("getSpTuCommand");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public Map<Integer, Tuser> getTuserMap() {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getTuserMap();
+		} catch (Exception e) {
+			System.err.println("getTsignalsMap");
 			return null;
 		} finally {
 			session.close();

@@ -2,12 +2,16 @@ package controllers;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import pr.common.Utils;
 import ui.Main;
 import ui.MainStage;
 import ui.Scheme;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -19,12 +23,29 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 
-public class TreeController {
+public class TreeController implements Initializable {
 
 	@FXML private Accordion accordTree;
 	@FXML private TreeView<Scheme> tvSchemes;
 	@FXML private TitledPane tpSchemes;
+	@FXML private TitledPane tpTrends;
+	@FXML private TitledPane tpReports;
 	@FXML private TreeItem<Scheme> trSchemes;
+	
+	@Override
+	public void initialize(URL url, ResourceBundle boundle) {
+		try {
+			setElementText(Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName())));
+		} catch (Exception e) {
+			setElementText(Controller.getResourceBundle(new Locale("en")));
+		}
+	}
+	
+	public void setElementText(ResourceBundle rb) {
+		tpSchemes.setText(rb.getString("keySchemes"));
+		tpTrends.setText(rb.getString("keyTrend"));
+		tpReports.setText(rb.getString("keyReports"));
+	}
 	
 	public void addScheme(TreeItem<Scheme> ti) {
 		trSchemes.getChildren().add(ti);

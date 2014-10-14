@@ -3,6 +3,8 @@ package controllers;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import pr.common.Utils;
 import pr.model.TtranspHistory;
@@ -21,6 +23,10 @@ import javafx.stage.Stage;
 
 public class ShapeController {
 
+	@FXML MenuItem miAddTransparant;
+	@FXML MenuItem miEdit;
+	@FXML MenuItem miDelete;
+	
 	@FXML
 	protected void add(ActionEvent event) {
 		System.out.println("test ShapeController add");
@@ -48,7 +54,9 @@ public class ShapeController {
 				e.printStackTrace();
 			}
 		}
-		transparantStage.setTitle(title);
+		ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
+		transparantStage.setTitle(rb.getString("keyFormTitle"));
+		controller.setElementText(rb);
 		return transparantStage;
 	}
 	
@@ -89,7 +97,8 @@ public class ShapeController {
 			controller.setTrref(trref);
 			controller.setTransparant(transp);
 			controller.setEdit(true);
-			controller.setOKtext("Редагувати");
+			ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
+			controller.setOKtext(rb.getString("keyEdit"));
 			Ttransparant tTransparant = MainStage.psClient.getTtransparantById(trref);
 			controller.selectTransparantById(tTransparant.getTp() - 1);
 			controller.disableListView();
@@ -97,5 +106,11 @@ public class ShapeController {
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void setElementText(ResourceBundle rb) {
+		if (miAddTransparant != null) miAddTransparant.setText(rb.getString("keyAddTransparant"));
+		if (miEdit != null) miEdit.setText(rb.getString("keyEdit"));
+		if (miDelete != null) miDelete.setText(rb.getString("keyDelete"));
 	}
 }

@@ -2,6 +2,8 @@ package controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import pr.common.Utils;
 import ui.Main;
@@ -10,6 +12,7 @@ import ui.Scheme;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -18,9 +21,19 @@ import javafx.scene.control.Label;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class ToolBarController {
+public class ToolBarController implements Initializable {
 
+	@FXML private Label lDataOn;
 	@FXML private Label lLastDate;
+	
+	@Override
+	public void initialize(URL url, ResourceBundle boundle) {
+		try {
+			setElementText(Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName())));
+		} catch (Exception e) {
+			setElementText(Controller.getResourceBundle(new Locale("en")));
+		}
+	}
 	
 	@FXML 
 	protected void testAction(ActionEvent event) {
@@ -78,7 +91,8 @@ public class ToolBarController {
 			
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
-			stage.setTitle("Data presentation");
+			ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
+			stage.setTitle(rb.getString("keyDataTitle"));
 			stage.initModality(Modality.NONE);
 			stage.initOwner(((Control)event.getSource()).getScene().getWindow());
 		} catch (IOException e) {
@@ -86,5 +100,9 @@ public class ToolBarController {
 		}
 		
 	    stage.show();
+	}
+	
+	public void setElementText(ResourceBundle rb) {
+		lDataOn.setText(rb.getString("keyDataOn"));
 	}
 }

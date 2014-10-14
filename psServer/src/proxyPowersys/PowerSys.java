@@ -26,6 +26,7 @@ import pr.model.Tsignal;
 import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
+import pr.model.Tuser;
 
 public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	private static final long serialVersionUID = 1L;
@@ -209,6 +210,11 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	@Override
 	public List<SpTuCommand> getSpTuCommand() throws RemoteException {
 		return pdb.getSpTuCommand();
+	}
+
+	@Override
+	public Map<Integer, Tuser> getTuserMap() throws RemoteException {
+		return pdb.getTuserMap();
 	}
 }
  

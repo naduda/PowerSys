@@ -5,7 +5,12 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
+
+import controllers.Controller;
+import controllers.ShapeController;
 import pr.common.Utils;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
@@ -177,14 +182,17 @@ public class Scheme extends ScrollPane {
 		try {
 			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/TransparantContextMenu.xml")));
 			ContextMenu contextMenu = loader.load();
-			
+			ShapeController shapeController = loader.getController();
 			contextMenu.setId(sh.getId());
 			
 			sh.setOnMouseClicked(new EventHandler<MouseEvent>() {
 		        @Override
 		        public void handle(MouseEvent t) {
-		            if(t.getButton().toString().equals("SECONDARY"))
+		            if(t.getButton().toString().equals("SECONDARY")) {
+		            	ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
+		            	shapeController.setElementText(rb);
 		            	contextMenu.show(sh, t.getScreenX(), t.getSceneY());
+		            }
 		        }
 		    });
 		} catch (IOException e) {

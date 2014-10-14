@@ -24,7 +24,7 @@
 					</TreeView>
 				</content>
 			</TitledPane>
-			<TitledPane text="Тренди" prefHeight="${spTree.height/2}">
+			<TitledPane fx:id="tpTrends" text="Тренди" prefHeight="${spTree.height/2}">
 				<graphic>
 					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 						<Image url="@../Icon/trend2.png"/>
@@ -42,7 +42,7 @@
 					</TreeView>
 				</content>
 			</TitledPane>
-			<TitledPane text="Звіти" prefHeight="${spTree.height/2}">
+			<TitledPane fx:id="tpReports" text="Звіти" prefHeight="${spTree.height/2}">
 				<graphic>
 					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 						<Image url="@../Icon/report.png"/>

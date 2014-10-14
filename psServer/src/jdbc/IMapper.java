@@ -18,6 +18,7 @@ import pr.model.Tsignal;
 import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
+import pr.model.Tuser;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -39,6 +40,10 @@ public interface IMapper {
 	@Select("select * from t_signal")
 	@MapKey("idsignal")
 	Map<Integer, Tsignal> getTsignalsMap();
+	
+	@Select("select * from t_user")
+	@MapKey("iduser")
+	Map<Integer, Tuser> getTuserMap();
 	
 	@Select("select * from d_valti where servdt > #{servdt} order by servdt desc")
 	List<DvalTI> getLastTI(Timestamp servdt);

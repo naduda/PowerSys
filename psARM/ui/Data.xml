@@ -29,13 +29,12 @@
 				</items>
 			</ChoiceBox>
 			<Separator/>
-			<Label text="Період: з "/>
+			<Label fx:id="lPeriodFrom" text="Період: з "/>
 			<DatePicker fx:id="dpBegin" prefWidth="100"/>
 			<ComboBox fx:id="cbHourBegin"/>
-			<Label text="г. по "/>
+			<Label fx:id="lTo" text="г. по "/>
 			<DatePicker fx:id="dpEnd" prefWidth="100"/>
 			<ComboBox fx:id="cbHourEnd"/>
-			<Label text="г."/>
 		</ToolBar>
 	</top>
 

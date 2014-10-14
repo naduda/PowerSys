@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 
 <ToolBar xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ToolBarController">
-	<Label text="Дані на: "/>
+	<Label fx:id="lDataOn" text="Дані на: "/>
 	<Label fx:id="lLastDate" text=" " prefWidth="150"/>
 	<Separator/>
 	<Button text="" onAction="#testAction" styleClass="toolBarButton">

@@ -66,7 +66,8 @@ public class AlarmTableItem {
 		pAlarmMes = new SimpleStringProperty(a.getAlarmmes() != null ? a.getAlarmmes() : "");
 		pLogState = new SimpleStringProperty(a.getpLogState() != null ? a.getpLogState() : "");
 		pConfirmDT = new SimpleStringProperty(a.getConfirmdt() != null ? dFormat.format(a.getConfirmdt()) : "");
-		pUserRef = new SimpleStringProperty(a.getUserref() + "");
+		pUserRef = new SimpleStringProperty(a.getUserref() == 0 ? "" : 
+			a.getUserref() == -1 ? "Administrator" : MainStage.users.get(a.getUserref()).getFio());
 		pLogNote = new SimpleStringProperty(a.getLognote() != null ? a.getLognote() : "");
 		pAlarmPriority = new SimpleStringProperty(a.getpAlarmPriority() != null ? a.getpAlarmPriority() : "");
 		pEventType = new SimpleStringProperty(a.getpEventType() != null ? a.getpEventType() : "");

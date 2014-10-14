@@ -1,7 +1,16 @@
 package controllers;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
+import java.util.ResourceBundle.Control;
 
 import javax.xml.bind.JAXBException;
 
@@ -14,6 +23,7 @@ import ui.Main;
 import ui.MainStage;
 import ui.Scheme;
 import pr.model.DvalTI;
+import pr.model.LinkedValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -32,11 +42,22 @@ public class Controller {
 	@FXML private ToolBarController toolBarController;
 	@FXML private MenuBarController menuBarController;
 	@FXML private TreeController spTreeController;	
-	@FXML private AlarmController bpAlarmsController;	
+	@FXML private AlarmController bpAlarmsController;
 	@FXML private Pane bpAlarms;
 	@FXML private BorderPane bpScheme;
 	@FXML private SplitPane vSplitPane;
 	@FXML private SplitPane hSplitPane;
+	
+	public static ResourceBundle getResourceBundle(Locale locale) {
+		return ResourceBundle.getBundle("Language", locale, Main.classLoader, new UTF8Control());
+	}
+	
+	public void setElementText(ResourceBundle rb) {
+		menuBarController.setElementText(rb);
+		toolBarController.setElementText(rb);
+		spTreeController.setElementText(rb);
+		bpAlarmsController.setElementText(rb);
+	}
 	
 	public static void exitProgram() {
 		Window w = Main.mainScheme.getScene().getWindow();
@@ -46,10 +67,17 @@ public class Controller {
 		ws.setTreeDividerPositions(MainStage.controller.getTreeSplitPane().getDividers().get(0).getPosition());
 		
 		ProgramSettings ps = new ProgramSettings(ws);
+		ps.setLocaleName(MainStage.controller.menuBarController.getLocaleName());
 		SchemeSettings ss = new SchemeSettings();
 		ps.setSchemeSettings(ss);
 		ss.setSchemeName(Main.mainScheme.getSchemeName());
 		ss.setSchemeScale(Main.mainScheme.getRoot().getScaleX());
+		
+		final LinkedValue lv = new LinkedValue("", "");
+		MainStage.controller.getAlarmsController().tvAlarms.getColumns().forEach(c -> {
+			lv.setVal(lv.getVal().toString() + (c.isVisible() ? 1 : 0) + ":");
+		});
+		ps.setShowAlarmColumns(lv.getVal().toString());
 		
 		try {
 			ps.saveToFile(Main.FILE_SETTINGS);
@@ -147,5 +175,37 @@ public class Controller {
 
 	public BorderPane getBpScheme() {
 		return bpScheme;
+	}
+	
+	private static class UTF8Control extends Control {
+	    public ResourceBundle newBundle (String baseName, Locale locale, 
+	    		String format, ClassLoader loader, boolean reload)
+	            throws IllegalAccessException, InstantiationException, IOException
+	    {
+	        String bundleName = toBundleName(baseName, locale);
+	        String resourceName = toResourceName(bundleName, "properties");
+	        ResourceBundle bundle = null;
+	        InputStream stream = null;
+	        if (reload) {
+	            URL url = loader.getResource(resourceName);
+	            if (url != null) {
+	                URLConnection connection = url.openConnection();
+	                if (connection != null) {
+	                    connection.setUseCaches(false);
+	                    stream = connection.getInputStream();
+	                }
+	            }
+	        } else {
+	            stream = loader.getResourceAsStream(resourceName);
+	        }
+	        if (stream != null) {
+	            try {
+	                bundle = new PropertyResourceBundle(new InputStreamReader(stream, "UTF-8"));
+	            } finally {
+	                stream.close();
+	            }
+	        }
+	        return bundle;
+	    }
 	}
 }

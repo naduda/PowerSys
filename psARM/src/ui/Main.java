@@ -1,6 +1,10 @@
 package ui;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 import javax.xml.bind.JAXBException;
 
@@ -21,7 +25,8 @@ public class Main extends Application {
 	private static final int TIMEOUT_TI_SEC = 35;
 	private static final int TIMEOUT_TS_SEC = 600;
 	public static final String FILE_SETTINGS = Utils.getFullPath("./Settings.xml");
-	private static ProgramSettings ps;
+	private static ProgramSettings ps = getProgramSettings();
+	public static ClassLoader classLoader;
 	public static Scheme mainScheme;
 	public static Stage mainStage;
 
@@ -30,10 +35,17 @@ public class Main extends Application {
 	}
 	
 	@Override
-	public void start(Stage stage) throws Exception {	
+	public void start(Stage stage) throws Exception {
+		try {
+			File file = new File("d:/GIT/PowerSys/psARM/lang");
+			URL[] urls = {file.toURI().toURL()};
+			classLoader = new URLClassLoader(urls);
+		} catch (MalformedURLException e) {
+			System.out.println("---");
+		}
+		
 		stage = new MainStage("./ui/Main.xml");
 		mainStage = stage;
-		ps = ProgramSettings.getFromFile(FILE_SETTINGS);
 		
         final Task<Void> task = new Task<Void>() {
 			@Override
@@ -99,15 +111,21 @@ public class Main extends Application {
 		SchemeSettings ss = ps.getSchemeSettings();
 		Main.mainScheme.getRoot().setScaleX(ss.getSchemeScale());
 		Main.mainScheme.getRoot().setScaleY(ss.getSchemeScale());
+		MainStage.controller.getMenuBarController().setLocaleName(ps.getLocaleName());
 	}
 	
 	public static ProgramSettings getProgramSettings() {
-		try {
-			return ProgramSettings.getFromFile(FILE_SETTINGS);
-		} catch (FileNotFoundException | JAXBException e) {
-			e.printStackTrace();
+		if (ps == null) {
+			try {
+				ps = ProgramSettings.getFromFile(FILE_SETTINGS);
+			} catch (FileNotFoundException | JAXBException e) {
+				e.printStackTrace();
+			}
+			if (ps.getLocaleName() == null) {
+				ps.setLocaleName("en");
+			}
 		}
-		return null;
+		return ps;
 	}
 	//	--------------------------------------------------------------
 	private final class Events {

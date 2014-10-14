@@ -20,6 +20,8 @@ public class ProgramSettings {
 	private WindowState winState;
 	@XmlElement(name = "schemeSettings")
 	private SchemeSettings schemeSettings;
+	private String localeName;
+	private String showAlarmColumns;
 	
 	public ProgramSettings() {
 		
@@ -29,8 +31,8 @@ public class ProgramSettings {
 		this.winState = winState;
 	}
 	
-	public void setWindowState(WindowState bookList) {
-		this.winState = bookList;
+	public void setWindowState(WindowState winState) {
+		this.winState = winState;
 	}
 	
 	public WindowState getWinState() {
@@ -43,6 +45,22 @@ public class ProgramSettings {
 
 	public void setSchemeSettings(SchemeSettings schemeSettings) {
 		this.schemeSettings = schemeSettings;
+	}
+
+	public String getLocaleName() {
+		return localeName;
+	}
+
+	public void setLocaleName(String localeName) {
+		this.localeName = localeName;
+	}
+
+	public String getShowAlarmColumns() {
+		return showAlarmColumns;
+	}
+
+	public void setShowAlarmColumns(String showAlarmColumns) {
+		this.showAlarmColumns = showAlarmColumns;
 	}
 
 	public void saveToFile(String fileName) throws JAXBException {

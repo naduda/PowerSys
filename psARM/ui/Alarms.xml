@@ -13,7 +13,7 @@
 		<padding><Insets top="0" right="0" bottom="0" left="0"/></padding>
 		<top>
 			<ToolBar fx:id="tbAlarms">
-				<Label text="Сигналізація"/>
+				<Label fx:id="lAlarms" text="Сигналізація"/>
 				<Button text="" onAction="#kvitOne" styleClass="toolBarButton">
 					<graphic>
 						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
@@ -36,7 +36,7 @@
 					</graphic>
 				</Button>
 				<Separator/>
-				<Label text="Пріоритет"/>
+				<Label fx:id="lPriority" text="Пріоритет"/>
 				<ChoiceBox fx:id="cbPriority">
 					<items>
 						<FXCollections fx:factory="observableArrayList">
@@ -49,8 +49,8 @@
 				</ChoiceBox>
 				<Separator/>
 				<Separator/>
-				<Button onAction="#filterColumnClick" text="DefaultSorting"/>
-				<MenuButton fx:id="cbColumns" text = "Columns"/>
+				<Button fx:id="btnSorting" onAction="#filterColumnClick" text="DefaultSorting"/>
+				<MenuButton fx:id="cbColumns" text="Columns"/>
 			</ToolBar>
 		</top>
 		<center>

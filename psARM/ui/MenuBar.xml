@@ -6,9 +6,9 @@
 
 <MenuBar xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.MenuBarController">
 	<menus>
-		<Menu text="Файл">
+		<Menu fx:id="menuFile" text="Файл">
 			<items>
-				<MenuItem text="Відкрити схему" onAction="#openScheme">
+				<MenuItem fx:id="miOpenScheme" text="Відкрити схему" onAction="#openScheme">
 					<graphic>
 						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 							<image>
@@ -17,7 +17,7 @@
 						</ImageView>
 					</graphic>
 				</MenuItem>
-				<MenuItem text="Відкрити проект">
+				<MenuItem fx:id="miOpenProject" text="Відкрити проект">
 					<graphic>
 						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 							<image>
@@ -26,9 +26,9 @@
 						</ImageView>
 					</graphic>
 				</MenuItem>
-				<Menu text="Тренд">
+				<Menu fx:id="menuTrend" text="Тренд">
 					<items>
-						<MenuItem text="Відкрити тренд">
+						<MenuItem fx:id="miOpenTrend" text="Відкрити тренд">
 							<graphic>
 								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 									<image>
@@ -37,7 +37,7 @@
 								</ImageView>
 							</graphic>
 						</MenuItem>
-						<MenuItem text="Створити тренд">
+						<MenuItem fx:id="miCreateTrend" text="Створити тренд">
 							<graphic>
 								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 									<image>
@@ -56,7 +56,7 @@
 					</graphic>
 				</Menu>
 				<SeparatorMenuItem />
-				<MenuItem text="Блокування">
+				<MenuItem fx:id="miLogin" text="Блокування">
 					<graphic>
 						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 							<image>
@@ -65,7 +65,7 @@
 						</ImageView>
 					</graphic>
 				</MenuItem>
-				<MenuItem text="Вихід" onAction="#exit">
+				<MenuItem fx:id="miExit" text="Вихід" onAction="#exit">
 					<graphic>
 						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 							<image>
@@ -76,32 +76,38 @@
 				</MenuItem>
 			</items>
 		</Menu>
-		<Menu text="Журнали">
+		<Menu fx:id="menuJournals" text="Журнали">
+			<items>
+				<MenuItem fx:id="miOpenJAlarms" onAction="#openJalarms" />
+			</items>
+		</Menu>
+		<Menu fx:id="menuReports" text="Звіти">
 			<items>
 
 			</items>
 		</Menu>
-		<Menu text="Звіти">
+		<Menu fx:id="menuTools" text="Інструменти">
 			<items>
 
 			</items>
 		</Menu>
-		<Menu text="Інструменти">
+		<Menu fx:id="menuSettings" text="Налаштування">
+			<items>
+				<Menu fx:id="menuLanguage" text="Мова" >
+					<items>
+						<MenuItem id="en" text="English" onAction="#changeLocale" />
+						<MenuItem id="ru" text="Русский" onAction="#changeLocale" />
+						<MenuItem id="uk" text="Українська" onAction="#changeLocale" />
+					</items>
+				</Menu>
+			</items>
+		</Menu>
+		<Menu fx:id="menuExit" text="Вихід">
 			<items>
 
 			</items>
 		</Menu>
-		<Menu text="Налаштування">
-			<items>
-
-			</items>
-		</Menu>
-		<Menu text="Вихід">
-			<items>
-
-			</items>
-		</Menu>
-		<Menu text="Про програму ...">
+		<Menu fx:id="menuAbout" text="Про програму ...">
 			<items>
 
 			</items>

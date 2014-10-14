@@ -12,7 +12,7 @@
 		<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
 	</padding>
 
-	<top>
+	<!--top>
 		<HBox spacing="10" alignment="center">
 			<padding>
 				<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
@@ -20,19 +20,19 @@
 
 			<Label text="Назва об'єкта" />
 		</HBox>
-	</top>
+	</top-->
 
 	<center>
 		<VBox spacing="10" alignment="center">
 			<Separator/>
-			<Label text="Список транспарантів" />
+			<Label fx:id="lListTransp" text="Список транспарантів" />
 			<ListView fx:id="lvTransparants" styleClass="table" prefHeight="200" />
-			<Label text="Причина встановлення" />
+			<Label fx:id="lReason" text="Причина встановлення" />
 			<HBox spacing="10" alignment="center">
 				<TextArea fx:id="txtArea" text="" prefWidth="${lvTransparants.width}" prefHeight="75"/>
 			</HBox>
 			<HBox spacing="10" alignment="center">
-				<Label text="Важливість" />
+				<Label fx:id="lImportance" text="Важливість" />
 				<ChoiceBox fx:id="cbPriority">
 					<items>
 						<FXCollections fx:factory="observableArrayList">
@@ -55,7 +55,7 @@
 			</padding>
 
 			<Button fx:id="btnOK" text="Встановити" onAction="#btnOK"/>
-			<Button text="Відхилити" onAction="#btnCancel"/>
+			<Button fx:id="btnCancel" text="Відхилити" onAction="#btnCancel"/>
 		</HBox>
 	</bottom>
 </BorderPane>

@@ -1,19 +1,24 @@
 package controllers;
 
+import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
+import pr.common.Utils;
 import pr.model.Alarm;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import svg2fx.Convert;
+import ui.Main;
 import ui.MainStage;
 import ui.Scheme;
 import ui.alarm.AlarmTableItem;
@@ -27,12 +32,20 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
@@ -49,10 +62,31 @@ public class AlarmController implements Initializable {
 	@FXML TableView<AlarmTableItem> tvAlarms;
 	@FXML ChoiceBox<String> cbPriority;
 	@FXML MenuButton cbColumns;
+	@FXML Label lAlarms;
+	@FXML Label lPriority;
+	@FXML Button btnSorting;
 	
 	@FXML
 	private void kvitOne(ActionEvent event) {
-		System.out.println("kvitOne");
+		Stage stage = new Stage();
+		
+		try {
+			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/TransparantComment.xml")));
+			Parent root = loader.load();
+			TrCommentController trController = loader.getController();
+			
+			Scene scene = new Scene(root);
+			stage.setScene(scene);
+			ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
+			trController.setElementText(rb);
+			trController.setAlarmTableItem(tvAlarms.getSelectionModel().getSelectedItem());
+			stage.initModality(Modality.NONE);
+			stage.initOwner(((Control)event.getSource()).getScene().getWindow());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	    stage.show();
 	}
 	
 	@FXML
@@ -60,7 +94,7 @@ public class AlarmController implements Initializable {
 		data.filtered(f -> f.getAlarm().getLogstate() == 1).forEach(it -> {
 			Convert.listSignals.forEach(lv -> {
 				if (lv.getKey() == it.getAlarm().getObjref()) {
-					confirmAlarm(it);
+					confirmAlarm(it, "");
 				}
 			});
 		});
@@ -90,6 +124,12 @@ public class AlarmController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
+			setElementText(Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName())));
+		} catch (Exception e) {
+			System.out.println("///");
+		}
+		
+		try {
 			sysParams = MainStage.psClient.getTSysParam("ALARM_PRIORITY");
 			viewParams = MainStage.psClient.getTViewParam("LOG_STATE", "COLOR", -1);
 		} catch (RemoteException e) {
@@ -100,6 +140,7 @@ public class AlarmController implements Initializable {
 		sysParams.values().forEach(it -> {list.add(it.getParamdescr());});
 		ObservableList<String> obList = FXCollections.observableList(list);
 
+		System.out.println("========================= >>> :" + cbPriority);
 		cbPriority.getItems().addAll(obList);
 		cbPriority.setValue(cbPriority.getItems().get(0));
 		cbPriority.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -125,7 +166,7 @@ public class AlarmController implements Initializable {
         clickTimer.setOnFinished(event -> {
             int count = sequentialClickCount.get();
             if (count == 2) {
-            	confirmAlarm(tvAlarms.getSelectionModel().getSelectedItem());
+            	confirmAlarm(tvAlarms.getSelectionModel().getSelectedItem(), "");
             }
 
             sequentialClickCount.set(0);
@@ -171,6 +212,24 @@ public class AlarmController implements Initializable {
         sortedData.comparatorProperty().bind(tvAlarms.comparatorProperty());
 		tvAlarms.setItems(sortedData);
 //		-------------------------------------------------------------------------------
+		setVisibleAlarmColumns();
+		setCbColumns();
+		System.out.println("========================= >>> : ============================");
+	}
+	
+	private void setVisibleAlarmColumns() {
+		String showColumnsString = Main.getProgramSettings().getShowAlarmColumns();
+		StringTokenizer st = new StringTokenizer(showColumnsString, ":");
+		int i = 0;
+		while (st.hasMoreElements()) {
+			boolean isShow = st.nextElement().toString().equals("1") ? true : false;
+			tvAlarms.getColumns().get(i).setVisible(isShow);
+			i++;
+		}
+	}
+	
+	private void setCbColumns() {
+		cbColumns.getItems().clear();
 		List<CheckMenuItem> checkItems = new ArrayList<CheckMenuItem>();
 		
 		tvAlarms.getColumns().forEach(c -> {
@@ -186,11 +245,30 @@ public class AlarmController implements Initializable {
 		cbColumns.getItems().addAll(checkItems);
 	}
 	
-	private void confirmAlarm(AlarmTableItem ati) {		
+	public void setElementText(ResourceBundle rb) {
+		lAlarms.setText(rb.getString("keyAlarms"));
+		lPriority.setText(rb.getString("keyPriority"));
+		tvAlarms.getColumns().forEach(c -> {
+			c.setText(rb.getString("key_" + c.getId()));
+		});
+		
+		cbPriority.getItems().replaceAll(s -> {			
+			if (s.equals(cbPriority.getItems().get(0))) {
+				return rb.getString("keyPriorityAny");
+			}
+			return s;
+		});
+		cbPriority.setValue(cbPriority.getItems().get(0));
+		btnSorting.setText(rb.getString("keySorting"));
+		cbColumns.setText(rb.getString("keyColumns"));
+		setCbColumns();
+	}
+	
+	public static void confirmAlarm(AlarmTableItem ati, String comment) {		
 		if (ati != null) {
 			try {
 				MainStage.psClient.confirmAlarm(ati.getAlarm().getRecorddt(), ati.getAlarm().getEventdt(), 
-						ati.getAlarm().getObjref(), new Timestamp(System.currentTimeMillis()), "",
+						ati.getAlarm().getObjref(), new Timestamp(System.currentTimeMillis()), comment,
 						ati.getAlarm().getUserref() == 0 ? -1 : ati.getAlarm().getUserref());
 			} catch (RemoteException e) {
 				System.err.println("error in confirmAlarm");

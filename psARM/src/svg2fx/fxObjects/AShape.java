@@ -3,9 +3,14 @@ package svg2fx.fxObjects;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
+import controllers.Controller;
+import controllers.ShapeController;
 import pr.common.Utils;
+import ui.Main;
 import ui.Scheme;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -49,6 +54,12 @@ public abstract class AShape extends Group {
 	    try {
 			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/ShapeContextMenu.xml")));
 			contextMenu = loader.load();
+			ShapeController shapeController = loader.getController();
+			
+			contextMenu.setOnShowing(e -> {
+				ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
+				shapeController.setElementText(rb);
+			});
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -95,7 +106,7 @@ public abstract class AShape extends Group {
 	    	}
 	    });
 	}
-			
+	
 	public AShape(Node g) {
 		this();
 		

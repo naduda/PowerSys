@@ -7,8 +7,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
+import ui.Main;
 import ui.MainStage;
 import ui.data.DataFX;
 import ui.data.DataWrapper;
@@ -23,6 +25,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.event.EventHandler;
@@ -30,6 +33,7 @@ import javafx.event.EventHandler;
 public class DataController implements Initializable {
 	private final ObservableList<DataWrapper> dataWrapp = FXCollections.observableArrayList();
 	
+	@FXML Tab tTable;
 	@FXML Tab tChart;
 	@FXML TableView<DataWrapper> tvChart;
 	@FXML ChoiceBox<LinkedValue> cbIntegration;
@@ -38,13 +42,16 @@ public class DataController implements Initializable {
 	@FXML ComboBox<Integer> cbHourBegin;
 	@FXML ComboBox<Integer> cbHourEnd;
 	
+	@FXML Label lPeriodFrom;
+	@FXML Label lTo;
+	
 	private DataFX dataFX;
 	private List<LinkedValue> data;
 	private List<LinkedValue> dataChange;
 	private int idSignal;
 	
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	public void initialize(URL url, ResourceBundle boundle) {
 		cbIntegration.getSelectionModel().selectFirst();
 		
 		cbIntegration.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -63,6 +70,23 @@ public class DataController implements Initializable {
 		});
 		
 		setDateHours();
+		
+		ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
+		setElementText(rb);
+	}
+	
+	public void setElementText(ResourceBundle rb) {
+		cbIntegration.getItems().forEach(lv -> {
+			if (lv.getDt().toString().equals("0")) {
+				lv.setVal(rb.getString("keyInstantaneous"));
+			} else {
+				lv.setVal(lv.getDt() + " " + rb.getString("keyMinute"));
+			}
+		});
+		lPeriodFrom.setText(rb.getString("keyPeriodFrom"));
+		lTo.setText(rb.getString("keyTo"));
+		tTable.setText(rb.getString("keyTable"));
+		tChart.setText(rb.getString("keyChart"));
 	}
 	
 	@SuppressWarnings("unchecked")

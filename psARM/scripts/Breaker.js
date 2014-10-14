@@ -8,5 +8,5 @@ function onValueChange(sh)
 {
 	var n = sh.getNodeById('0/0'); 
 
-	n.setFill(sh.getColorByName([idTS] == sh.getStateIdTS('on') ? 'red' : 'GREEN'));
+	n.setFill(sh.getColorByName([idTS] == sh.getStateIdTS('on') ? 'red' : 'Lime'));
 }

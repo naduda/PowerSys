@@ -8,6 +8,6 @@
 	<items>
 		<MenuItem text="add" onAction="#add"/>
 		<SeparatorMenuItem/>
-		<MenuItem text="Встановити транспарант" onAction="#addTransparant"/>
+		<MenuItem fx:id="miAddTransparant" text="Встановити транспарант" onAction="#addTransparant"/>
 	</items>
 </ContextMenu>

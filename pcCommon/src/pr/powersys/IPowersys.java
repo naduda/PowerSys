@@ -20,6 +20,7 @@ import pr.model.Tsignal;
 import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
+import pr.model.Tuser;
       
 public interface IPowersys extends Remote {
 	public static final int RMI_PORT = 1099;
@@ -37,6 +38,7 @@ public interface IPowersys extends Remote {
 	public void confirmAlarmAll(String lognote, int userref) throws RemoteException;
 	public Map<Integer, SPunit> getSPunitMap() throws RemoteException;
 	public List<SpTuCommand> getSpTuCommand() throws RemoteException;
+	public Map<Integer, Tuser> getTuserMap() throws RemoteException;
 	
 	public List<LinkedValue> getData(int idSignal) throws RemoteException;
 	public List<LinkedValue> getDataArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd) throws RemoteException;

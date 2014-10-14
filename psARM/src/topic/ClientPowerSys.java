@@ -23,6 +23,7 @@ import pr.model.Tsignal;
 import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
+import pr.model.Tuser;
 import pr.powersys.IPowersys;
 
 public class ClientPowerSys implements IPowersys {
@@ -235,6 +236,15 @@ public class ClientPowerSys implements IPowersys {
 	public List<SpTuCommand> getSpTuCommand() {
 		try {
 			return myServer.getSpTuCommand();
+		} catch (RemoteException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public Map<Integer, Tuser> getTuserMap() {
+		try {
+			return myServer.getTuserMap();
 		} catch (RemoteException e) {
 			return null;
 		}
