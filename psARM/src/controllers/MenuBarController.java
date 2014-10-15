@@ -25,6 +25,7 @@ public class MenuBarController implements Initializable {
 	final FileChooser fileChooser = new FileChooser();
 	private String localeName;
 	private final Label lMenuExit = new Label();
+	private JAlarmsController jAlarmController;
 	
 	@FXML Menu menuFile;
 	@FXML MenuItem miOpenScheme;
@@ -81,15 +82,13 @@ public class MenuBarController implements Initializable {
 		try {
 			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/JournalAlarms.xml")));
 			Parent root = loader.load();
-//			JAlarmsController jAlarmController = loader.getController();
-//			jAlarmController.setAlarms();
+			jAlarmController = loader.getController();
+			jAlarmController.setAlarms();
 			
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
-//			ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
-//			stage.setTitle(rb.getString("keyDataTitle"));
-//			stage.initModality(Modality.NONE);
-//			stage.initOwner(((Control)event.getSource()).getScene().getWindow());
+			ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
+			stage.setTitle(rb.getString("keyJalarms"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -135,5 +134,9 @@ public class MenuBarController implements Initializable {
 
 	public void setLocaleName(String localeName) {
 		this.localeName = localeName;
+	}
+
+	public JAlarmsController getjAlarmController() {
+		return jAlarmController;
 	}
 }

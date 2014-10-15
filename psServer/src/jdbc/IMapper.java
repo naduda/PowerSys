@@ -83,6 +83,12 @@ public interface IMapper {
 	@Select("select * from "
 			+ "(select *, alarms_for_event(eventtype,objref,objStatus) as alarms "
 			+ "from d_eventlog) as eloginner join t_alarm on alarmid in (alarms) "
+			+ "where recorddt >= #{dtBeg} and recorddt <= #{dtEnd} order by recorddt desc")
+	List<Alarm> getAlarmsPeriod(@Param("dtBeg")Timestamp dtBeg, @Param("dtEnd")Timestamp dtEnd);
+	
+	@Select("select * from "
+			+ "(select *, alarms_for_event(eventtype,objref,objStatus) as alarms "
+			+ "from d_eventlog) as eloginner join t_alarm on alarmid in (alarms) "
 			+ "where confirmdt > #{confirmdt} order by confirmdt desc")
 	List<Alarm> getAlarmsConfirm(Timestamp confirmdt);
 	

@@ -601,4 +601,18 @@ public class PostgresDB implements IMapper {
 			session.close();
 		}
 	}
+
+	@Override
+	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getAlarmsPeriod(dtBeg, dtEnd);
+		} catch (Exception e) {
+			System.err.println("getAlarmsPeriod(Timestamp, Timestamp)");
+			e.printStackTrace();
+			return null;
+		} finally {
+			session.close();
+		}
+	}
 }

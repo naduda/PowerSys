@@ -7,54 +7,88 @@
 <?import java.lang.*?>
 <?import javafx.collections.*?>
 <?import javafx.scene.control.cell.*?> 
+<?import javafx.scene.text.Text?> 
 
 <Pane fx:id="bpAlarms" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.AlarmController">
-	<BorderPane prefWidth="${bpAlarms.width}" prefHeight="${bpAlarms.height}">
+	<BorderPane prefWidth="${bpAlarms.width}" prefHeight="${bpAlarms.height}" >
 		<padding><Insets top="0" right="0" bottom="0" left="0"/></padding>
+
 		<top>
-			<ToolBar fx:id="tbAlarms">
-				<Label fx:id="lAlarms" text="Сигналізація"/>
-				<Button text="" onAction="#kvitOne" styleClass="toolBarButton">
-					<graphic>
-						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-							<Image url="@../Icon/kvitOne.png"/>
-						</ImageView>
-					</graphic>
-				</Button>
-				<Button text="" onAction="#kvitPS" styleClass="toolBarButton">
-					<graphic>
-						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-							<Image url="@../Icon/kvitPS.png"/>
-						</ImageView>
-					</graphic>
-				</Button>
-				<Button text="" onAction="#kvitAll" styleClass="toolBarButton">
-					<graphic>
-						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-							<Image url="@../Icon/kvitAll.png"/>
-						</ImageView>
-					</graphic>
-				</Button>
-				<Separator/>
-				<Label fx:id="lPriority" text="Пріоритет"/>
-				<ChoiceBox fx:id="cbPriority">
-					<items>
-						<FXCollections fx:factory="observableArrayList">
-							<String fx:value="Будь-який"/>
-						</FXCollections>
-					</items>
-					<value>
-						<String fx:value="Будь-який" />
-					</value>
-				</ChoiceBox>
-				<Separator/>
-				<Separator/>
-				<Button fx:id="btnSorting" onAction="#filterColumnClick" text="DefaultSorting"/>
-				<MenuButton fx:id="cbColumns" text="Columns"/>
-			</ToolBar>
+			<BorderPane>
+				<padding><Insets top="0" right="0" bottom="0" left="0"/></padding>
+
+				<left>
+					<ToolBar fx:id="tbAlarms" >
+						<Label fx:id="lAlarms" text="Сигналізація" underline="true" styleClass="alarms-text" />
+						<Button text="" onAction="#kvitOne" styleClass="toolBarButton">
+							<graphic>
+								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+									<Image url="@../Icon/kvitOne.png"/>
+								</ImageView>
+							</graphic>
+						</Button>
+						<Button text="" onAction="#kvitPS" styleClass="toolBarButton">
+							<graphic>
+								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+									<Image url="@../Icon/kvitPS.png"/>
+								</ImageView>
+							</graphic>
+						</Button>
+						<Button text="" onAction="#kvitAll" styleClass="toolBarButton">
+							<graphic>
+								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+									<Image url="@../Icon/kvitAll.png"/>
+								</ImageView>
+							</graphic>
+						</Button>
+						<Separator/>
+						<Label fx:id="lPriority" text="Пріоритет"/>
+						<ChoiceBox fx:id="cbPriority">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<String fx:value="Будь-який"/>
+								</FXCollections>
+							</items>
+							<value>
+								<String fx:value="Будь-який" />
+							</value>
+						</ChoiceBox>
+						<Separator/>
+						<Label fx:id="lEvent"/>
+						<ChoiceBox fx:id="cbEvent">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<String fx:value="Будь-який"/>
+								</FXCollections>
+							</items>
+							<value>
+								<String fx:value="Будь-який" />
+							</value>
+						</ChoiceBox>
+						<Separator/>
+						<Separator/>
+						<Button fx:id="btnSorting" onAction="#filterColumnClick" text="DefaultSorting"/>
+						<MenuButton fx:id="cbColumns" text="Columns"/>
+						<Separator/>
+					</ToolBar>
+				</left>
+
+				<center>
+					<HBox styleClass="tool-bar">
+					</HBox>
+				</center>
+
+				<right>
+					<HBox fx:id="hBoxCount" alignment="center_right" styleClass="tool-bar">
+						<padding><Insets top="0" right="10" bottom="0" left="0"/></padding>
+						<Label fx:id="lCount"/>
+						<Text fx:id="tCount" text="" />
+					</HBox>
+				</right>
+			</BorderPane>
 		</top>
 		<center>
-			<TableView fx:id="tvAlarms" styleClass="table" maxHeight="${bpAlarms.height - tbAlarms.height}">
+			<TableView fx:id="tvAlarms" maxHeight="${bpAlarms.height - tbAlarms.height}">
 				<columns>
 					<TableColumn id="pObject" text="Об'єкт" minWidth="${tvAlarms.width/15}"/>
 					<TableColumn id="pLocation" text="Розміщення" minWidth="${tvAlarms.width/15}" />

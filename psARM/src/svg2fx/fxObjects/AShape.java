@@ -158,9 +158,9 @@ public abstract class AShape extends Group {
 		}
 	}
 	
-	public abstract void onDoubleClick();
+	abstract void onDoubleClick();
 	
-	public abstract void onValueChange(Double newValue);
+	abstract void onValueChange(Double newValue);
 	
 	public void rotate(Shape n, double deg) {
 		while (Math.abs(deg) > 180) {

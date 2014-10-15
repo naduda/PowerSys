@@ -25,7 +25,7 @@ import javafx.scene.text.TextAlignment;
 
 public class EShape extends AShape {
 	private static final String TEXT_CONST = "text";
-
+	
 	private SignalState value = new SignalState();
 	
 	private Map<String, Integer> signals = new HashMap<>();
@@ -163,40 +163,33 @@ public class EShape extends AShape {
 
 	@Override
 	public void onDoubleClick() {
-		double start = System.currentTimeMillis();
-		
-		String script = "";
-		try {
-			script = getScripts().getScriptByName("onDoubleClick");
-			if (script != null) {
-				Convert.engine.eval(script);
-				Invocable inv = (Invocable) Convert.engine;
-	            inv.invokeFunction("onDoubleClick", this );
-	            System.out.println((System.currentTimeMillis() - start) + " mc");
-			}
-		} catch (ScriptException | NoSuchMethodException e) {
-			System.out.println("Script not found - " + script);
-		}
+		runScriptByName("onDoubleClick");
 	}
 	
 	@Override
 	public void onValueChange(Double newValue) {
+		runScriptByName("onValueChange");
+	}
+	
+	private void runScriptByName(String scriptName) {
 		if (TEXT_CONST.equals(getId())) return;
 		double start = System.currentTimeMillis();
 		
 		String script = "";
 		try {
-			script = getScripts().getScriptByName("onValueChange");
+			script = getScripts().getScriptByName(scriptName);
 			
 			if (script != null) {
 				Convert.engine.eval(script);
 				Invocable inv = (Invocable) Convert.engine;
-	            inv.invokeFunction("onValueChange", this );
-	            System.out.println((System.currentTimeMillis() - start) + " mc ");
+	            inv.invokeFunction(scriptName, this);
 			}
 		} catch (ScriptException | NoSuchMethodException e) {
 			System.out.println("Script not found - " + script);
 		}
+		
+		if ((System.currentTimeMillis() - start) > 10)
+        	System.out.println((System.currentTimeMillis() - start) + " mc, :" + scriptName + " -> " + getId());
 	}
 	
 	private int getStateVal(int idSignal, String denom) {

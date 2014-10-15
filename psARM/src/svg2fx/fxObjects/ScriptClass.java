@@ -25,7 +25,11 @@ public class ScriptClass {
 					func = s;
 					funcName = s.substring(s.indexOf(" ") + 1, s.indexOf("("));
 				} else {
-					func = func + "\n" + s.replace("[id]", "sh.getValue().getIdValue()").replace("[idTS]", "sh.getValue().getIdTSValue()");
+					s = s.replace("[id]", "sh.getValue().getIdValue()");
+					s = s.replace("[idTS]", "sh.getValue().getIdTSValue()");
+					s = s.replace("[ON]", "sh.getStateIdTS('on')");
+					s = s.replace("[OFF]", "sh.getStateIdTS('off')");
+					func = func + "\n" + s;
 				}
 			}
 			if (funcName.length() > 0) {

@@ -29,6 +29,7 @@ public interface IPowersys extends Remote {
 	public Map<Integer, Tsignal> getTsignalsMap() throws RemoteException;
 	public Map<Integer, ConfTree> getConfTreeMap() throws RemoteException;
 	public List<Alarm> getAlarmsCurrentDay() throws RemoteException;
+	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException;
 	public Map<String, TSysParam> getTSysParam(String paramname) throws RemoteException;
 	public List<TViewParam> getTViewParam(String objdenom, String paramdenom, int userref) throws RemoteException;
 	public void setTS(int idsignal, double val, int schemeref) throws RemoteException;

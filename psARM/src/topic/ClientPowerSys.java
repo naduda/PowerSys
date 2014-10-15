@@ -249,4 +249,9 @@ public class ClientPowerSys implements IPowersys {
 			return null;
 		}
 	}
+
+	@Override
+	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd)throws RemoteException {
+		return myServer.getAlarmsPeriod(dtBeg, dtEnd);
+	}
 } 

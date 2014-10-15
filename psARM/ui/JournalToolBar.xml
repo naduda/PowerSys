@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.*?>
+<?import pr.model.LinkedValue?>
+<?import javafx.scene.control.DatePicker?>
+
+<ToolBar xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.JToolBarController">
+	<Label fx:id="lPeriodFrom" text="Період: з "/>
+	<DatePicker fx:id="dpBegin" prefWidth="100"/>
+	<Label fx:id="lTo" text="г. по "/>
+	<DatePicker fx:id="dpEnd" prefWidth="100"/>
+</ToolBar>

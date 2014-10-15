@@ -216,5 +216,10 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	public Map<Integer, Tuser> getTuserMap() throws RemoteException {
 		return pdb.getTuserMap();
 	}
+
+	@Override
+	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
+		return pdb.getAlarmsPeriod(dtBeg, dtEnd);
+	}
 }
  

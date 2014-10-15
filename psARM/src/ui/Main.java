@@ -47,15 +47,7 @@ public class Main extends Application {
 		stage = new MainStage("./ui/Main.xml");
 		mainStage = stage;
 		
-        final Task<Void> task = new Task<Void>() {
-			@Override
-			protected Void call() throws Exception {
-				new ReceiveTopic();
-				return null;
-			}
-        	
-        };
-        new Thread(task, "ReceiveTopic").start();
+        new Thread(new ReceiveTopic("127.0.0.1:7676"), "ReceiveTopic").start();
 
         final Task<Void> taskTI = new Task<Void>() {
 			@Override

@@ -26,6 +26,7 @@ import javafx.animation.PauseTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -44,6 +45,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.ToolBar;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -53,17 +56,24 @@ public class AlarmController implements Initializable {
 
 	private static final double MOUSE_DURATION_MILLS = 250;
 	private List<TViewParam> viewParams;
-	private Map<String, TSysParam> sysParams;
+	private Map<String, TSysParam> sysParamsPriority;
+	private Map<String, TSysParam> sysParamsEvent;
 	
 	private final ObservableList<AlarmTableItem> data = FXCollections.observableArrayList();
 	private final FilteredList<AlarmTableItem> filteredData = new FilteredList<>(data, p -> true);
 	private final SortedList<AlarmTableItem> sortedData = new SortedList<>(filteredData);
+	private final SimpleStringProperty countAlarmsProperty = new SimpleStringProperty();
 	
 	@FXML TableView<AlarmTableItem> tvAlarms;
+	@FXML ToolBar tbAlarms;
 	@FXML ChoiceBox<String> cbPriority;
+	@FXML ChoiceBox<String> cbEvent;
 	@FXML MenuButton cbColumns;
 	@FXML Label lAlarms;
 	@FXML Label lPriority;
+	@FXML Label lEvent;
+	@FXML Label lCount;
+	@FXML Text tCount;
 	@FXML Button btnSorting;
 	
 	@FXML
@@ -118,11 +128,12 @@ public class AlarmController implements Initializable {
 		data.removeAll(data);
 		copyData.sort(new DefaultSorting());
 		data.addAll(copyData);
-		System.out.println(Scheme.selectedShape.getIdSignal());
 	}
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		tCount.textProperty().bind(countAlarmsProperty);
+		
 		try {
 			setElementText(Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName())));
 		} catch (Exception e) {
@@ -130,33 +141,15 @@ public class AlarmController implements Initializable {
 		}
 		
 		try {
-			sysParams = MainStage.psClient.getTSysParam("ALARM_PRIORITY");
+			sysParamsPriority = MainStage.psClient.getTSysParam("ALARM_PRIORITY");
+			sysParamsEvent = MainStage.psClient.getTSysParam("ALARM_EVENT");
 			viewParams = MainStage.psClient.getTViewParam("LOG_STATE", "COLOR", -1);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-
-		List<String> list = new ArrayList<>();
-		sysParams.values().forEach(it -> {list.add(it.getParamdescr());});
-		ObservableList<String> obList = FXCollections.observableList(list);
-
-		System.out.println("========================= >>> :" + cbPriority);
-		cbPriority.getItems().addAll(obList);
-		cbPriority.setValue(cbPriority.getItems().get(0));
-		cbPriority.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(a -> {
-            	if (cbPriority.getItems().indexOf(newValue) == 0) { //Priority = Any
-            		return true;
-            	} else {
-            		String lowerCaseFilter = newValue.toString().toLowerCase();
-            		if (a.getPAlarmPriority().toLowerCase().equals(lowerCaseFilter)) {
-            			return true;
-            		} else {
-            			return false;
-            		}
-            	}
-            });
-        });
+		
+		cbPriority = setChoiceBoxItems(sysParamsPriority, cbPriority);
+		cbEvent = setChoiceBoxItems(sysParamsEvent, cbEvent);
 
 		tvAlarms.getColumns().forEach(c -> { c.setCellValueFactory(p -> Bindings.selectString(p.getValue(), c.getId())); });
 		
@@ -214,7 +207,11 @@ public class AlarmController implements Initializable {
 //		-------------------------------------------------------------------------------
 		setVisibleAlarmColumns();
 		setCbColumns();
-		System.out.println("========================= >>> : ============================");
+		
+		tbAlarms.setOnMouseReleased(e -> {
+			System.out.println(tbAlarms.getBackground().getFills().get(0).getFill());
+			System.out.println(tbAlarms.getBackground().getFills().get(1).getFill());
+		});
 	}
 	
 	private void setVisibleAlarmColumns() {
@@ -248,6 +245,8 @@ public class AlarmController implements Initializable {
 	public void setElementText(ResourceBundle rb) {
 		lAlarms.setText(rb.getString("keyAlarms"));
 		lPriority.setText(rb.getString("keyPriority"));
+		lEvent.setText(rb.getString("keyLevent"));
+		lCount.setText(rb.getString("keyCount"));
 		tvAlarms.getColumns().forEach(c -> {
 			c.setText(rb.getString("key_" + c.getId()));
 		});
@@ -259,9 +258,48 @@ public class AlarmController implements Initializable {
 			return s;
 		});
 		cbPriority.setValue(cbPriority.getItems().get(0));
+		
+		cbEvent.getItems().replaceAll(s -> {			
+			if (s.equals(cbEvent.getItems().get(0))) {
+				return rb.getString("keyPriorityAny");
+			}
+			return s;
+		});
+		cbEvent.setValue(cbEvent.getItems().get(0));
+		
 		btnSorting.setText(rb.getString("keySorting"));
 		cbColumns.setText(rb.getString("keyColumns"));
 		setCbColumns();
+	}
+	
+	private ChoiceBox<String> setChoiceBoxItems(Map<String, TSysParam> map, ChoiceBox<String> cb) {
+		List<String> list = new ArrayList<>();
+		map.values().forEach(it -> {list.add(it.getParamdescr());});
+		ObservableList<String> obList = FXCollections.observableList(list);
+		
+		cb.getItems().addAll(obList);
+		cb.setValue(cb.getItems().get(0));
+		cb.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(a -> {
+            	String lowerCaseFilterPriority = cbPriority.getSelectionModel().getSelectedItem().toLowerCase();
+            	String lowerCaseFilterEvent = cbEvent.getSelectionModel().getSelectedItem().toLowerCase();
+            	
+            	boolean isPriority = cbPriority.getSelectionModel().getSelectedIndex() == 0 ? true :
+            							a.getPAlarmPriority().toLowerCase().equals(lowerCaseFilterPriority);
+            	
+            	boolean isEvent = cbEvent.getSelectionModel().getSelectedIndex() == 0 ? true :
+										a.getPEventType().toLowerCase().equals(lowerCaseFilterEvent);
+            	
+            	if (isPriority && isEvent) {
+        			return true;
+        		} else {
+        			return false;
+        		}
+            });
+            countAlarmsProperty.setValue(tvAlarms.getItems().size() + "");
+        });
+		
+		return cb;
 	}
 	
 	public static void confirmAlarm(AlarmTableItem ati, String comment) {		
@@ -280,6 +318,7 @@ public class AlarmController implements Initializable {
 	public void addAlarm(Alarm a) {
 		data.add(new AlarmTableItem(a));
 		data.sort(new DefaultSorting());
+		countAlarmsProperty.setValue(data.size() + "");
 	}
 	
 	private class DefaultSorting implements Comparator<AlarmTableItem> {
@@ -322,4 +361,7 @@ public class AlarmController implements Initializable {
 		}
 	}
 
+	public void clearTable() {
+		data.clear();
+	}
 }
