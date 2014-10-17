@@ -66,8 +66,6 @@ public class MainStage extends Stage implements Serializable {
 				s.setLocation(location);
 			});
 			
-			psClient.getAlarmsCurrentDay().forEach(a -> { controller.getAlarmsController().addAlarm(a); });
-			
 			try {
 				String schemeName = Main.getProgramSettings().getSchemeSettings().getSchemeName();
 				setScheme(schemeName);

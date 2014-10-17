@@ -20,6 +20,7 @@ import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 
 import pr.model.Alarm;
 import pr.model.ConfTree;
+import pr.model.ControlJournalItem;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
 import pr.model.LinkedValue;
@@ -609,6 +610,20 @@ public class PostgresDB implements IMapper {
 			return session.getMapper(IMapper.class).getAlarmsPeriod(dtBeg, dtEnd);
 		} catch (Exception e) {
 			System.err.println("getAlarmsPeriod(Timestamp, Timestamp)");
+			e.printStackTrace();
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public List<ControlJournalItem> getJContrlItems(Timestamp dtBeg, Timestamp dtEnd) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getJContrlItems(dtBeg, dtEnd);
+		} catch (Exception e) {
+			System.err.println("getJContrlItems(Timestamp, Timestamp)");
 			e.printStackTrace();
 			return null;
 		} finally {

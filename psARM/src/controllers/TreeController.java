@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import controllers.interfaces.IControllerInit;
 import pr.common.Utils;
 import ui.Main;
 import ui.MainStage;
@@ -23,7 +24,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 
-public class TreeController implements Initializable {
+public class TreeController implements Initializable, IControllerInit {
 
 	@FXML private Accordion accordTree;
 	@FXML private TreeView<Scheme> tvSchemes;
@@ -41,6 +42,7 @@ public class TreeController implements Initializable {
 		}
 	}
 	
+	@Override
 	public void setElementText(ResourceBundle rb) {
 		tpSchemes.setText(rb.getString("keySchemes"));
 		tpTrends.setText(rb.getString("keyTrend"));

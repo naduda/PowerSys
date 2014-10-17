@@ -9,7 +9,7 @@
 <BorderPane fx:id="jAlarms" prefWidth="1000" prefHeight="500" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.JAlarmsController" styleClass="root">
 		
 	<top>
-		<fx:include fx:id="tbAlarms" source="JournalToolBar.xml" />
+		<fx:include fx:id="tbJournal" source="JournalToolBar.xml" />
 	</top>
 
 	<center>

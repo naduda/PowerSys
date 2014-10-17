@@ -14,6 +14,7 @@ import jdbc.PostgresDB;
 import pr.powersys.IPowersys;
 import pr.model.Alarm;
 import pr.model.ConfTree;
+import pr.model.ControlJournalItem;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
 import pr.model.LinkedValue;
@@ -220,6 +221,11 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	@Override
 	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
 		return pdb.getAlarmsPeriod(dtBeg, dtEnd);
+	}
+
+	@Override
+	public List<ControlJournalItem> getJContrlItems(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
+		return pdb.getJContrlItems(dtBeg, dtEnd);
 	}
 }
  

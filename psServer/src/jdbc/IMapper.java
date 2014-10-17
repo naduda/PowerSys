@@ -6,6 +6,7 @@ import java.util.Map;
 
 import pr.model.Alarm;
 import pr.model.ConfTree;
+import pr.model.ControlJournalItem;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
 import pr.model.LinkedValue;
@@ -195,4 +196,14 @@ public interface IMapper {
 	
 	@Select("select * from t_transparant where idtr = #{idtr}")
 	Ttransparant getTtransparantById(@Param("idtr")int idtr);
+	
+	@Select("select dt, schemeName, nameSignal, formatValue(idsignal, d.val) as val, paramdescr as status, "
+			+ "statedt-servdt as duration, fio from (select * from d_arcvaltu tu union all "
+			+ "(select dt, signalref, val, 3 as sendok, servdt, rcode, userref, statedt, "
+			+ "ts.schemeRef from d_arcvalts ts where rcode = 107 )) as d left join t_signal s "
+			+ "on signalref=idsignal left join t_scheme sc on d.schemeref=idscheme left join "
+			+ "(select -1 as idUser, 'Admin' as fio union select iduser, fio from t_user) u on "
+			+ "userRef=idUser left join t_sysparam v on v.val=d.sendOK and paramname='SENDTU_STATUS' "
+			+ "where dt >= #{dtBeg} and dt <= #{dtEnd} order by dt")
+	List<ControlJournalItem> getJContrlItems(@Param("dtBeg")Timestamp dtBeg, @Param("dtEnd")Timestamp dtEnd);
 }

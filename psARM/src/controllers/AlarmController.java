@@ -13,6 +13,7 @@ import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
+import controllers.interfaces.IControllerInit;
 import pr.common.Utils;
 import pr.model.Alarm;
 import pr.model.TSysParam;
@@ -21,7 +22,7 @@ import svg2fx.Convert;
 import ui.Main;
 import ui.MainStage;
 import ui.Scheme;
-import ui.alarm.AlarmTableItem;
+import ui.tables.AlarmTableItem;
 import javafx.animation.PauseTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
@@ -52,7 +53,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
-public class AlarmController implements Initializable {
+public class AlarmController implements Initializable, IControllerInit {
 
 	private static final double MOUSE_DURATION_MILLS = 250;
 	private List<TViewParam> viewParams;
@@ -63,6 +64,10 @@ public class AlarmController implements Initializable {
 	private final FilteredList<AlarmTableItem> filteredData = new FilteredList<>(data, p -> true);
 	private final SortedList<AlarmTableItem> sortedData = new SortedList<>(filteredData);
 	private final SimpleStringProperty countAlarmsProperty = new SimpleStringProperty();
+	
+	private final Duration maxTimeBetweenSequentialClicks = Duration.millis(MOUSE_DURATION_MILLS);
+	private final PauseTransition clickTimer = new PauseTransition(maxTimeBetweenSequentialClicks);
+	private final IntegerProperty sequentialClickCount = new SimpleIntegerProperty(0);
 	
 	@FXML TableView<AlarmTableItem> tvAlarms;
 	@FXML ToolBar tbAlarms;
@@ -133,13 +138,37 @@ public class AlarmController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		tCount.textProperty().bind(countAlarmsProperty);
-		
-		try {
-			setElementText(Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName())));
-		} catch (Exception e) {
-			System.out.println("///");
-		}
-		
+		setElementText(Main.getResourceBundle());		
+		setChoiceBoxes();		
+		setOnMouseClicked();		
+		changeRowFactory();
+        
+		tvAlarms.getColumns().forEach(c -> { c.setCellValueFactory(p -> Bindings.selectString(p.getValue(), c.getId())); });
+//      Bind the SortedList comparator to the TableView comparator.
+        sortedData.comparatorProperty().bind(tvAlarms.comparatorProperty());
+		tvAlarms.setItems(sortedData);
+//		-------------------------------------------------------------------------------
+		setVisibleAlarmColumns();
+		setCbColumns();		
+		setCurrentDayItems();
+	}
+	
+	private void setOnMouseClicked() {
+		clickTimer.setOnFinished(event -> {
+            int count = sequentialClickCount.get();
+            if (count == 2) {
+            	confirmAlarm(tvAlarms.getSelectionModel().getSelectedItem(), "");
+            }
+            sequentialClickCount.set(0);
+        });
+        
+        tvAlarms.setOnMouseClicked(event -> {
+	    	sequentialClickCount.set(sequentialClickCount.get() + 1);
+            clickTimer.playFromStart();
+		});
+	}
+	
+	private void setChoiceBoxes() {
 		try {
 			sysParamsPriority = MainStage.psClient.getTSysParam("ALARM_PRIORITY");
 			sysParamsEvent = MainStage.psClient.getTSysParam("ALARM_EVENT");
@@ -150,26 +179,9 @@ public class AlarmController implements Initializable {
 		
 		cbPriority = setChoiceBoxItems(sysParamsPriority, cbPriority);
 		cbEvent = setChoiceBoxItems(sysParamsEvent, cbEvent);
-
-		tvAlarms.getColumns().forEach(c -> { c.setCellValueFactory(p -> Bindings.selectString(p.getValue(), c.getId())); });
-		
-		Duration maxTimeBetweenSequentialClicks = Duration.millis(MOUSE_DURATION_MILLS);
-        PauseTransition clickTimer = new PauseTransition(maxTimeBetweenSequentialClicks);
-        final IntegerProperty sequentialClickCount = new SimpleIntegerProperty(0);
-        clickTimer.setOnFinished(event -> {
-            int count = sequentialClickCount.get();
-            if (count == 2) {
-            	confirmAlarm(tvAlarms.getSelectionModel().getSelectedItem(), "");
-            }
-
-            sequentialClickCount.set(0);
-        });
-        
-        tvAlarms.setOnMouseClicked(event -> {
-	    	sequentialClickCount.set(sequentialClickCount.get() + 1);
-            clickTimer.playFromStart();
-		});
-		
+	}
+	
+	private void changeRowFactory() {
 		tvAlarms.setRowFactory(new Callback<TableView<AlarmTableItem>, TableRow<AlarmTableItem>>() {			
 			@Override
 			public TableRow<AlarmTableItem> call(TableView<AlarmTableItem> param) {
@@ -200,18 +212,14 @@ public class AlarmController implements Initializable {
 	            return row;
 			}
 		});
-        
-//      Bind the SortedList comparator to the TableView comparator.
-        sortedData.comparatorProperty().bind(tvAlarms.comparatorProperty());
-		tvAlarms.setItems(sortedData);
-//		-------------------------------------------------------------------------------
-		setVisibleAlarmColumns();
-		setCbColumns();
-		
-		tbAlarms.setOnMouseReleased(e -> {
-			System.out.println(tbAlarms.getBackground().getFills().get(0).getFill());
-			System.out.println(tbAlarms.getBackground().getFills().get(1).getFill());
-		});
+	}
+	
+	private void setCurrentDayItems() {
+		try {
+			MainStage.psClient.getAlarmsCurrentDay().forEach(this::addAlarm);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void setVisibleAlarmColumns() {
@@ -242,6 +250,7 @@ public class AlarmController implements Initializable {
 		cbColumns.getItems().addAll(checkItems);
 	}
 	
+	@Override
 	public void setElementText(ResourceBundle rb) {
 		lAlarms.setText(rb.getString("keyAlarms"));
 		lPriority.setText(rb.getString("keyPriority"));

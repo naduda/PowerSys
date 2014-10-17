@@ -2,14 +2,15 @@ package controllers;
 
 import java.util.ResourceBundle;
 
-import ui.alarm.AlarmTableItem;
+import controllers.interfaces.IControllerInit;
+import ui.tables.AlarmTableItem;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
-public class TrCommentController {
+public class TrCommentController implements IControllerInit {
 
 	@FXML Button btnOK;
 	@FXML Button btnCancel;
@@ -32,6 +33,7 @@ public class TrCommentController {
 		((Stage)((Button)event.getSource()).getScene().getWindow()).close();
 	}
 	
+	@Override
 	public void setElementText(ResourceBundle rb) {
 		btnOK.setText(rb.getString("keySet"));
 		btnCancel.setText(rb.getString("keyCancel"));

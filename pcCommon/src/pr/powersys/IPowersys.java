@@ -8,6 +8,7 @@ import java.util.Map;
 
 import pr.model.Alarm;
 import pr.model.ConfTree;
+import pr.model.ControlJournalItem;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
 import pr.model.LinkedValue;
@@ -65,4 +66,6 @@ public interface IPowersys extends Remote {
 	public TtranspHistory getTtranspHistory(int trref) throws RemoteException;
 	public void updateTtranspHistory(int trref, String txt) throws RemoteException;
 	public Ttransparant getTtransparantById(int idtr) throws RemoteException;
+	
+	public List<ControlJournalItem> getJContrlItems(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException;
 } 

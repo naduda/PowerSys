@@ -2,12 +2,12 @@
 <settings>
     <windowstate x="1362.0" y="-4.0" width="1928.0" height="1088.0">
         <alarmDividerPositions>0.7572314049586777</alarmDividerPositions>
-        <treeDividerPositions>0.11626694473409802</treeDividerPositions>
+        <treeDividerPositions>0.11783107403545359</treeDividerPositions>
     </windowstate>
     <schemeSettings>
         <schemeName>ПС-110 кВ 'Блок-4'</schemeName>
         <schemeScale>1.0293526811890934</schemeScale>
     </schemeSettings>
-    <localeName>uk</localeName>
+    <localeName>en</localeName>
     <showAlarmColumns>1:1:1:1:1:1:0:1:1:1:1:1:0:</showAlarmColumns>
 </settings>

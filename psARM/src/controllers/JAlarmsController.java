@@ -16,21 +16,13 @@ import javafx.fxml.Initializable;
 public class JAlarmsController implements Initializable {
 	@FXML private AlarmController bpAlarmsController;
 	
-	@FXML private JToolBarController tbAlarmsController;
+	@FXML private JToolBarController tbJournalController;
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
-		tbAlarmsController.dpBegin.setOnHidden(new DateHandler());
-		tbAlarmsController.dpEnd.setOnHidden(new DateHandler());
-	}
-	
-	public void setAlarms() {
-		try {
-			MainStage.psClient.getAlarmsCurrentDay().forEach(a -> { bpAlarmsController.addAlarm(a); });
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
+	public void initialize(URL url, ResourceBundle bundle) {
+		tbJournalController.dpBegin.setOnHidden(new DateHandler());
+		tbJournalController.dpEnd.setOnHidden(new DateHandler());
 	}
 	
 	public AlarmController getAlarmsController() {
@@ -42,11 +34,11 @@ public class JAlarmsController implements Initializable {
 		@Override
 		public void handle(Event e) {
 			try {
-				List<Alarm> alarms = MainStage.psClient.getAlarmsPeriod(Timestamp.valueOf(tbAlarmsController.dpBegin.getValue().atTime(0, 0)), 
-						Timestamp.valueOf(tbAlarmsController.dpEnd.getValue().atTime(0, 0)));
+				List<Alarm> alarms = MainStage.psClient.getAlarmsPeriod(Timestamp.valueOf(tbJournalController.dpBegin.getValue().atTime(0, 0)), 
+						Timestamp.valueOf(tbJournalController.dpEnd.getValue().atTime(0, 0)));
 				
 				bpAlarmsController.clearTable();
-				alarms.forEach(a -> { bpAlarmsController.addAlarm(a); });
+				alarms.forEach(bpAlarmsController::addAlarm);
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}

@@ -5,13 +5,14 @@ import java.time.LocalDate;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import controllers.interfaces.IControllerInit;
 import ui.Main;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 
-public class JToolBarController implements Initializable {
+public class JToolBarController implements Initializable, IControllerInit {
 
 	@FXML DatePicker dpBegin;
 	@FXML DatePicker dpEnd;
@@ -27,6 +28,7 @@ public class JToolBarController implements Initializable {
 		setElementText(rb);
 	}
 	
+	@Override
 	public void setElementText(ResourceBundle rb) {
 		lPeriodFrom.setText(rb.getString("keyPeriodFrom"));
 		lTo.setText(rb.getString("keyTo"));

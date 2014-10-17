@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import controllers.interfaces.IControllerInit;
 import ui.Main;
 import ui.MainStage;
 import ui.data.DataFX;
@@ -30,7 +31,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.event.EventHandler;
 
-public class DataController implements Initializable {
+public class DataController implements Initializable, IControllerInit {
 	private final ObservableList<DataWrapper> dataWrapp = FXCollections.observableArrayList();
 	
 	@FXML Tab tTable;
@@ -75,6 +76,7 @@ public class DataController implements Initializable {
 		setElementText(rb);
 	}
 	
+	@Override
 	public void setElementText(ResourceBundle rb) {
 		cbIntegration.getItems().forEach(lv -> {
 			if (lv.getDt().toString().equals("0")) {

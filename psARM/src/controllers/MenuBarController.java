@@ -1,27 +1,27 @@
 package controllers;
 
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import controllers.interfaces.IControllerInit;
+import controllers.interfaces.StageLoader;
 import pr.common.Utils;
 import ui.Main;
 import ui.MainStage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-public class MenuBarController implements Initializable {
+public class MenuBarController implements Initializable, IControllerInit {
 	final FileChooser fileChooser = new FileChooser();
 	private String localeName;
 	private final Label lMenuExit = new Label();
@@ -36,7 +36,8 @@ public class MenuBarController implements Initializable {
 	@FXML MenuItem miLogin;
 	@FXML MenuItem miExit;
 	@FXML Menu menuJournals;
-	@FXML MenuItem miOpenJAlarms;
+	@FXML MenuItem miJAlarms;
+	@FXML MenuItem miJControl;
 	@FXML Menu menuReports;
 	@FXML Menu menuTools;
 	@FXML Menu menuSettings;
@@ -77,21 +78,18 @@ public class MenuBarController implements Initializable {
 	
 	@FXML
 	private void openJalarms(ActionEvent event) {
-		Stage stage = new Stage();
+		Point p = MouseInfo.getPointerInfo().getLocation();
+		StageLoader stage = new StageLoader("JournalAlarms.xml", Main.getResourceBundle().getString("keyJalarms"), p);
 		
-		try {
-			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/JournalAlarms.xml")));
-			Parent root = loader.load();
-			jAlarmController = loader.getController();
-			jAlarmController.setAlarms();
-			
-			Scene scene = new Scene(root);
-			stage.setScene(scene);
-			ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
-			stage.setTitle(rb.getString("keyJalarms"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		stage.setX(p.getX());
+		stage.setY(p.getY());
+	    stage.show();
+	}
+	
+	@FXML
+	private void openJControl(ActionEvent event) {
+		Point p = MouseInfo.getPointerInfo().getLocation();
+		StageLoader stage = new StageLoader("JournalControl.xml", Main.getResourceBundle().getString("keyJcontrol"), p);
 		
 	    stage.show();
 	}
@@ -109,6 +107,7 @@ public class MenuBarController implements Initializable {
 		Main.getProgramSettings().setLocaleName(localeName);
 	}
 	
+	@Override
 	public void setElementText(ResourceBundle rb) {
 		menuFile.setText(rb.getString("keyFile"));
 		miOpenScheme.setText(rb.getString("keyOpenFile"));
@@ -119,13 +118,14 @@ public class MenuBarController implements Initializable {
 		miLogin.setText(rb.getString("keyLogin"));
 		miExit.setText(rb.getString("keyExit"));
 		menuJournals.setText(rb.getString("keyJournals"));
-		miOpenJAlarms.setText(rb.getString("keyJalarms"));
+		miJAlarms.setText(rb.getString("keyJalarms"));
+		miJControl.setText(rb.getString("keyJcontrol"));
 		menuReports.setText(rb.getString("keyReports"));
 		menuTools.setText(rb.getString("keyTools"));
 		menuSettings.setText(rb.getString("keySettings"));
 		menuLanguage.setText(rb.getString("keyLanguage"));
 		lMenuExit.setText(rb.getString("keyExit"));
-		menuAbout.setText(rb.getString("keyAbout"));	
+		menuAbout.setText(rb.getString("keyAbout"));
 	}
 
 	public String getLocaleName() {

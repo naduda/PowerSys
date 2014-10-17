@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.xml.bind.JAXBException;
 
@@ -119,7 +121,11 @@ public class Main extends Application {
 		}
 		return ps;
 	}
-	//	--------------------------------------------------------------
+	
+	public static ResourceBundle getResourceBundle() {
+		return Controller.getResourceBundle(new Locale(ps.getLocaleName()));
+	}
+//	--------------------------------------------------------------
 	private final class Events {
 		public void exitProgram() {
 			Controller.exitProgram();

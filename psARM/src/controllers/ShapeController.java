@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import controllers.interfaces.IControllerInit;
 import pr.common.Utils;
 import pr.model.TtranspHistory;
 import pr.model.Ttransparant;
@@ -21,7 +22,7 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class ShapeController {
+public class ShapeController implements IControllerInit {
 
 	@FXML MenuItem miAddTransparant;
 	@FXML MenuItem miEdit;
@@ -108,6 +109,7 @@ public class ShapeController {
 		}
 	}
 	
+	@Override
 	public void setElementText(ResourceBundle rb) {
 		if (miAddTransparant != null) miAddTransparant.setText(rb.getString("keyAddTransparant"));
 		if (miEdit != null) miEdit.setText(rb.getString("keyEdit"));

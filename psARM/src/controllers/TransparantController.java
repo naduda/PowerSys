@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import controllers.interfaces.IControllerInit;
 import pr.model.Transparant;
 import ui.Main;
 import ui.MainStage;
@@ -31,7 +32,7 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-public class TransparantController implements Initializable {
+public class TransparantController implements Initializable, IControllerInit {
 	@FXML ListView<Transparant> lvTransparants;
 	@FXML TextArea txtArea;
 	@FXML Button btnOK;
@@ -67,6 +68,7 @@ public class TransparantController implements Initializable {
 		});
 	}
 	
+	@Override
 	public void setElementText(ResourceBundle rb) {
 		lListTransp.setText(rb.getString("keyListTransp"));
 		lReason.setText(rb.getString("keyReason"));

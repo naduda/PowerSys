@@ -11,6 +11,7 @@ import java.util.Map;
 
 import pr.model.Alarm;
 import pr.model.ConfTree;
+import pr.model.ControlJournalItem;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
 import pr.model.LinkedValue;
@@ -253,5 +254,10 @@ public class ClientPowerSys implements IPowersys {
 	@Override
 	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd)throws RemoteException {
 		return myServer.getAlarmsPeriod(dtBeg, dtEnd);
+	}
+
+	@Override
+	public List<ControlJournalItem> getJContrlItems(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
+		return myServer.getJContrlItems(dtBeg, dtEnd);
 	}
 } 

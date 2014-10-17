@@ -14,6 +14,7 @@ import java.util.ResourceBundle.Control;
 
 import javax.xml.bind.JAXBException;
 
+import controllers.interfaces.IControllerInit;
 import state.ProgramSettings;
 import state.SchemeSettings;
 import state.WindowState;
@@ -35,7 +36,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 
-public class Controller {
+public class Controller implements IControllerInit {
 	private final DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	private static final int WORK_STATUS = 1;
 	
@@ -52,6 +53,7 @@ public class Controller {
 		return ResourceBundle.getBundle("Language", locale, Main.classLoader, new UTF8Control());
 	}
 	
+	@Override
 	public void setElementText(ResourceBundle rb) {
 		menuBarController.setElementText(rb);
 		toolBarController.setElementText(rb);
