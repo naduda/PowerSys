@@ -18,6 +18,7 @@ public class Alarm implements Serializable {
 	private int alarmpriority;
 	private int eventtype;
 	private boolean alarmuser_ack;
+	private int status;
 	
 	private int alarmid;
 	private double objval;
@@ -199,6 +200,14 @@ public class Alarm implements Serializable {
 
 	public void setAlarmuser_ack(boolean alarmuser_ack) {
 		this.alarmuser_ack = alarmuser_ack;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
 	}
 	
 }

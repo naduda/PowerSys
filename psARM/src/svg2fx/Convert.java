@@ -18,6 +18,7 @@ public class Convert {
 	public static ScriptEngineManager manager = new ScriptEngineManager();
 	public static ScriptEngine engine = manager.getEngineByName("JavaScript");
 	public static List<LinkedValue> listSignals = new ArrayList<>();
+	public static int idScheme = 0;
 	
 	private static boolean wasInRoot = false;
 	private static Node getFXgroup(G g, boolean isInRoot, SVG svg) {
@@ -71,7 +72,11 @@ public class Convert {
 	public static Node getNodeBySVG(String filePath) {
 		EntityFromXML efx = new EntityFromXML();
 		SVG svg = (SVG)efx.getObject(filePath, SVG.class);
-		
+		try {
+			idScheme = Integer.parseInt(svg.getTitle());
+		} catch (Exception e) {
+			System.out.println("idScheme not set");
+		}
 		return getFXgroup(svg.getG(), false, svg);
 	}
 }

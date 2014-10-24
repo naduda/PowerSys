@@ -6,6 +6,7 @@
 
 <ContextMenu fx:id="shapeContextMenu" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ShapeController">
 	<items>
+		<Menu fx:id="mOperationMode" />
 		<MenuItem text="add" onAction="#add"/>
 		<SeparatorMenuItem/>
 		<MenuItem fx:id="miAddTransparant" text="Встановити транспарант" onAction="#addTransparant"/>

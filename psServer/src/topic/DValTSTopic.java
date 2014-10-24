@@ -3,8 +3,6 @@ package topic;
 import java.sql.Timestamp;
 import java.util.List;
 
-import actualdata.LastData;
-
 import com.sun.messaging.ConnectionFactory;
 
 import jdbc.PostgresDB;
@@ -33,12 +31,6 @@ public class DValTSTopic extends ASender {
 
 					msgObject.setObject(ts);
 					producer.send(topic, msgObject);
-					DvalTS oldTS = LastData.getOldTS().get(ts.getSignalref());
-					if (oldTS != null) {
-						oldTS.setVal(ts.getVal());
-					} else {
-						LastData.getOldTS().put(ts.getSignalref(), ts);
-					}
 				}
 			}
 		} catch (Exception e) {

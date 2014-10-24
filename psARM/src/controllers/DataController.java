@@ -89,6 +89,10 @@ public class DataController implements Initializable, IControllerInit {
 		lTo.setText(rb.getString("keyTo"));
 		tTable.setText(rb.getString("keyTable"));
 		tChart.setText(rb.getString("keyChart"));
+		
+		tvChart.getColumns().forEach(c -> {
+			c.setText(rb.getString("key_" + c.getId()));
+		});
 	}
 	
 	@SuppressWarnings("unchecked")

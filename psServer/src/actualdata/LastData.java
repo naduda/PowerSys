@@ -6,27 +6,19 @@ import java.util.List;
 import java.util.Map;
 
 import pr.model.Alarm;
-import pr.model.ConfTree;
 import pr.model.DvalTI;
-import pr.model.DvalTS;
-import pr.model.SPunit;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import pr.model.Transparant;
-import pr.model.Tsignal;
 
 public class LastData {
 
 	private static long lastDT = 0;
 	
-	private static Map<Integer, Tsignal> signals = new HashMap<>();
-	private static Map<Integer, SPunit> spunits = new HashMap<>();
-	private static Map<Integer, ConfTree> confTree = new HashMap<>();
 	private static List<Alarm> alarms = new ArrayList<>();
 	private static List<TSysParam> tsysparmams = new ArrayList<>();
 	private static List<TViewParam> tviewparams = new ArrayList<>();
 	private static Map<Integer, DvalTI> oldTI = new HashMap<>();
-	private static Map<Integer, DvalTS> oldTS = new HashMap<>();
 	private static Map<Integer, Transparant> transparants = new HashMap<>();
 	
 	public static List<Alarm> getAlarms() {
@@ -49,14 +41,6 @@ public class LastData {
 		LastData.tsysparmams = tsysparmams;
 	}
 
-	public static Map<Integer, SPunit> getSpunits() {
-		return spunits;
-	}
-
-	public static void setSpunits(Map<Integer, SPunit> spunits) {
-		LastData.spunits = spunits;
-	}
-
 	public static List<TViewParam> getTviewparams() {
 		return tviewparams;
 	}
@@ -71,30 +55,6 @@ public class LastData {
 
 	public static void setOldTI(Map<Integer, DvalTI> oldTI) {
 		LastData.oldTI = oldTI;
-	}
-
-	public static Map<Integer, DvalTS> getOldTS() {
-		return oldTS;
-	}
-
-	public static void setOldTS(Map<Integer, DvalTS> oldTS) {
-		LastData.oldTS = oldTS;
-	}
-
-	public static Map<Integer, Tsignal> getSignals() {
-		return signals;
-	}
-
-	public static void setSignals(Map<Integer, Tsignal> signals) {
-		LastData.signals = signals;
-	}
-
-	public static Map<Integer, ConfTree> getConfTree() {
-		return confTree;
-	}
-
-	public static void setConfTree(Map<Integer, ConfTree> confTree) {
-		LastData.confTree = confTree;
 	}
 
 	public static Map<Integer, Transparant> getTransparants() {

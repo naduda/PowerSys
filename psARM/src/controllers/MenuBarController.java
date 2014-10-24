@@ -4,12 +4,18 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.io.File;
 import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import controllers.interfaces.IControllerInit;
 import controllers.interfaces.StageLoader;
+import controllers.journals.JAlarmsController;
 import pr.common.Utils;
+import pr.model.DvalTS;
 import ui.Main;
 import ui.MainStage;
 import javafx.event.ActionEvent;
@@ -38,8 +44,10 @@ public class MenuBarController implements Initializable, IControllerInit {
 	@FXML Menu menuJournals;
 	@FXML MenuItem miJAlarms;
 	@FXML MenuItem miJControl;
+	@FXML MenuItem miJNormalMode;
 	@FXML Menu menuReports;
 	@FXML Menu menuTools;
+	@FXML MenuItem miSetBaseVal;
 	@FXML Menu menuSettings;
 	@FXML Menu menuLanguage;
 	@FXML Menu menuExit;
@@ -95,6 +103,34 @@ public class MenuBarController implements Initializable, IControllerInit {
 	}
 	
 	@FXML
+	private void openJNormalMode(ActionEvent event) {
+		Point p = MouseInfo.getPointerInfo().getLocation();
+		StageLoader stage = new StageLoader("JournalNormalMode.xml", Main.getResourceBundle().getString("keyJNoralMode"), p);
+		
+	    stage.show();
+	}
+	
+	@FXML
+	private void setBaseVal(ActionEvent event) {
+		try {
+			final Map<Integer, DvalTS> oldTS =  MainStage.psClient.getOldTS();
+			final List<String> query = new ArrayList<>();
+			query.add("");
+			Main.mainScheme.getSignalsTS().forEach(s -> {
+				DvalTS ts = oldTS.get(s);
+				MainStage.signals.get(ts.getSignalref()).setBaseval(ts.getVal());
+				if (ts != null) {
+					String sq = String.format("update t_signal set baseval=%s where idSignal=%s;", ts.getVal(), s);
+					query.set(0, query.get(0) + sq);
+				}
+			});
+			MainStage.psClient.update(query.get(0));
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@FXML
 	private void exit(ActionEvent event) {
 		Controller.exitProgram();
 	}
@@ -120,8 +156,10 @@ public class MenuBarController implements Initializable, IControllerInit {
 		menuJournals.setText(rb.getString("keyJournals"));
 		miJAlarms.setText(rb.getString("keyJalarms"));
 		miJControl.setText(rb.getString("keyJcontrol"));
+		miJNormalMode.setText(rb.getString("keyJNoralMode"));
 		menuReports.setText(rb.getString("keyReports"));
 		menuTools.setText(rb.getString("keyTools"));
+		miSetBaseVal.setText(rb.getString("keySetBaseVal"));
 		menuSettings.setText(rb.getString("keySettings"));
 		menuLanguage.setText(rb.getString("keyLanguage"));
 		lMenuExit.setText(rb.getString("keyExit"));

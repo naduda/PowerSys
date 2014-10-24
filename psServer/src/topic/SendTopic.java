@@ -18,10 +18,7 @@ import javax.jms.TopicPublisher;
 
 import jdbc.PostgresDB;
 import pr.model.Alarm;
-import pr.model.ConfTree;
 import pr.model.DvalTI;
-import pr.model.DvalTS;
-import pr.model.SPunit;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import pr.model.Transparant;
@@ -52,7 +49,7 @@ public class SendTopic implements Runnable {
 
 	public SendTopic(String dbServer, String dbName, String dbUser, String dbPassword) {
 		try {
-			jConn = new JMSConnection("127.0.0.1", "7676", "admin", "admin");
+			jConn = new JMSConnection("0.0.0.0", "7676", "admin", "admin");
 			setConnectionParams(dbServer, dbName, dbUser, dbPassword);
 			pdb = getPdb();
 			
@@ -69,31 +66,15 @@ public class SendTopic implements Runnable {
 	public void run() {
 		double start = System.currentTimeMillis();
 		System.out.println("START at " + LocalDateTime.now());
-		while (!isDataFromDB) {
-			Map<Integer, Tsignal> signals = pdb.getTsignalsMap();
-			LastData.setSignals(signals);
-			isDataFromDB = signals == null ? false : true;
-		}
-		isDataFromDB = false;
-		System.out.println("signals - " + (System.currentTimeMillis() - start) / 1000 + " s");
-		start = System.currentTimeMillis();
 		
+		Map<Integer, Tsignal> signals2 = null;
 		while (!isDataFromDB) {
-			Map<Integer, SPunit> spunit = pdb.getSPunitMap();
-			LastData.setSpunits(spunit);
-			isDataFromDB = spunit == null ? false : true;
+			signals2 = pdb.getTsignalsMap();
+			isDataFromDB = signals2 == null ? false : true;
 		}
 		isDataFromDB = false;
-		System.out.println("sp_units - " + (System.currentTimeMillis() - start) / 1000 + " s");
-		start = System.currentTimeMillis();
-		
-		while (!isDataFromDB) {
-			Map<Integer, ConfTree> ctm = pdb.getConfTreeMap();
-			LastData.setConfTree(ctm);
-			isDataFromDB = ctm == null ? false : true;
-		}
-		isDataFromDB = false;
-		System.out.println("ConfTree - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		System.out.println("t_signal - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		final Map<Integer, Tsignal> signals = signals2;
 		start = System.currentTimeMillis();
 		
 		while (!isDataFromDB) {
@@ -133,24 +114,14 @@ public class SendTopic implements Runnable {
 		
 		while (!isDataFromDB) {
 			Map<Integer, DvalTI> oldTIs = pdb.getOldTI().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTI::getSignalref, obj -> obj));
-			oldTIs.values().forEach(ti -> { ti.setVal(ti.getVal() * LastData.getSignals().get(ti.getSignalref()).getKoef()); });
+			oldTIs.values().forEach(ti -> { ti.setVal(ti.getVal() * signals.get(ti.getSignalref()).getKoef()); });
 			LastData.setOldTI(oldTIs);
 			isDataFromDB = oldTIs == null ? false : true;
 		}
 		isDataFromDB = false;
 		System.out.println("oldTI - " + (System.currentTimeMillis() - start) / 1000 + " s");
 		start = System.currentTimeMillis();
-		
-		while (!isDataFromDB) {
-			Map<Integer, DvalTS> oldTSs = pdb.getOldTS().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTS::getSignalref, obj -> obj));
-			oldTSs.values().forEach(ti -> { ti.setVal(ti.getVal() * LastData.getSignals().get(ti.getSignalref()).getKoef()); });
-			LastData.setOldTS(oldTSs);
-			isDataFromDB = oldTSs == null ? false : true;
-		}
-		isDataFromDB = false;
-		System.out.println("oldTS - " + (System.currentTimeMillis() - start) / 1000 + " s");
-		start = System.currentTimeMillis();
-		
+				
 		while (!isDataFromDB) {
 			Map<Integer, Transparant> transparants = pdb.getTransparants();
 			LastData.setTransparants(transparants);
@@ -159,7 +130,7 @@ public class SendTopic implements Runnable {
 		System.out.println("transparants - " + (System.currentTimeMillis() - start) / 1000 + " s");
 		start = System.currentTimeMillis();
 		
-		new Thread(new DValTITopic(factory, jConn, "DvalTI", LastData.getSignals(), getPdb()), "SendDValTI_Thread").start();
+		new Thread(new DValTITopic(factory, jConn, "DvalTI", signals, getPdb()), "SendDValTI_Thread").start();
 		new Thread(new DValTSTopic(factory, jConn, "DvalTS", getPdb()), "SendDValTS_Thread").start();
 		new Thread(new AlarmsTopic(factory, jConn, "Alarms", getPdb()), "SendAlarms_Thread").start();
 		new Thread(new TransparantsTopic(factory, jConn, "Transparants", getPdb()), "Transparants_Thread").start();
@@ -177,6 +148,14 @@ public class SendTopic implements Runnable {
 			this.dbPort = "5432";
 			this.dbName = "PowerSys_Donetsk_25";
 			this.dbName = "Zaporizh";
+			this.dbUser = "postgres";
+			this.dbPassword = "12345678";
+			return;
+		}
+		if (dbServer.equals("2")) {
+			this.dbServer = "10.248.194.104";
+			this.dbPort = "5432";
+			this.dbName = "PowerSys";
 			this.dbUser = "postgres";
 			this.dbPassword = "12345678";
 			return;

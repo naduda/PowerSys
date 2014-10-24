@@ -1,6 +1,6 @@
 package topic.messagelisteners;
 
-import controllers.JAlarmsController;
+import controllers.journals.JAlarmsController;
 import pr.model.Alarm;
 import ui.MainStage;
 

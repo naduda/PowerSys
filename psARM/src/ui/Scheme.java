@@ -58,27 +58,30 @@ public class Scheme extends ScrollPane {
 		this();
 		
 		setSchemeName(fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf(".")));
-		setIdScheme(1);
 		
 		root = (Group) Convert.getNodeBySVG(fileName);
+		setIdScheme(Convert.idScheme);
 		rootScheme.getChildren().add(root);
 		
 		Convert.listSignals.forEach(e -> {
-			try {
-				int typeSignal = MainStage.signals.get(e.getKey()).getTypesignalref();
-				
-				switch (typeSignal) {
-				case 1:
-					signalsTI.add(e.getKey());
-					break;
-				case 2:
-					signalsTS.add(e.getKey());
-					break;
-				default:
-					break;
+			if (e.getKey() != 0) {
+				try {
+					int typeSignal = MainStage.signals.get(e.getKey()).getTypesignalref();
+					
+					switch (typeSignal) {
+					case 1:
+						signalsTI.add(e.getKey());
+						break;
+					case 2:
+						signalsTS.add(e.getKey());
+						break;
+					default:
+						break;
+					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					System.err.println(e.getKey());
 				}
-			} catch (Exception e1) {
-				System.err.println(e.getKey());
 			}
 		});
 		

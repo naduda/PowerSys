@@ -22,12 +22,18 @@ import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
 import pr.model.Tuser;
+import pr.model.VsignalView;
       
 public interface IPowersys extends Remote {
 	public static final int RMI_PORT = 1099;
 	public static final String bindString = String.format("rmi://localhost:%s/PowerSysService", RMI_PORT);
 	
+//	==============================================================================
+	void update(String query) throws RemoteException;
+//	==============================================================================
+	
 	public Map<Integer, Tsignal> getTsignalsMap() throws RemoteException;
+	public Map<Integer, VsignalView> getVsignalViewMap() throws RemoteException;
 	public Map<Integer, ConfTree> getConfTreeMap() throws RemoteException;
 	public List<Alarm> getAlarmsCurrentDay() throws RemoteException;
 	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException;
@@ -68,4 +74,8 @@ public interface IPowersys extends Remote {
 	public Ttransparant getTtransparantById(int idtr) throws RemoteException;
 	
 	public List<ControlJournalItem> getJContrlItems(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException;
+	void setBaseVal(int idSignal, double val) throws RemoteException;
+	void updateTsignalStatus(int idSignal, int status) throws RemoteException;
+	
+	void insertDeventLog(int eventtype, int objref, Timestamp eventdt, double objval, int objstatus, int authorref) throws RemoteException;
 } 

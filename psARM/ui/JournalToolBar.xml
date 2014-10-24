@@ -9,9 +9,9 @@
 <?import pr.model.LinkedValue?>
 <?import javafx.scene.control.DatePicker?>
 
-<ToolBar xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.JToolBarController">
+<ToolBar xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.journals.JToolBarController">
 	<Label fx:id="lPeriodFrom" text="Період: з "/>
-	<DatePicker fx:id="dpBegin" prefWidth="100"/>
+	<DatePicker fx:id="dpBegin" prefWidth="110"/>
 	<Label fx:id="lTo" text="г. по "/>
-	<DatePicker fx:id="dpEnd" prefWidth="100"/>
+	<DatePicker fx:id="dpEnd" prefWidth="110"/>
 </ToolBar>

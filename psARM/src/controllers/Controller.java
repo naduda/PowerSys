@@ -152,7 +152,7 @@ public class Controller implements IControllerInit {
 		Convert.listSignals.stream().filter(f -> f.getKey().equals(idSigal)).forEach(s -> {
 			EShape tt = Main.mainScheme.getDeviceById(s.getValue());
 			if (tt == null) return;
-			int status = MainStage.psClient.getTsignalsMap().get(idSigal).getStatus();
+			int status = MainStage.signals.get(idSigal).getStatus();
 			if (status == WORK_STATUS) {
 				tt.updateSignal(sec);
 			}

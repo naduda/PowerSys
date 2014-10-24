@@ -1,25 +1,38 @@
 package svg2fx.fxObjects;
 
+import java.io.IOException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 import javax.script.Invocable;
 import javax.script.ScriptException;
 
+import controllers.Controller;
+import controllers.ShapeController;
 import pr.common.Utils;
+import pr.model.TSysParam;
 import pr.model.Tsignal;
 import svg2fx.Convert;
 import svg2fx.SignalState;
 import ui.Main;
 import ui.MainStage;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
@@ -31,9 +44,15 @@ public class EShape extends AShape {
 	private Map<String, Integer> signals = new HashMap<>();
 	private int id = -1;
 	private int idTS = -1;
+	private int status = 1;
+	private String scriptName;
 	private boolean textShape;
 	private ScriptClass scripts;
 	private String scriptPath;
+	private Tsignal tSignalID;
+	private Tsignal tSignalIDTS;
+	
+	private ContextMenu contextMenu;
 	
 	private HashMap<String, String> custProps;
 	@SuppressWarnings("unchecked")
@@ -46,6 +65,8 @@ public class EShape extends AShape {
 			id = v != null ? Integer.parseInt(v) : 0;
 			v = custProps.get("idTS");
 			idTS = v != null ? Integer.parseInt(v) : 0;
+			v = custProps.get("script");
+			scriptName = v != null ? v : null;
 			v = custProps.get("signals");
 			if (v != null) {
 				StringTokenizer st = new StringTokenizer(v, "|");
@@ -60,11 +81,88 @@ public class EShape extends AShape {
 				setValue(0.0, "id");
 			}
 		}
+	    
+	    rect.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	        @Override
+	        public void handle(MouseEvent t) {
+	            if(t.getButton().toString().equals("SECONDARY")) {
+	            	setContextMenu();
+	            	contextMenu.show(rect, t.getScreenX(), t.getSceneY());
+	            }
+	        }
+	    });
+	}
+	
+	@Override
+	public void onDoubleClick() {
+		runScriptByName("onDoubleClick");
+	}
+	
+	@Override
+	public void onValueChange(Double newValue) {
+		runScriptByName("onValueChange");
+	}
+	
+	@Override
+	public void onSignalUpdate() {
+		runScriptByName("onSignalUpdate");
+		getTsignalProp().set(false);
+	}
+	
+	private void runScriptByName(String scriptName) {
+		if (TEXT_CONST.equals(getId())) return;
+		double start = System.currentTimeMillis();
+		
+		String script = "";
+		try {
+			script = getScripts().getScriptByName(scriptName);
+			
+			if (script != null) {
+				Convert.engine.eval(script);
+				Invocable inv = (Invocable) Convert.engine;
+	            inv.invokeFunction(scriptName, this);
+			}
+		} catch (ScriptException | NoSuchMethodException e) {
+			System.out.println("Script not found - " + script);
+			e.printStackTrace();
+		}
+		
+		if ((System.currentTimeMillis() - start) > 10)
+        	System.out.println((System.currentTimeMillis() - start) + " mc, :" + scriptName + " -> " + getId());
+	}
+	
+	private void setContextMenu() {
+		try {
+			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/ShapeContextMenu.xml")));
+			contextMenu = loader.load();
+			ShapeController shapeController = loader.getController();
+			contextMenu.setId(contextMenu.getId() + "_" + getId());
+			 
+			if (idTS < 1 && id < 1) {
+				shapeController.getmOperationMode().setDisable(true);
+			} else {
+				Map<String, TSysParam> modes = MainStage.psClient.getTSysParam("SIGNAL_STATUS");
+				modes.values().forEach(m -> {
+					CheckMenuItem mi = new CheckMenuItem(m.getParamdescr());
+					mi.setId("miMode_" + m.getVal());
+					mi.setSelected(Integer.parseInt(m.getVal()) == getStatus());
+					mi.setOnAction(shapeController::changeMode);
+					shapeController.getmOperationMode().getItems().add(mi);
+				});
+			}
+			contextMenu.setOnShowing(e -> {
+				ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
+				shapeController.setElementText(rb);
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void setTS(int idSignal, int val) {
 		try {
 			MainStage.psClient.setTS(idSignal, val, Main.mainScheme.getIdScheme());
+			System.out.println(Main.mainScheme.getIdScheme());
 		} catch (RemoteException | NumberFormatException e) {
 			e.printStackTrace();
 		}
@@ -146,7 +244,9 @@ public class EShape extends AShape {
 	}
 
 	public String getScriptPath() {
-		if (custProps != null) {
+		if (scriptName != null) {
+			scriptPath = Utils.getFullPath("./scripts/" + scriptName + ".js");
+		} else if (custProps != null) {
 			String sName = getId().replace("_", ".");
 			sName = sName.indexOf(".") > -1 ? sName.substring(0, sName.indexOf(".")) : sName;
 			if (TEXT_CONST.equals(sName)) {
@@ -160,41 +260,10 @@ public class EShape extends AShape {
 	public void setScriptPath(String scriptPath) {
 		this.scriptPath = scriptPath;
 	}
-
-	@Override
-	public void onDoubleClick() {
-		runScriptByName("onDoubleClick");
-	}
-	
-	@Override
-	public void onValueChange(Double newValue) {
-		runScriptByName("onValueChange");
-	}
-	
-	private void runScriptByName(String scriptName) {
-		if (TEXT_CONST.equals(getId())) return;
-		double start = System.currentTimeMillis();
-		
-		String script = "";
-		try {
-			script = getScripts().getScriptByName(scriptName);
-			
-			if (script != null) {
-				Convert.engine.eval(script);
-				Invocable inv = (Invocable) Convert.engine;
-	            inv.invokeFunction(scriptName, this);
-			}
-		} catch (ScriptException | NoSuchMethodException e) {
-			System.out.println("Script not found - " + script);
-		}
-		
-		if ((System.currentTimeMillis() - start) > 10)
-        	System.out.println((System.currentTimeMillis() - start) + " mc, :" + scriptName + " -> " + getId());
-	}
 	
 	private int getStateVal(int idSignal, String denom) {
 		try {
-			Tsignal tSignal = MainStage.psClient.getTsignalsMap().get(idSignal);
+			Tsignal tSignal = MainStage.tsignals.get(idSignal);
 			return MainStage.psClient.getSpTuCommand().stream()
 				.filter(f -> f.getObjref() == tSignal.getStateref() && f.getDenom().equals(denom.toUpperCase()))
 				.collect(Collectors.toList()).get(0).getVal();
@@ -210,5 +279,28 @@ public class EShape extends AShape {
 	
 	public int getStateId(String denom) {
 		return getStateVal(id, denom);
+	}
+
+	public int getStatus() {
+		Tsignal tSignal = MainStage.tsignals.get(idTS);
+		return tSignal != null ? tSignal.getStatus() : status;
+	}
+	
+	public void setShapeFill(Shape sh, String colorName1, String colorName2) {
+		if (getStatus() == 1) {
+			sh.setFill(getColorByName(getValue().getIdTSValue() == getStateIdTS("ON") ? "red" : "Lime"));
+		} else {
+			sh.setFill(getColorByName("yellow", getValue().getIdTSValue() == getStateIdTS("ON") ? "red" : "Lime"));
+		}
+	}
+
+	public Tsignal gettSignalID() {
+		tSignalID = MainStage.tsignals.get(id);
+		return tSignalID;
+	}
+	
+	public Tsignal gettSignalIDTS() {
+		tSignalIDTS = MainStage.tsignals.get(idTS);
+		return tSignalIDTS;
 	}
 }

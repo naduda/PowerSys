@@ -3,6 +3,7 @@ package controllers;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -10,6 +11,7 @@ import controllers.interfaces.IControllerInit;
 import pr.common.Utils;
 import pr.model.TtranspHistory;
 import pr.model.Ttransparant;
+import svg2fx.fxObjects.EShape;
 import ui.Main;
 import ui.MainStage;
 import javafx.event.ActionEvent;
@@ -17,6 +19,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.shape.Shape;
 import javafx.stage.Modality;
@@ -24,6 +28,7 @@ import javafx.stage.Stage;
 
 public class ShapeController implements IControllerInit {
 
+	@FXML Menu mOperationMode;
 	@FXML MenuItem miAddTransparant;
 	@FXML MenuItem miEdit;
 	@FXML MenuItem miDelete;
@@ -111,8 +116,33 @@ public class ShapeController implements IControllerInit {
 	
 	@Override
 	public void setElementText(ResourceBundle rb) {
+		if (mOperationMode != null) mOperationMode.setText(rb.getString("keyOperationMode"));
 		if (miAddTransparant != null) miAddTransparant.setText(rb.getString("keyAddTransparant"));
 		if (miEdit != null) miEdit.setText(rb.getString("keyEdit"));
 		if (miDelete != null) miDelete.setText(rb.getString("keyDelete"));
+	}
+
+	public Menu getmOperationMode() {
+		return mOperationMode;
+	}
+	
+	public void changeMode(ActionEvent event) {
+		CheckMenuItem mi = (CheckMenuItem)event.getSource();
+		String id = mi.getParentMenu().getParentPopup().getId();
+		id = id.substring(id.indexOf("_") + 1);
+		EShape sh = (EShape) Main.mainScheme.getRoot().lookup("#" + id);
+		int newStatus = Integer.parseInt(mi.getId().substring(mi.getId().indexOf("_") + 1));
+		if (newStatus != sh.getStatus()) {
+			try {
+				MainStage.psClient.updateTsignalStatus(sh.gettSignalIDTS().getIdsignal(), newStatus);
+				MainStage.tsignals.get(sh.gettSignalIDTS().getIdsignal()).setStatus(newStatus);
+				
+				MainStage.psClient.insertDeventLog(5, sh.gettSignalIDTS().getIdsignal(), 
+						new Timestamp(System.currentTimeMillis()), newStatus, sh.getStatus(), -1);		
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+		sh.getTsignalProp().set(true);
 	}
 }

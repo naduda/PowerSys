@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.Text?> 
+
+<BorderPane fx:id="jNormalMode" prefWidth="1000" prefHeight="500" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.journals.JNormalModeController" styleClass="root">
+		
+	<top>
+		<BorderPane>
+			<padding><Insets top="0" right="0" bottom="0" left="0"/></padding>
+
+			<left>
+				<fx:include fx:id="tbJournal" source="JournalToolBar.xml" />
+			</left>
+
+			<center>
+				<HBox styleClass="tool-bar">
+				</HBox>
+			</center>
+
+			<right>
+				<HBox fx:id="hBoxCount" alignment="center_right" styleClass="tool-bar">
+					<padding><Insets top="0" right="10" bottom="0" left="0"/></padding>
+					<Label fx:id="lCount"/>
+					<Text fx:id="tCount" text="" />
+				</HBox>
+			</right>
+		</BorderPane>
+	</top>
+
+	<center>
+		<fx:include fx:id="bpNormalMode" source="NormalModeTable.xml" />
+	</center>
+
+	<stylesheets>
+		<URL value="@Main.css" />
+	</stylesheets>
+</BorderPane>

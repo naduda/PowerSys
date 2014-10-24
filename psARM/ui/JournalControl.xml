@@ -7,7 +7,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.text.Text?> 
 
-<BorderPane fx:id="jControls" prefWidth="1000" prefHeight="500" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.JControlController" styleClass="root">
+<BorderPane fx:id="jControls" prefWidth="1000" prefHeight="500" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.journals.JControlController" styleClass="root">
 		
 	<top>
 		<BorderPane>

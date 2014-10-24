@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <settings>
     <windowstate x="1362.0" y="-4.0" width="1928.0" height="1088.0">
-        <alarmDividerPositions>0.7572314049586777</alarmDividerPositions>
-        <treeDividerPositions>0.11783107403545359</treeDividerPositions>
+        <alarmDividerPositions>0.7262396694214877</alarmDividerPositions>
+        <treeDividerPositions>0.12773722627737227</treeDividerPositions>
     </windowstate>
     <schemeSettings>
         <schemeName>ПС-110 кВ 'Блок-4'</schemeName>
-        <schemeScale>1.0293526811890934</schemeScale>
+        <schemeScale>0.999429638131271</schemeScale>
     </schemeSettings>
-    <localeName>en</localeName>
+    <localeName>ru</localeName>
     <showAlarmColumns>1:1:1:1:1:1:0:1:1:1:1:1:0:</showAlarmColumns>
 </settings>

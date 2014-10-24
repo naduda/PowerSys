@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
@@ -9,7 +10,7 @@
 <?import pr.model.LinkedValue?>
 <?import javafx.scene.control.DatePicker?>
 
-<BorderPane fx:id="bpData" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.DataController">
+<BorderPane fx:id="bpData" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.DataController" styleClass="root">
 	<padding>
 		<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
 	</padding>
@@ -30,10 +31,10 @@
 			</ChoiceBox>
 			<Separator/>
 			<Label fx:id="lPeriodFrom" text="Період: з "/>
-			<DatePicker fx:id="dpBegin" prefWidth="100"/>
+			<DatePicker fx:id="dpBegin" prefWidth="110"/>
 			<ComboBox fx:id="cbHourBegin"/>
 			<Label fx:id="lTo" text="г. по "/>
-			<DatePicker fx:id="dpEnd" prefWidth="100"/>
+			<DatePicker fx:id="dpEnd" prefWidth="110"/>
 			<ComboBox fx:id="cbHourEnd"/>
 		</ToolBar>
 	</top>
@@ -56,4 +57,7 @@
 		</TabPane>
 	</center>
 
+	<stylesheets>
+		<URL value="@Main.css" />
+	</stylesheets>
 </BorderPane>

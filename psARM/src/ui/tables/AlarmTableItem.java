@@ -10,8 +10,8 @@ import pr.model.TSysParam;
 import javafx.beans.property.SimpleStringProperty;
 
 public class AlarmTableItem {
-
 	private final SimpleDateFormat dFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss.SSS");
+	
 	private Map<String, TSysParam> sysParamsEvent;
 	private Map<String, TSysParam> sysParamsPriority;
 	private Map<String, TSysParam> sysParamsLogState;
@@ -42,14 +42,9 @@ public class AlarmTableItem {
 		}
 		
 		a.setpObject(MainStage.signals.get(a.getObjref()).getNamesignal());
-		a.setpLocation(MainStage.signals.get(a.getObjref()).getLocation());
+		a.setpLocation(MainStage.signals.get(a.getObjref()).getSignalpath());
 		
-    	String sAlarmMes = a.getAlarmmes();
-    	if (sAlarmMes.toLowerCase().startsWith("<vf::")) {
-    		sAlarmMes = sAlarmMes.substring(sAlarmMes.indexOf(":" + (int)a.getObjval()) + 1);
-    		sAlarmMes = sAlarmMes.substring(sAlarmMes.indexOf("=") + 1, sAlarmMes.indexOf(":"));
-    		a.setAlarmmes(sAlarmMes);
-    	}
+    	AlarmMessageParcer.setAlarmMessage(a);
 
     	a.setpEventType(sysParamsEvent.get("" + a.getEventtype()).getParamdescr());
     	a.setpAlarmPriority(sysParamsPriority.get("" + a.getAlarmpriority()).getParamdescr());
@@ -75,7 +70,7 @@ public class AlarmTableItem {
 		
 		setAlarm(a);
 	}
-	
+		
 	public String getPObject() {
         return pObject.get();
     }

@@ -25,10 +25,10 @@ import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
 import pr.model.Tuser;
+import pr.model.VsignalView;
 import pr.powersys.IPowersys;
 
-public class ClientPowerSys implements IPowersys {
-	
+public class ClientPowerSys implements IPowersys {	
 	private IPowersys myServer;
 	
 	public ClientPowerSys() {
@@ -39,6 +39,17 @@ public class ClientPowerSys implements IPowersys {
 			System.exit(0);
 		}
 	}
+	
+//	==============================================================================
+	@Override
+	public void update(String query) {
+		try {
+			myServer.update(query);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+//	==============================================================================
 
 	public Map<Integer, Tsignal> getTsignalsMap() {
 		try {
@@ -259,5 +270,30 @@ public class ClientPowerSys implements IPowersys {
 	@Override
 	public List<ControlJournalItem> getJContrlItems(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
 		return myServer.getJContrlItems(dtBeg, dtEnd);
+	}
+
+	@Override
+	public Map<Integer, VsignalView> getVsignalViewMap() {
+		try {
+			return myServer.getVsignalViewMap();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public void setBaseVal(int idSignal, double val) throws RemoteException {
+		myServer.setBaseVal(idSignal, val);
+	}
+
+	@Override
+	public void updateTsignalStatus(int idSignal, int status) throws RemoteException {
+		myServer.updateTsignalStatus(idSignal, status);
+	}
+
+	@Override
+	public void insertDeventLog(int eventtype, int objref, Timestamp eventdt, double objval, int objstatus, int authorref) throws RemoteException {
+		myServer.insertDeventLog(eventtype, objref, eventdt, objval, objstatus, authorref);
 	}
 } 

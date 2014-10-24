@@ -28,6 +28,7 @@ import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
 import pr.model.Tuser;
+import pr.model.VsignalView;
 
 public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	private static final long serialVersionUID = 1L;
@@ -39,15 +40,21 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 		LocateRegistry.createRegistry(RMI_PORT);
 		this.pdb = pdb;
 	}
+//	==============================================================================
+	@Override
+	public void update(String query) throws RemoteException {
+		pdb.update(query);
+	}
+//	==============================================================================
 
 	@Override
 	public Map<Integer, Tsignal> getTsignalsMap() throws RemoteException {
-		return LastData.getSignals();
+		return pdb.getTsignalsMap();
 	}
 
 	@Override
 	public Map<Integer, ConfTree> getConfTreeMap() throws RemoteException {
-		return LastData.getConfTree();
+		return pdb.getConfTreeMap();
 	}
 
 	@Override
@@ -79,8 +86,8 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	}
 
 	@Override
-	public Map<Integer, DvalTS> getOldTS() {
-		return LastData.getOldTS();
+	public Map<Integer, DvalTS> getOldTS() throws RemoteException {
+		return pdb.getOldTS().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTS::getSignalref, obj -> obj));
 	}
 
 	@Override
@@ -100,7 +107,7 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 
 	@Override
 	public Map<Integer, SPunit> getSPunitMap() throws RemoteException {
-		return LastData.getSpunits();
+		return pdb.getSPunitMap();
 	}
 
 	@Override
@@ -226,6 +233,26 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	@Override
 	public List<ControlJournalItem> getJContrlItems(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
 		return pdb.getJContrlItems(dtBeg, dtEnd);
+	}
+
+	@Override
+	public Map<Integer, VsignalView> getVsignalViewMap() throws RemoteException {
+		return pdb.getVsignalViewMap();
+	}
+
+	@Override
+	public void setBaseVal(int idSignal, double val) throws RemoteException {
+		pdb.setBaseVal(idSignal, val);
+	}
+	
+	@Override
+	public void updateTsignalStatus(int idSignal, int status) throws RemoteException {
+		pdb.updateTsignalStatus(idSignal, status);
+	}
+	
+	@Override
+	public void insertDeventLog(int eventtype, int objref, Timestamp eventdt, double objval, int objstatus, int authorref) throws RemoteException {
+		pdb.insertDeventLog(eventtype, objref, eventdt, objval, objstatus, authorref);
 	}
 }
  

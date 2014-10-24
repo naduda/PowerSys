@@ -80,6 +80,7 @@
 			<items>
 				<MenuItem fx:id="miJAlarms" onAction="#openJalarms" />
 				<MenuItem fx:id="miJControl" onAction="#openJControl" />
+				<MenuItem fx:id="miJNormalMode" onAction="#openJNormalMode" />
 			</items>
 		</Menu>
 		<Menu fx:id="menuReports" text="Звіти">
@@ -89,7 +90,7 @@
 		</Menu>
 		<Menu fx:id="menuTools" text="Інструменти">
 			<items>
-
+				<MenuItem fx:id="miSetBaseVal" onAction="#setBaseVal" />
 			</items>
 		</Menu>
 		<Menu fx:id="menuSettings" text="Налаштування">

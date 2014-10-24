@@ -13,11 +13,11 @@ import java.util.Map;
 
 import pr.common.Utils;
 import pr.common.WMF2PNG;
-import pr.model.ConfTree;
 import pr.model.SpTuCommand;
 import pr.model.Transparant;
 import pr.model.Tsignal;
 import pr.model.Tuser;
+import pr.model.VsignalView;
 import controllers.Controller;
 import topic.ClientPowerSys;
 import javafx.fxml.FXMLLoader;
@@ -34,7 +34,8 @@ public class MainStage extends Stage implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	public static final ClientPowerSys psClient = new ClientPowerSys();
-	public static final Map<Integer, Tsignal> signals = psClient.getTsignalsMap();
+	public static final Map<Integer, VsignalView> signals = psClient.getVsignalViewMap();
+	public static final Map<Integer, Tsignal> tsignals = psClient.getTsignalsMap();
 	public static final Map<Integer, Tuser> users = psClient.getTuserMap();
 	public static ListView<String> lvTree;
 	public static BorderPane bpScheme;
@@ -54,17 +55,6 @@ public class MainStage extends Stage implements Serializable {
 			setTitle("PowerSys ARM");
 
 			bpScheme = controller.getBpScheme();
-
-			Map<Integer, ConfTree> confTree = psClient.getConfTreeMap();			
-			signals.values().forEach(s -> {
-				ConfTree ct = confTree.get(s.getNoderef());
-				String location = ct.getNodename();
-				while (ct.getParentref() > 0) {
-					ct = confTree.get(ct.getParentref());
-					location = location + "/" + ct.getNodename();
-				}
-				s.setLocation(location);
-			});
 			
 			try {
 				String schemeName = Main.getProgramSettings().getSchemeSettings().getSchemeName();

@@ -1,33 +1,26 @@
 package svg2fx.fxObjects;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.Date;
-import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
-import controllers.Controller;
-import controllers.ShapeController;
-import pr.common.Utils;
-import ui.Main;
 import ui.Scheme;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
@@ -38,10 +31,9 @@ public abstract class AShape extends Group {
 	private static final double MOUSE_DURATION_MILLS = 250;
 	private final Timeline timeline = new Timeline();
 	
-	private ContextMenu contextMenu;
-	
-	private final Rectangle rect = new Rectangle();
+	public final Rectangle rect = new Rectangle();
 	private DoubleProperty valueProp = new SimpleDoubleProperty();
+	private BooleanProperty tsignalProp = new SimpleBooleanProperty();
 	private Date lastDataDate;
 	private double deadZone;
 	
@@ -50,27 +42,6 @@ public abstract class AShape extends Group {
 		rect.getStrokeDashArray().addAll(2d, 5d);
 		rect.setStrokeWidth(RECT_LINE_WIDTH);
 		rect.setFill(Color.TRANSPARENT);
-	    
-	    try {
-			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/ShapeContextMenu.xml")));
-			contextMenu = loader.load();
-			ShapeController shapeController = loader.getController();
-			
-			contextMenu.setOnShowing(e -> {
-				ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
-				shapeController.setElementText(rb);
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	    
-	    rect.setOnMouseClicked(new EventHandler<MouseEvent>() {
-	        @Override
-	        public void handle(MouseEvent t) {
-	            if(t.getButton().toString().equals("SECONDARY"))
-	            	contextMenu.show(rect, t.getScreenX(), t.getSceneY());
-	        }
-	    });
 
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.setAutoReverse(true);
@@ -105,6 +76,11 @@ public abstract class AShape extends Group {
 	    		onValueChange((Double) newValue);
 	    	}
 	    });
+	    tsignalProp.addListener((observable, oldValue, newValue) -> {
+	    	if (newValue) {
+	    		onSignalUpdate();
+	    	}
+	    });
 	}
 	
 	public AShape(Node g) {
@@ -119,6 +95,10 @@ public abstract class AShape extends Group {
 		getChildren().add(g);
 		setId(g.getId());
 	}
+	
+	abstract void onDoubleClick();
+	abstract void onValueChange(Double newValue);
+	abstract void onSignalUpdate(); 
 	
 	public void setSelection(boolean isSelected) {
 		if (isSelected) {
@@ -157,10 +137,6 @@ public abstract class AShape extends Group {
 			i++;
 		}
 	}
-	
-	abstract void onDoubleClick();
-	
-	abstract void onValueChange(Double newValue);
 	
 	public void rotate(Shape n, double deg) {
 		while (Math.abs(deg) > 180) {
@@ -203,9 +179,21 @@ public abstract class AShape extends Group {
 	public Paint getColorByName(String colorName) {
 		return Color.valueOf(colorName.toUpperCase());
 	}
+	
+	public LinearGradient getColorByName(String colorName1, String colorName2) {
+		Stop[] stops = new Stop[] { 
+				new Stop(0, Color.valueOf(colorName1.toUpperCase())), 
+				new Stop(1, Color.valueOf(colorName2.toUpperCase()))
+		};
+		return new LinearGradient(0, 0.1, 0.1, 0, true, CycleMethod.NO_CYCLE, stops);
+	}
 
 	public DoubleProperty getValueProp() {
 		return valueProp;
+	}
+
+	public BooleanProperty getTsignalProp() {
+		return tsignalProp;
 	}
 
 	public void setLastDataDate(Date lastDataDate) {
