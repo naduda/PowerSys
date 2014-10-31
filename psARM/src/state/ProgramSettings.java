@@ -1,8 +1,12 @@
 package state;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -75,7 +79,10 @@ public class ProgramSettings {
 	public static ProgramSettings getFromFile(String fileName) throws JAXBException, FileNotFoundException {
 		JAXBContext context = JAXBContext.newInstance(ProgramSettings.class);
 		Unmarshaller um = context.createUnmarshaller();
+		InputStream inputStream = new FileInputStream(fileName);
+		
+		Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
 
-		return (ProgramSettings) um.unmarshal(new FileReader(fileName));
+		return (ProgramSettings) um.unmarshal(reader);
 	}
 } 

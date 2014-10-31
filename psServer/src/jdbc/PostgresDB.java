@@ -32,8 +32,11 @@ import pr.model.ControlJournalItem;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
 import pr.model.LinkedValue;
+import pr.model.NormalModeJournalItem;
 import pr.model.SPunit;
 import pr.model.SpTuCommand;
+import pr.model.SpTypeSignal;
+import pr.model.SwitchEquipmentJournalItem;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import pr.model.Transparant;
@@ -42,6 +45,7 @@ import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
 import pr.model.Tuser;
+import pr.model.UserEventJournalItem;
 import pr.model.VsignalView;
 
 public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, IMapperV {
@@ -105,7 +109,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		Environment environment = new Environment("development", transactionFactory, dataSource);
 		Configuration configuration = new Configuration(environment);
 		configuration.addMappers("jdbc.mappers");
-		configuration.addMapper(TestMapper.class);
+		configuration.addMapper(BaseMapper.class);
 		sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
 	}
 	
@@ -115,16 +119,23 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
         return params.get("query").toString();
     }
 
-    public interface TestMapper
+    public interface BaseMapper
     {
         @SelectProvider(type = PostgresDB.class, method = "getQuery")
         void update(@Param("query") String query);
+
+        @SelectProvider(type = PostgresDB.class, method = "getQuery")
+		List<NormalModeJournalItem> getListNormalModeItems(@Param("query") String query);
+        
+        @SelectProvider(type = PostgresDB.class, method = "getQuery")
+        List<SwitchEquipmentJournalItem> getSwitchJournalItems(@Param("query") String query);
     }
 //    -----------------------------------------------------------------------------------------
+    @Override
 	public void update(String query) {
 		try {
 			session = sqlSessionFactory.openSession(true);
-			session.getMapper(TestMapper.class).update(query);			
+			session.getMapper(BaseMapper.class).update(query);			
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("update --> query = " + query);
@@ -132,6 +143,34 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 			session.close();
 		}
 	}
+    
+    @Override
+	public List<NormalModeJournalItem> getListNormalModeItems(String query) {
+    	try {
+			session = sqlSessionFactory.openSession(true);
+			return session.getMapper(BaseMapper.class).getListNormalModeItems(query);			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getList --> query = " + query);
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+    
+    @Override
+    public List<SwitchEquipmentJournalItem> getSwitchJournalItems(String query) {
+    	try {
+			session = sqlSessionFactory.openSession(true);
+			return session.getMapper(BaseMapper.class).getSwitchJournalItems(query);			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getList --> query = " + query);
+			return null;
+		} finally {
+			session.close();
+		}
+    }
 //	==============================================================================================
 	
 	@Override
@@ -288,6 +327,20 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 			session.close();
 		}
 	}
+	
+	@Override
+	public List<Alarm> getAlarmsPeriodById(Timestamp dtBeg, Timestamp dtEnd, int idSignal) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getAlarmsPeriodById(dtBeg, dtEnd, idSignal);
+		} catch (Exception e) {
+			System.err.println("getAlarmsPeriodById(...)");
+			e.printStackTrace();
+			return null;
+		} finally {
+			session.close();
+		}
+	}
 
 	@Override
 	public List<ControlJournalItem> getJContrlItems(Timestamp dtBeg, Timestamp dtEnd) {
@@ -303,6 +356,19 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		}
 	}
 	
+	@Override
+	public List<UserEventJournalItem> getUserEventJournalItems(Timestamp dtBeg, Timestamp dtEnd) {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapper.class).getUserEventJournalItems(dtBeg, dtEnd);
+		} catch (Exception e) {
+			System.err.println("getUserEventJournalItems()");
+			e.printStackTrace();
+			return null;
+		} finally {
+			session.close();
+		}
+	}
 //	----- SP -----
 	@Override
 	public Map<Integer, SPunit> getSPunitMap() {
@@ -331,6 +397,19 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		}
 	}
 	
+	@Override
+	public Map<Integer, SpTypeSignal> getSpTypeSignalMap() {
+		try {
+			session = sqlSessionFactory.openSession();
+			return session.getMapper(IMapperSP.class).getSpTypeSignalMap();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getSpTypeSignalMap");
+			return null;
+		} finally {
+			session.close();
+		}
+	}
 //	----- T -----
 	@Override
 	public Map<Integer, Tsignal> getTsignalsMap() {
@@ -737,5 +816,4 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 			session.close();
 		}
 	}
-
 }

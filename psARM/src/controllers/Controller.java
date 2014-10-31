@@ -15,6 +15,7 @@ import java.util.ResourceBundle.Control;
 import javax.xml.bind.JAXBException;
 
 import controllers.interfaces.IControllerInit;
+import controllers.journals.AlarmTableController;
 import state.ProgramSettings;
 import state.SchemeSettings;
 import state.WindowState;
@@ -43,7 +44,7 @@ public class Controller implements IControllerInit {
 	@FXML private ToolBarController toolBarController;
 	@FXML private MenuBarController menuBarController;
 	@FXML private TreeController spTreeController;	
-	@FXML private AlarmController bpAlarmsController;
+	@FXML private AlarmTableController bpAlarmsController;
 	@FXML private Pane bpAlarms;
 	@FXML private BorderPane bpScheme;
 	@FXML private SplitPane vSplitPane;
@@ -76,7 +77,7 @@ public class Controller implements IControllerInit {
 		ss.setSchemeScale(Main.mainScheme.getRoot().getScaleX());
 		
 		final LinkedValue lv = new LinkedValue("", "");
-		MainStage.controller.getAlarmsController().tvAlarms.getColumns().forEach(c -> {
+		MainStage.controller.getAlarmsController().getTvTable().getColumns().forEach(c -> {
 			lv.setVal(lv.getVal().toString() + (c.isVisible() ? 1 : 0) + ":");
 		});
 		ps.setShowAlarmColumns(lv.getVal().toString());
@@ -139,12 +140,13 @@ public class Controller implements IControllerInit {
 			try {
 				EShape tt = mainScheme.getDeviceById(s.getValue());
 				tt.setValue(ti.getVal(), s.getTypeSignal());
+				tt.setRcode(ti.getRcode());
+				tt.setDt(ti.getDt());
 				
 				toolBarController.updateLabel(df.format(ti.getServdt()));
 			} catch (Exception e) {
 				
 			}
-			//toolBarController.setTsLastDate(ti.getServdt().getTime());
 		});	
 	}
 	
@@ -171,7 +173,7 @@ public class Controller implements IControllerInit {
 		return menuBarController;
 	}
 
-	public AlarmController getAlarmsController() {
+	public AlarmTableController getAlarmsController() {
 		return bpAlarmsController;
 	}
 

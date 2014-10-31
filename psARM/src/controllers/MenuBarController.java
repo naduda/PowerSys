@@ -45,6 +45,8 @@ public class MenuBarController implements Initializable, IControllerInit {
 	@FXML MenuItem miJAlarms;
 	@FXML MenuItem miJControl;
 	@FXML MenuItem miJNormalMode;
+	@FXML MenuItem miJswitchEq;
+	@FXML MenuItem miJuserEvents;
 	@FXML Menu menuReports;
 	@FXML Menu menuTools;
 	@FXML MenuItem miSetBaseVal;
@@ -87,17 +89,17 @@ public class MenuBarController implements Initializable, IControllerInit {
 	@FXML
 	private void openJalarms(ActionEvent event) {
 		Point p = MouseInfo.getPointerInfo().getLocation();
-		StageLoader stage = new StageLoader("JournalAlarms.xml", Main.getResourceBundle().getString("keyJalarms"), p);
+		StageLoader stage = new StageLoader("journals/JournalAlarms.xml", 
+				Main.getResourceBundle().getString("keyJalarms"), p, true);
 		
-		stage.setX(p.getX());
-		stage.setY(p.getY());
 	    stage.show();
 	}
 	
 	@FXML
 	private void openJControl(ActionEvent event) {
 		Point p = MouseInfo.getPointerInfo().getLocation();
-		StageLoader stage = new StageLoader("JournalControl.xml", Main.getResourceBundle().getString("keyJcontrol"), p);
+		StageLoader stage = new StageLoader("journals/JournalControl.xml", 
+				Main.getResourceBundle().getString("keyJcontrol"), p, true);
 		
 	    stage.show();
 	}
@@ -105,7 +107,24 @@ public class MenuBarController implements Initializable, IControllerInit {
 	@FXML
 	private void openJNormalMode(ActionEvent event) {
 		Point p = MouseInfo.getPointerInfo().getLocation();
-		StageLoader stage = new StageLoader("JournalNormalMode.xml", Main.getResourceBundle().getString("keyJNoralMode"), p);
+		StageLoader stage = new StageLoader("journals/JournalNormalMode.xml", 
+				Main.getResourceBundle().getString("keyJNormalMode"), p, true);
+		
+	    stage.show();
+	}
+	
+	@FXML
+	private void openJswitchEq(ActionEvent event) {
+		StageLoader stage = new StageLoader("journals/JournalSwitchEquipment.xml", 
+				Main.getResourceBundle().getString("keyJswitchingEquipment"), true);
+		
+	    stage.show();
+	}
+	
+	@FXML
+	private void openJuserEvent(ActionEvent event) {
+		StageLoader stage = new StageLoader("journals/JournalUserEvents.xml", 
+				Main.getResourceBundle().getString("keyJuserEvent"), true);
 		
 	    stage.show();
 	}
@@ -118,8 +137,8 @@ public class MenuBarController implements Initializable, IControllerInit {
 			query.add("");
 			Main.mainScheme.getSignalsTS().forEach(s -> {
 				DvalTS ts = oldTS.get(s);
-				MainStage.signals.get(ts.getSignalref()).setBaseval(ts.getVal());
 				if (ts != null) {
+					MainStage.signals.get(ts.getSignalref()).setBaseval(ts.getVal());
 					String sq = String.format("update t_signal set baseval=%s where idSignal=%s;", ts.getVal(), s);
 					query.set(0, query.get(0) + sq);
 				}
@@ -156,7 +175,9 @@ public class MenuBarController implements Initializable, IControllerInit {
 		menuJournals.setText(rb.getString("keyJournals"));
 		miJAlarms.setText(rb.getString("keyJalarms"));
 		miJControl.setText(rb.getString("keyJcontrol"));
-		miJNormalMode.setText(rb.getString("keyJNoralMode"));
+		miJNormalMode.setText(rb.getString("keyJNormalMode"));
+		miJswitchEq.setText(rb.getString("keyJswitchingEquipment"));
+		miJuserEvents.setText(rb.getString("keyJuserEvent"));
 		menuReports.setText(rb.getString("keyReports"));
 		menuTools.setText(rb.getString("keyTools"));
 		miSetBaseVal.setText(rb.getString("keySetBaseVal"));

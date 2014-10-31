@@ -8,6 +8,9 @@ import pr.model.ControlJournalItem;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
 import pr.model.LinkedValue;
+import pr.model.NormalModeJournalItem;
+import pr.model.SwitchEquipmentJournalItem;
+import pr.model.UserEventJournalItem;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
@@ -17,6 +20,8 @@ import org.apache.ibatis.annotations.Select;
 public interface IMapper {
 //	==============================================================================
 	void update(String query);
+	List<NormalModeJournalItem> getListNormalModeItems(String query);
+	List<SwitchEquipmentJournalItem> getSwitchJournalItems(String query);
 //	==============================================================================
 	
 	@Select("select * from d_valti where servdt > #{servdt} order by servdt desc")
@@ -63,6 +68,12 @@ public interface IMapper {
 	@Select("select * from "
 			+ "(select *, alarms_for_event(eventtype,objref,objStatus) as alarms "
 			+ "from d_eventlog) as eloginner join t_alarm on alarmid in (alarms) "
+			+ "where recorddt >= #{dtBeg} and recorddt <= #{dtEnd} and objref = #{idSignal} order by recorddt desc")
+	List<Alarm> getAlarmsPeriodById(@Param("dtBeg")Timestamp dtBeg, @Param("dtEnd")Timestamp dtEnd, @Param("idSignal")int idSignal);
+	
+	@Select("select * from "
+			+ "(select *, alarms_for_event(eventtype,objref,objStatus) as alarms "
+			+ "from d_eventlog) as eloginner join t_alarm on alarmid in (alarms) "
 			+ "where confirmdt > #{confirmdt} order by confirmdt desc")
 	List<Alarm> getAlarmsConfirm(Timestamp confirmdt);
 	
@@ -89,4 +100,11 @@ public interface IMapper {
 			+ "userRef=idUser left join t_sysparam v on v.val=d.sendOK and paramname='SENDTU_STATUS' "
 			+ "where dt >= #{dtBeg} and dt <= #{dtEnd} order by dt")
 	List<ControlJournalItem> getJContrlItems(@Param("dtBeg")Timestamp dtBeg, @Param("dtEnd")Timestamp dtEnd);
+	
+	@Select("select eventdt, v2.paramdescr as app, fio, v1.paramdescr as descr "
+			+ "from d_eventlog d join t_sysparam v1 on v1.val = d.eventtype and v1.paramname = 'EVENT_TYPE' "
+			+ "left join (select -1 as idUser, null as fio union select iduser, fio from t_user) u on authorRef = idUser "
+			+ "left join t_sysparam v2 on v2.val = d.objref and v2.paramname = 'APPLIST' "
+			+ "where eventdt >= #{dtBeg} and eventdt<#{dtEnd} order by eventdt")
+	List<UserEventJournalItem> getUserEventJournalItems(@Param("dtBeg")Timestamp dtBeg, @Param("dtEnd")Timestamp dtEnd);
 }

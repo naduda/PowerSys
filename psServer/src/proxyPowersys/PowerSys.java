@@ -18,8 +18,11 @@ import pr.model.ControlJournalItem;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
 import pr.model.LinkedValue;
+import pr.model.NormalModeJournalItem;
 import pr.model.SPunit;
 import pr.model.SpTuCommand;
+import pr.model.SpTypeSignal;
+import pr.model.SwitchEquipmentJournalItem;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import pr.model.Transparant;
@@ -28,6 +31,7 @@ import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
 import pr.model.Tuser;
+import pr.model.UserEventJournalItem;
 import pr.model.VsignalView;
 
 public class PowerSys extends UnicastRemoteObject  implements IPowersys {
@@ -37,6 +41,7 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	
 	public PowerSys(PostgresDB pdb) throws RemoteException {
 		super();
+		
 		LocateRegistry.createRegistry(RMI_PORT);
 		this.pdb = pdb;
 	}
@@ -44,6 +49,16 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	@Override
 	public void update(String query) throws RemoteException {
 		pdb.update(query);
+	}
+	
+	@Override
+	public List<NormalModeJournalItem> getListNormalModeItems(String query) throws RemoteException {
+		return pdb.getListNormalModeItems(query);
+	}
+	
+	@Override
+	public List<SwitchEquipmentJournalItem> getSwitchJournalItems(String query) throws RemoteException {
+		return pdb.getSwitchJournalItems(query);
 	}
 //	==============================================================================
 
@@ -229,6 +244,11 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
 		return pdb.getAlarmsPeriod(dtBeg, dtEnd);
 	}
+	
+	@Override
+	public List<Alarm> getAlarmsPeriodById(Timestamp dtBeg, Timestamp dtEnd, int idSignal) throws RemoteException {
+		return pdb.getAlarmsPeriodById(dtBeg, dtEnd, idSignal);
+	}
 
 	@Override
 	public List<ControlJournalItem> getJContrlItems(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
@@ -254,5 +274,15 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	public void insertDeventLog(int eventtype, int objref, Timestamp eventdt, double objval, int objstatus, int authorref) throws RemoteException {
 		pdb.insertDeventLog(eventtype, objref, eventdt, objval, objstatus, authorref);
 	}
+	
+	@Override
+	public List<UserEventJournalItem> getUserEventJournalItems(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
+		return pdb.getUserEventJournalItems(dtBeg, dtEnd);
+	}
+	@Override
+	public Map<Integer, SpTypeSignal> getSpTypeSignalMap() throws RemoteException {
+		return pdb.getSpTypeSignalMap();
+	}
+	
 }
  

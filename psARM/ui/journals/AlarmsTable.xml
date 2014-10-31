@@ -9,7 +9,7 @@
 <?import javafx.scene.control.cell.*?> 
 <?import javafx.scene.text.Text?> 
 
-<Pane fx:id="bpAlarms" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.AlarmController">
+<Pane fx:id="bpAlarms" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.journals.AlarmTableController">
 	<BorderPane prefWidth="${bpAlarms.width}" prefHeight="${bpAlarms.height}" >
 		<padding><Insets top="0" right="0" bottom="0" left="0"/></padding>
 
@@ -23,21 +23,21 @@
 						<Button text="" onAction="#kvitOne" styleClass="toolBarButton">
 							<graphic>
 								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-									<Image url="@../Icon/kvitOne.png"/>
+									<Image url="@../../Icon/kvitOne.png"/>
 								</ImageView>
 							</graphic>
 						</Button>
 						<Button text="" onAction="#kvitPS" styleClass="toolBarButton">
 							<graphic>
 								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-									<Image url="@../Icon/kvitPS.png"/>
+									<Image url="@../../Icon/kvitPS.png"/>
 								</ImageView>
 							</graphic>
 						</Button>
 						<Button text="" onAction="#kvitAll" styleClass="toolBarButton">
 							<graphic>
 								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-									<Image url="@../Icon/kvitAll.png"/>
+									<Image url="@../../Icon/kvitAll.png"/>
 								</ImageView>
 							</graphic>
 						</Button>
@@ -88,21 +88,21 @@
 			</BorderPane>
 		</top>
 		<center>
-			<TableView fx:id="tvAlarms" maxHeight="${bpAlarms.height - tbAlarms.height}">
+			<TableView fx:id="tvTable" maxHeight="${bpAlarms.height - tbAlarms.height}">
 				<columns>
-					<TableColumn id="pObject" text="Об'єкт" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pLocation" text="Розміщення" minWidth="${tvAlarms.width/15}" />
-					<TableColumn id="pAlarmName" text="Сигналізація" minWidth="${tvAlarms.width/15}" />
-					<TableColumn id="pRecordDT" text="Дата збереження" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pEventDT" text="Дата події" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pAlarmMes" text="Повідомлення" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pLogState" text="Стан" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pConfirmDT" text="Дата квітування" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pUserRef" text="Користувач" minWidth="${tvAlarms.width/15}" visible="false"/>
-					<TableColumn id="pLogNote" text="Примітка" minWidth="${tvAlarms.width/15}" visible="false"/>
-					<TableColumn id="pAlarmPriority" text="Пріоритет" minWidth="${tvAlarms.width/15}"/>
-					<TableColumn id="pEventType" text="Тип події" minWidth="${tvAlarms.width/15}" visible="false"/>
-					<TableColumn id="pSchemeObject" text="Об'єкт схеми" minWidth="${tvAlarms.width/15}" visible="false"/>
+					<TableColumn id="pObject" text="Об'єкт" minWidth="${tvTable.width/15}"/>
+					<TableColumn id="pLocation" text="Розміщення" minWidth="${tvTable.width/15}" />
+					<TableColumn id="pAlarmName" text="Сигналізація" minWidth="${tvTable.width/15}" />
+					<TableColumn id="pRecordDT" text="Дата збереження" minWidth="${tvTable.width/15}"/>
+					<TableColumn id="pEventDT" text="Дата події" minWidth="${tvTable.width/15}"/>
+					<TableColumn id="pAlarmMes" text="Повідомлення" minWidth="${tvTable.width/15}"/>
+					<TableColumn id="pLogState" text="Стан" minWidth="${tvTable.width/15}"/>
+					<TableColumn id="pConfirmDT" text="Дата квітування" minWidth="${tvTable.width/15}"/>
+					<TableColumn id="pUserRef" text="Користувач" minWidth="${tvTable.width/15}" visible="false"/>
+					<TableColumn id="pLogNote" text="Примітка" minWidth="${tvTable.width/15}" visible="false"/>
+					<TableColumn id="pAlarmPriority" text="Пріоритет" minWidth="${tvTable.width/15}"/>
+					<TableColumn id="pEventType" text="Тип події" minWidth="${tvTable.width/15}" visible="false"/>
+					<TableColumn id="pSchemeObject" text="Об'єкт схеми" minWidth="${tvTable.width/15}" visible="false"/>
 				</columns>
 			</TableView>
 		</center>

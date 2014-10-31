@@ -3,6 +3,7 @@ package topic.messagelisteners;
 import controllers.journals.JAlarmsController;
 import pr.model.Alarm;
 import ui.MainStage;
+import ui.tables.AlarmTableItem;
 
 public class AlarmMessageListener extends AbstarctMessageListener {
 
@@ -12,9 +13,9 @@ public class AlarmMessageListener extends AbstarctMessageListener {
 		JAlarmsController jAlarmController = MainStage.controller.getMenuBarController().getjAlarmController();
 		
     	if (a.getConfirmdt() == null) {
-    		MainStage.controller.getAlarmsController().addAlarm(a);
+    		MainStage.controller.getAlarmsController().addItem(new AlarmTableItem(a));
     		if (jAlarmController != null) {
-    			jAlarmController.getAlarmsController().addAlarm(a);
+    			jAlarmController.getAlarmsController().addItem(new AlarmTableItem(a));
     		}
     	} else {
     		MainStage.controller.getAlarmsController().updateAlarm(a);

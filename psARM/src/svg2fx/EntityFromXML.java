@@ -1,13 +1,19 @@
 package svg2fx;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.sax.SAXSource;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -25,11 +31,17 @@ public class EntityFromXML {
 	        spf.setFeature(FEATURE_LOAD_DTD, false);
 	        
 	        XMLReader xmlReader = spf.newSAXParser().getXMLReader();
-	        InputSource inputSource = new InputSource(new FileReader(xmlFilePath));
-	        SAXSource source = new SAXSource(xmlReader, inputSource);
+	        
+	        InputStream inputStream = new FileInputStream(xmlFilePath);
 			
-			Unmarshaller u = jc.createUnmarshaller();
-			result = u.unmarshal(source);
+			Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+	        InputSource inputSource = new InputSource(reader);
+	        inputSource.setEncoding("UTF-8");
+	        SAXSource source = new SAXSource(xmlReader, inputSource);
+	        
+	        Unmarshaller um = jc.createUnmarshaller();
+	        
+			result = um.unmarshal(source);
 		} catch (Exception e) {
 			System.err.println("Error in EntityFromXML.getObject(...). JAXBException: " + e);
 		}

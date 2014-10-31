@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 
 import pr.model.SPunit;
 import pr.model.SpTuCommand;
+import pr.model.SpTypeSignal;
 
 public interface IMapperSP {
 
@@ -18,4 +19,7 @@ public interface IMapperSP {
 	@Select("select * from sp_tu_command")
 	List<SpTuCommand> getSpTuCommand();
 	
+	@Select("select * from sp_typesignal")
+	@MapKey("idtypesignal")
+	Map<Integer, SpTypeSignal> getSpTypeSignalMap();
 }

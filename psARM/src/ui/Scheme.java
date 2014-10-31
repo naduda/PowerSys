@@ -6,18 +6,17 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import controllers.Controller;
 import controllers.ShapeController;
 import pr.common.Utils;
-import pr.model.DvalTI;
-import pr.model.DvalTS;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
 import svg2fx.Convert;
 import svg2fx.fxObjects.EShape;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -40,6 +39,7 @@ public class Scheme extends ScrollPane {
 	private final List<Integer> signalsTI = new ArrayList<>();
 	private final List<Integer> signalsTS = new ArrayList<>();
 	public static EShape selectedShape;
+	public static final BooleanProperty selectedShapeChangeProperty = new SimpleBooleanProperty();
 	private int idScheme = 0;
 	private String schemeName;
 	private double currentVvalue;
@@ -86,16 +86,8 @@ public class Scheme extends ScrollPane {
 		});
 		
 		try {
-			Map<Integer, DvalTI> oldTI = MainStage.psClient.getOldTI();
-			Map<Integer, DvalTS> oldTS = MainStage.psClient.getOldTS();
-			
-			for (DvalTI ti : oldTI.values()) {
-				MainStage.controller.updateTI(this, ti);
-			}
-
-			for (DvalTS ts : oldTS.values()) {
-				MainStage.controller.updateTI(this, ts);
-			}
+			MainStage.psClient.getOldTI().values().forEach(s -> MainStage.controller.updateTI(this, s));
+			MainStage.psClient.getOldTS().values().forEach(s -> MainStage.controller.updateTI(this, s));
 			
 			setTransparants();
 		} catch (RemoteException e) {

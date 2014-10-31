@@ -9,12 +9,12 @@
 <?import javafx.scene.control.cell.*?> 
 <?import javafx.scene.text.Text?> 
 
-<Pane fx:id="bpAlarms" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.journals.ControlsTableController">
+<Pane fx:id="bpAlarms" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.journals.TableController">
 	<BorderPane prefWidth="${bpAlarms.width}" prefHeight="${bpAlarms.height}" >
 		<padding><Insets top="0" right="0" bottom="0" left="0"/></padding>
 
 		<center>
-			<TableView fx:id="tvControls">
+			<TableView fx:id="tvTable">
 				<columns>
 					<TableColumn id="pDate" />
 					<TableColumn id="pScheme" />

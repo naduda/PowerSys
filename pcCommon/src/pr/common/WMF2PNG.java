@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 
 import javafx.scene.image.Image;
 
@@ -102,11 +104,14 @@ public class WMF2PNG {
 	
 	private static ByteArrayOutputStream getSVG_OutputStream(TranscoderInput input) throws TranscoderException {
     	ByteArrayOutputStream svg = new ByteArrayOutputStream();
-    	TranscoderOutput output = new TranscoderOutput(svg);
-    	
-    	WMFTranscoder transcoder = new WMFTranscoder();
-    	transcoder.transcode(input, output);
-    	
+    	TranscoderOutput output = null;
+		try {
+			output = new TranscoderOutput(new OutputStreamWriter(svg, "UTF-8"));
+			WMFTranscoder transcoder = new WMFTranscoder();
+	    	transcoder.transcode(input, output);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
     	return svg;
 	}
 }

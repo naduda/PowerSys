@@ -1,7 +1,6 @@
 package ui.tables;
 
 import java.util.stream.Collectors;
-
 import pr.model.Alarm;
 import ui.MainStage;
 
@@ -60,7 +59,7 @@ public class AlarmMessageParcer {
 		String[] arr = mes.split("\\|");
 		
 		mes = arr[0];
-		String toReplace = arr[1];		
+		String toReplace = arr[1];
 		
 		try {
 			mes = MainStage.psClient.getTSysParam("SIGNAL_STATUS").values().stream()

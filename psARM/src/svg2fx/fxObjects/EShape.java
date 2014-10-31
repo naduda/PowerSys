@@ -3,6 +3,7 @@ package svg2fx.fxObjects;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
@@ -45,6 +46,8 @@ public class EShape extends AShape {
 	private int id = -1;
 	private int idTS = -1;
 	private int status = 1;
+	private int rcode;
+	private Timestamp dt;
 	private String scriptName;
 	private boolean textShape;
 	private ScriptClass scripts;
@@ -231,6 +234,22 @@ public class EShape extends AShape {
 
 	public void setTextShape(boolean textShape) {
 		this.textShape = textShape;
+	}
+
+	public int getRcode() {
+		return rcode;
+	}
+
+	public void setRcode(int rcode) {
+		this.rcode = rcode;
+	}
+
+	public Timestamp getDt() {
+		return dt;
+	}
+
+	public void setDt(Timestamp dt) {
+		this.dt = dt;
 	}
 
 	public ScriptClass getScripts() {

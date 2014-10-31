@@ -13,10 +13,10 @@
 	</top>
 
 	<center>
-		<fx:include fx:id="bpAlarms" source="Alarms.xml" />
+		<fx:include fx:id="bpTable" source="AlarmsTable.xml" />
 	</center>
 
 	<stylesheets>
-		<URL value="@Main.css" />
+		<URL value="@../Main.css" />
 	</stylesheets>
 </BorderPane>

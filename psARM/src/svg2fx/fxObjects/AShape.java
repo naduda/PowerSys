@@ -101,6 +101,7 @@ public abstract class AShape extends Group {
 	abstract void onSignalUpdate(); 
 	
 	public void setSelection(boolean isSelected) {
+		Scheme.selectedShapeChangeProperty.set(false);
 		if (isSelected) {
 			if (Scheme.selectedShape != null) {
 				Scheme.selectedShape.setSelection(false);
@@ -110,6 +111,7 @@ public abstract class AShape extends Group {
 			rect.getStrokeDashArray().addAll(2d, 5d);
 			
 			Scheme.selectedShape = (EShape) this;
+			Scheme.selectedShapeChangeProperty.set(true);
 		} else {
 			rect.setStroke(Color.TRANSPARENT);
 		}

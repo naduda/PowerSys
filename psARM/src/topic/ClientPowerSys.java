@@ -15,8 +15,11 @@ import pr.model.ControlJournalItem;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
 import pr.model.LinkedValue;
+import pr.model.NormalModeJournalItem;
 import pr.model.SPunit;
 import pr.model.SpTuCommand;
+import pr.model.SpTypeSignal;
+import pr.model.SwitchEquipmentJournalItem;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import pr.model.Transparant;
@@ -25,15 +28,19 @@ import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
 import pr.model.Tuser;
+import pr.model.UserEventJournalItem;
 import pr.model.VsignalView;
 import pr.powersys.IPowersys;
+import ui.Main;
 
 public class ClientPowerSys implements IPowersys {	
 	private IPowersys myServer;
 	
 	public ClientPowerSys() {
 		try {
-			myServer = (IPowersys) Naming.lookup("rmi://localhost:1099/PowerSysService");
+			System.setProperty("java.rmi.server.hostname", Main.ipAddress);
+			myServer = (IPowersys) Naming.lookup(String.format("rmi://%s:%s/PowerSysService", Main.ipAddress, IPowersys.RMI_PORT));
+			System.out.println(String.format("rmi://%s:1099/PowerSysService", Main.ipAddress).toUpperCase());
 		} catch (NotBoundException | RemoteException | MalformedURLException e) {
 			System.err.println("PowerSysService is stoped");
 			System.exit(0);
@@ -48,6 +55,16 @@ public class ClientPowerSys implements IPowersys {
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public List<NormalModeJournalItem> getListNormalModeItems(String query) throws RemoteException {
+		return myServer.getListNormalModeItems(query);
+	}
+	
+	@Override
+	public List<SwitchEquipmentJournalItem> getSwitchJournalItems(String query) throws RemoteException {
+		return myServer.getSwitchJournalItems(query);
 	}
 //	==============================================================================
 
@@ -263,8 +280,13 @@ public class ClientPowerSys implements IPowersys {
 	}
 
 	@Override
-	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd)throws RemoteException {
+	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
 		return myServer.getAlarmsPeriod(dtBeg, dtEnd);
+	}
+	
+	@Override
+	public List<Alarm> getAlarmsPeriodById(Timestamp dtBeg, Timestamp dtEnd, int idSignal) throws RemoteException {
+		return myServer.getAlarmsPeriodById(dtBeg, dtEnd, idSignal);
 	}
 
 	@Override
@@ -296,4 +318,20 @@ public class ClientPowerSys implements IPowersys {
 	public void insertDeventLog(int eventtype, int objref, Timestamp eventdt, double objval, int objstatus, int authorref) throws RemoteException {
 		myServer.insertDeventLog(eventtype, objref, eventdt, objval, objstatus, authorref);
 	}
+
+	@Override
+	public List<UserEventJournalItem> getUserEventJournalItems(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
+		return myServer.getUserEventJournalItems(dtBeg, dtEnd);
+	}
+
+	@Override
+	public Map<Integer, SpTypeSignal> getSpTypeSignalMap() {
+		try {
+			return myServer.getSpTypeSignalMap();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 } 

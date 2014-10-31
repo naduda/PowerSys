@@ -33,10 +33,10 @@
 	</top>
 
 	<center>
-		<fx:include fx:id="bpControls" source="ControlsTable.xml" />
+		<fx:include fx:id="bpTable" source="ControlsTable.xml" />
 	</center>
 
 	<stylesheets>
-		<URL value="@Main.css" />
+		<URL value="@../Main.css" />
 	</stylesheets>
 </BorderPane>

@@ -3,6 +3,7 @@ package controllers;
 import java.util.ResourceBundle;
 
 import controllers.interfaces.IControllerInit;
+import controllers.journals.AlarmTableController;
 import ui.tables.AlarmTableItem;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,7 +21,7 @@ public class TrCommentController implements IControllerInit {
 	
 	@FXML 
 	protected void btnOK(ActionEvent event) {
-		AlarmController.confirmAlarm(alarmTableItem, txtArea.getText());
+		AlarmTableController.confirmAlarm(alarmTableItem, txtArea.getText());
 		closeWindowTransparant(event);
 	}
 	

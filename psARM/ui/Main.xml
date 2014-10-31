@@ -27,7 +27,7 @@
 						<BorderPane fx:id="bpScheme"/>
 					</items>
 				</SplitPane>
-				<fx:include fx:id="bpAlarms" source="Alarms.xml" maxHeight="${vSplitPane.height/2}" />
+				<fx:include fx:id="bpAlarms" source="journals/AlarmsTable.xml" maxHeight="${vSplitPane.height/2}" />
 			</items>
 		</SplitPane>
 	</center>

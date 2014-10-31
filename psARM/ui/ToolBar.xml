@@ -8,14 +8,14 @@
 	<Label fx:id="lDataOn" text="Дані на: "/>
 	<Label fx:id="lLastDate" text=" " prefWidth="150"/>
 	<Separator/>
-	<Button text="" onAction="#testAction" styleClass="toolBarButton">
+	<Button onAction="#testAction" styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/lArrow.png"/>
 			</ImageView>
 		</graphic>
 	</Button>
-	<Button text="" styleClass="toolBarButton">
+	<Button styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/rArrow.png"/>
@@ -23,7 +23,7 @@
 		</graphic>
 	</Button>
 	<Separator/>
-	<Button text="" styleClass="toolBarButton">
+	<Button styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/minus.png"/>
@@ -31,7 +31,7 @@
 		</graphic>
 	</Button>
 	<Slider />
-	<Button text="" styleClass="toolBarButton">
+	<Button styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/plus.png"/>
@@ -53,21 +53,21 @@
 		</graphic>
 	</Button>
 	<Separator/>
-	<Button text="" styleClass="toolBarButton">
+	<Button styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/Fit.png"/>
 			</ImageView>
 		</graphic>
 	</Button>
-	<Button onAction="#info" text="" styleClass="toolBarButton">
+	<Button fx:id="btnInfo" onAction="#info" styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/info.png"/>
 			</ImageView>
 		</graphic>
 	</Button>
-	<Button text="" styleClass="toolBarButton">
+	<Button onAction="#showAlarms" styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/findAlarms.png"/>
@@ -93,7 +93,7 @@
 			</Menu>
 		</menus>
 	</MenuBar-->
-	<Button text="" onAction="#showChart" styleClass="toolBarButton">
+	<Button onAction="#showChart" styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/trend16.png"/>
@@ -101,21 +101,21 @@
 		</graphic>
 	</Button>
 	<Separator/>
-	<Button text="" styleClass="toolBarButton">
+	<Button styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/navigator.png"/>
 			</ImageView>
 		</graphic>
 	</Button>
-	<Button text="" styleClass="toolBarButton">
+	<Button styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/retro.png"/>
 			</ImageView>
 		</graphic>
 	</Button>
-	<Button text="" styleClass="toolBarButton">
+	<Button styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/normRezh.png"/>
@@ -123,14 +123,14 @@
 		</graphic>
 	</Button>
 	<Separator/>
-	<Button text="" styleClass="toolBarButton">
+	<Button styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/save.png"/>
 			</ImageView>
 		</graphic>
 	</Button>
-	<Button text="" styleClass="toolBarButton">
+	<Button styleClass="toolBarButton">
 		<graphic>
 			<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 				<Image url="@../Icon/print.png"/>

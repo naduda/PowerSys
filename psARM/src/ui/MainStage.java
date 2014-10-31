@@ -10,10 +10,12 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import pr.common.Utils;
 import pr.common.WMF2PNG;
 import pr.model.SpTuCommand;
+import pr.model.SpTypeSignal;
 import pr.model.Transparant;
 import pr.model.Tsignal;
 import pr.model.Tuser;
@@ -33,6 +35,9 @@ import javafx.stage.Stage;
 public class MainStage extends Stage implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	private final static int MANUAL_MODE = 107;
+	private final static int AUTO_MODE = 0;
+	
 	public static final ClientPowerSys psClient = new ClientPowerSys();
 	public static final Map<Integer, VsignalView> signals = psClient.getVsignalViewMap();
 	public static final Map<Integer, Tsignal> tsignals = psClient.getTsignalsMap();
@@ -43,6 +48,7 @@ public class MainStage extends Stage implements Serializable {
 	public static Controller controller;
 	public static final Map<Integer, Transparant> transpMap = psClient.getTransparants();
 	public static final List<SpTuCommand> spTuCommands = psClient.getSpTuCommand();
+	public static final Map<Integer, SpTypeSignal> spTypeSignals = psClient.getSpTypeSignalMap();
 	public static final Map<Integer, Image> imageMap = getImageMap();
 	
 	public MainStage(String pathXML) {
@@ -103,6 +109,23 @@ public class MainStage extends Stage implements Serializable {
 			InputStream is = WMF2PNG.convert(new ByteArrayInputStream(bytes), 250);
 			ret.put(key, new Image(is));
 		});
+		return ret;
+	}
+
+	public static String getQuality(int rcode) {
+		ResourceBundle rb = Main.getResourceBundle();
+		String ret = "";
+		switch (rcode) {
+		case MANUAL_MODE:
+			ret = rb.getString("keyManual");
+			break;
+		case AUTO_MODE:
+			ret = rb.getString("keyAuto");
+			break;
+		default:
+			ret = "";
+			break;
+		}
 		return ret;
 	}
 }
