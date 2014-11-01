@@ -108,7 +108,12 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		TransactionFactory transactionFactory = new JdbcTransactionFactory();
 		Environment environment = new Environment("development", transactionFactory, dataSource);
 		Configuration configuration = new Configuration(environment);
-		configuration.addMappers("jdbc.mappers");
+		configuration.addMapper(IMapper.class);
+		configuration.addMapper(IMapperAction.class);
+		configuration.addMapper(IMapperSP.class);
+		configuration.addMapper(IMapperT.class);
+		configuration.addMapper(IMapperV.class);
+		//configuration.addMappers("jdbc.mappers");
 		configuration.addMapper(BaseMapper.class);
 		sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
 	}

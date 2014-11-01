@@ -90,7 +90,8 @@ public class MenuBarController implements Initializable, IControllerInit {
 	private void openJalarms(ActionEvent event) {
 		Point p = MouseInfo.getPointerInfo().getLocation();
 		StageLoader stage = new StageLoader("journals/JournalAlarms.xml", 
-				Main.getResourceBundle().getString("keyJalarms"), p, true);
+				Main.getResourceBundle().getString("keyJalarms"), p, true);	
+		jAlarmController = (JAlarmsController) stage.getController();
 		
 	    stage.show();
 	}

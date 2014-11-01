@@ -1,7 +1,6 @@
 package proxyPowersys;
   
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -41,8 +40,6 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	
 	public PowerSys(PostgresDB pdb) throws RemoteException {
 		super();
-		
-		LocateRegistry.createRegistry(RMI_PORT);
 		this.pdb = pdb;
 	}
 //	==============================================================================

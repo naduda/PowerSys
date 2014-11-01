@@ -98,7 +98,7 @@ public class InfoController implements Initializable, IControllerInit {
 	private void resize() {
 		Platform.runLater(new Runnable() {
             @Override public void run() {
-            	((Stage)infoStage.getScene().getWindow()).setWidth(getLabelMax() + getTextMax() + 4 * infoStage.getInsets().getLeft());
+            	((Stage)infoStage.getScene().getWindow()).setWidth(getLabelMax() + getTextMax() + 5 * infoStage.getInsets().getLeft());
             }
 		});
 	}

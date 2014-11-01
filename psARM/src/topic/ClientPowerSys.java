@@ -31,6 +31,7 @@ import pr.model.Tuser;
 import pr.model.UserEventJournalItem;
 import pr.model.VsignalView;
 import pr.powersys.IPowersys;
+import pr.powersys.MySocketFactory;
 import ui.Main;
 
 public class ClientPowerSys implements IPowersys {	
@@ -38,9 +39,8 @@ public class ClientPowerSys implements IPowersys {
 	
 	public ClientPowerSys() {
 		try {
-			System.setProperty("java.rmi.server.hostname", Main.ipAddress);
+			MySocketFactory.setServer(Main.ipAddress);
 			myServer = (IPowersys) Naming.lookup(String.format("rmi://%s:%s/PowerSysService", Main.ipAddress, IPowersys.RMI_PORT));
-			System.out.println(String.format("rmi://%s:1099/PowerSysService", Main.ipAddress).toUpperCase());
 		} catch (NotBoundException | RemoteException | MalformedURLException e) {
 			System.err.println("PowerSysService is stoped");
 			System.exit(0);
@@ -330,6 +330,7 @@ public class ClientPowerSys implements IPowersys {
 			return myServer.getSpTypeSignalMap();
 		} catch (RemoteException e) {
 			e.printStackTrace();
+			System.exit(0);
 		}
 		return null;
 	}

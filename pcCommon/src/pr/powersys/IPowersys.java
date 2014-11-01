@@ -30,7 +30,7 @@ import pr.model.VsignalView;
       
 public interface IPowersys extends Remote {
 	public static final int RMI_PORT = 1099;
-	public static final String bindString = String.format("rmi://localhost:%s/PowerSysService", RMI_PORT);
+//	public static final String bindString = String.format("rmi://%s:%s/PowerSysService", RMI_PORT);
 	
 //	==============================================================================
 	void update(String query) throws RemoteException;
