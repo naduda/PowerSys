@@ -280,6 +280,5 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	public Map<Integer, SpTypeSignal> getSpTypeSignalMap() throws RemoteException {
 		return pdb.getSpTypeSignalMap();
 	}
-	
 }
  

@@ -13,9 +13,9 @@ import javafx.stage.Stage;
 
 public class TrCommentController implements IControllerInit {
 
-	@FXML Button btnOK;
-	@FXML Button btnCancel;
-	@FXML TextArea txtArea;
+	@FXML private Button btnOK;
+	@FXML private Button btnCancel;
+	@FXML private TextArea txtArea;
 	
 	private AlarmTableItem alarmTableItem;
 	

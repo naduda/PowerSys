@@ -10,7 +10,7 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import pr.common.Utils;
-import ui.Main;
+import ui.single.SingleObject;
 
 public class StageLoader extends Stage {
 
@@ -27,9 +27,10 @@ public class StageLoader extends Stage {
 			
 			if (isMainStageOwner) {
 				initModality(Modality.NONE);
-				initOwner(Main.mainStage.getScene().getWindow());
+				initOwner(SingleObject.mainStage.getScene().getWindow());
 			}
 		} catch (IOException e) {
+			System.out.println("------------------------------------------");
 			e.printStackTrace();
 			System.out.println("------------------------------------------");
 		}

@@ -1,5 +1,6 @@
 package controllers.journals;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -20,13 +21,18 @@ import pr.model.Alarm;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import svg2fx.Convert;
-import ui.Main;
-import ui.MainStage;
 import ui.Scheme;
+import ui.single.ProgramProperty;
+import ui.single.SingleFromDB;
+import ui.single.SingleObject;
 import ui.tables.AlarmTableItem;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -43,6 +49,8 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -60,16 +68,35 @@ public class AlarmTableController extends TableController {
 	private final PauseTransition clickTimer = new PauseTransition(maxTimeBetweenSequentialClicks);
 	private final IntegerProperty sequentialClickCount = new SimpleIntegerProperty(0);
 	
-	@FXML ToolBar tbAlarms;
-	@FXML ChoiceBox<String> cbPriority;
-	@FXML ChoiceBox<String> cbEvent;
-	@FXML MenuButton cbColumns;
-	@FXML Label lAlarms;
-	@FXML Label lPriority;
-	@FXML Label lEvent;
-	@FXML Label lCount;
-	@FXML Text tCount;
-	@FXML Button btnSorting;
+	private final ObjectProperty<Alarm> alarmProperty = new SimpleObjectProperty<>();
+	
+	@FXML private ToolBar tbAlarms;
+	@FXML private ChoiceBox<String> cbPriority;
+	@FXML private ChoiceBox<String> cbEvent;
+	@FXML private MenuButton cbColumns;
+	@FXML private Label lAlarms;
+	@FXML private Label lPriority;
+	@FXML private Label lEvent;
+	@FXML private Label lCount;
+	@FXML private Text tCount;
+	@FXML private Button btnSorting;
+	
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		super.initialize(location, resources);
+		tCount.textProperty().bind(getCountProperty());
+		
+		alarmProperty.bind(ProgramProperty.alarmProperty);
+		alarmProperty.addListener(new AlarmChangeListener());
+		
+		setChoiceBoxes();		
+		setOnMouseClicked();		
+		changeRowFactory();
+//		-------------------------------------------------------------------------------
+		setVisibleAlarmColumns();
+		setCbColumns();		
+		setCurrentDayItems();
+	}
 	
 	@FXML
 	private void kvitOne(ActionEvent event) {
@@ -82,7 +109,7 @@ public class AlarmTableController extends TableController {
 			
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
-			ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
+			ResourceBundle rb = Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName()));
 			trController.setElementText(rb);
 			trController.setAlarmTableItem((AlarmTableItem) tvTable.getSelectionModel().getSelectedItem());
 			stage.initModality(Modality.NONE);
@@ -109,7 +136,7 @@ public class AlarmTableController extends TableController {
 	@FXML
 	private void kvitAll(ActionEvent event) {
 		try {
-			MainStage.psClient.confirmAlarmAll("", -1);
+			SingleFromDB.psClient.confirmAlarmAll("", -1);
 		} catch (RemoteException e) {
 			System.err.println("error in confirmAlarmAll");
 			e.printStackTrace();
@@ -124,20 +151,6 @@ public class AlarmTableController extends TableController {
 		data.removeAll(data);
 		copyData.sort(new DefaultSorting());
 		data.addAll(copyData);
-	}
-	
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		super.initialize(location, resources);
-		tCount.textProperty().bind(getCountProperty());
-		
-		setChoiceBoxes();		
-		setOnMouseClicked();		
-		changeRowFactory();
-//		-------------------------------------------------------------------------------
-		setVisibleAlarmColumns();
-		setCbColumns();		
-		setCurrentDayItems();
 	}
 	
 	private void setOnMouseClicked() {
@@ -157,9 +170,9 @@ public class AlarmTableController extends TableController {
 	
 	private void setChoiceBoxes() {
 		try {
-			sysParamsPriority = MainStage.psClient.getTSysParam("ALARM_PRIORITY");
-			sysParamsEvent = MainStage.psClient.getTSysParam("ALARM_EVENT");
-			viewParams = MainStage.psClient.getTViewParam("LOG_STATE", "COLOR", -1);
+			sysParamsPriority = SingleFromDB.psClient.getTSysParam("ALARM_PRIORITY");
+			sysParamsEvent = SingleFromDB.psClient.getTSysParam("ALARM_EVENT");
+			viewParams = SingleFromDB.psClient.getTViewParam("LOG_STATE", "COLOR", -1);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -172,7 +185,7 @@ public class AlarmTableController extends TableController {
 		tvTable.setRowFactory(new Callback<TableView<Object>, TableRow<Object>>() {			
 			@Override
 			public TableRow<Object> call(TableView<Object> param) {
-				final TableRow<Object> row = new TableRow<Object>() {
+				return new TableRow<Object>() {
 	                @Override
 	                protected void updateItem(Object alarm, boolean empty){
 	                    super.updateItem(alarm, empty);
@@ -190,32 +203,31 @@ public class AlarmTableController extends TableController {
 								cellStyle = String.format(cellStyle, col);
 							} catch (NumberFormatException e) {
 								cellStyle = String.format(cellStyle, "white");
-							}	
+							}
 	                    } else {
 	                    	cellStyle = String.format(cellStyle, "white");
 	                    }
 	                    setStyle(cellStyle);
 	                }
 	            };
-	            return row;
 			}
 		});
 	}
 	
 	private void setCurrentDayItems() {
 		try {
-			MainStage.psClient.getAlarmsCurrentDay().forEach(it -> addItem(new AlarmTableItem(it)));
+			SingleFromDB.psClient.getAlarmsCurrentDay().forEach(it -> addItem(new AlarmTableItem(it)));
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	private void setVisibleAlarmColumns() {
-		String showColumnsString = Main.getProgramSettings().getShowAlarmColumns();
+		String showColumnsString = SingleObject.getProgramSettings().getShowAlarmColumns();
 		StringTokenizer st = new StringTokenizer(showColumnsString, ":");
 		int i = 0;
 		while (st.hasMoreElements()) {
-			boolean isShow = st.nextElement().toString().equals("1") ? true : false;
+			boolean isShow = st.nextElement().toString().equals("1");
 			tvTable.getColumns().get(i).setVisible(isShow);
 			i++;
 		}
@@ -254,7 +266,7 @@ public class AlarmTableController extends TableController {
 		});
 		cbPriority.setValue(cbPriority.getItems().get(0));
 		
-		cbEvent.getItems().replaceAll(s -> {			
+		cbEvent.getItems().replaceAll(s -> {
 			if (s.equals(cbEvent.getItems().get(0))) {
 				return rb.getString("keyPriorityAny");
 			}
@@ -262,9 +274,22 @@ public class AlarmTableController extends TableController {
 		});
 		cbEvent.setValue(cbEvent.getItems().get(0));
 		
-		btnSorting.setText(rb.getString("keySorting"));
+		btnSorting.setText(rb.getString("keyTooltip_btnSorting"));
 		cbColumns.setText(rb.getString("keyColumns"));
 		setCbColumns();
+		
+		tbAlarms.getItems().filtered(f -> f.getClass().equals(Button.class)).forEach(it -> {
+			if (it.getId() != null) {
+				((Button)it).setTooltip(new Tooltip(rb.getString("keyTooltip_" + it.getId())));
+				File icon = new File(Utils.getFullPath("./Icon/" + it.getId() + ".png"));
+				if (icon.exists()) {
+					ImageView iw = new ImageView("file:/" + icon.getAbsolutePath());
+					iw.setFitHeight(SingleObject.getProgramSettings().getIconWidth());
+					iw.setPreserveRatio(true);
+					((Button)it).setGraphic(iw);
+				}
+			}
+		});
 	}
 	
 	@Override
@@ -285,17 +310,13 @@ public class AlarmTableController extends TableController {
             	String lowerCaseFilterPriority = cbPriority.getSelectionModel().getSelectedItem().toLowerCase();
             	String lowerCaseFilterEvent = cbEvent.getSelectionModel().getSelectedItem().toLowerCase();
             	
-            	boolean isPriority = cbPriority.getSelectionModel().getSelectedIndex() == 0 ? true :
+            	boolean isPriority = cbPriority.getSelectionModel().getSelectedIndex() == 0 ||
             							((AlarmTableItem)a).getPAlarmPriority().toLowerCase().equals(lowerCaseFilterPriority);
             	
-            	boolean isEvent = cbEvent.getSelectionModel().getSelectedIndex() == 0 ? true :
+            	boolean isEvent = cbEvent.getSelectionModel().getSelectedIndex() == 0 ||
             							((AlarmTableItem)a).getPEventType().toLowerCase().equals(lowerCaseFilterEvent);
             	
-            	if (isPriority && isEvent) {
-        			return true;
-        		} else {
-        			return false;
-        		}
+            	return isPriority && isEvent;
             });
             getCountProperty().setValue(tvTable.getItems().size() + "");
         });
@@ -306,7 +327,7 @@ public class AlarmTableController extends TableController {
 	public static void confirmAlarm(AlarmTableItem ati, String comment) {		
 		if (ati != null) {
 			try {
-				MainStage.psClient.confirmAlarm(ati.getAlarm().getRecorddt(), ati.getAlarm().getEventdt(), 
+				SingleFromDB.psClient.confirmAlarm(ati.getAlarm().getRecorddt(), ati.getAlarm().getEventdt(), 
 						ati.getAlarm().getObjref(), new Timestamp(System.currentTimeMillis()), comment,
 						ati.getAlarm().getUserref() == 0 ? -1 : ati.getAlarm().getUserref());
 			} catch (RemoteException e) {
@@ -362,5 +383,19 @@ public class AlarmTableController extends TableController {
 	
 	public TableView<Object> getTvTable() {
 		return tvTable;
+	}
+	
+//	===========================================================================
+	private class AlarmChangeListener implements ChangeListener<Alarm> {
+
+		@Override
+		public void changed(ObservableValue<? extends Alarm> observable, Alarm oldValue, Alarm newValue) {
+			if (newValue.getConfirmdt() == null) {
+				addItem(new AlarmTableItem(newValue));
+	    	} else {
+	    		updateAlarm(newValue);
+	    	}
+		}
+		
 	}
 }

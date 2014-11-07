@@ -42,17 +42,12 @@
 	<center>
 		<TabPane side="BOTTOM">
 			<tabs>
-				<Tab fx:id="tTable" text="Таблиця" closable="false">
+				<Tab fx:id="tTable" closable="false">
 					<content>
-						<TableView fx:id="tvChart" styleClass="table">
-							<columns>
-								<TableColumn id="pDate" text="Дата" minWidth="150"/>
-								<TableColumn id="pValue" text="Значення" minWidth="100" />
-							</columns>
-						</TableView>
+						<TableView fx:id="tvChart" styleClass="table" />
 					</content>
 				</Tab>
-				<Tab fx:id="tChart" text="Графік" closable="false"/>
+				<Tab fx:id="tChart" closable="false"/>
 			</tabs>
 		</TabPane>
 	</center>

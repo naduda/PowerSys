@@ -24,15 +24,18 @@ import pr.model.TSysParam;
 import pr.model.Tsignal;
 import svg2fx.Convert;
 import svg2fx.SignalState;
-import ui.Main;
-import ui.MainStage;
+import ui.single.SingleFromDB;
+import ui.single.SingleObject;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -94,6 +97,17 @@ public class EShape extends AShape {
 	            }
 	        }
 	    });
+	    
+	    setOnDragDetected(e -> {
+	    	if (id > 0) {
+		    	Dragboard db = startDragAndDrop(TransferMode.ANY);
+		    	ClipboardContent content = new ClipboardContent();
+	            content.putString(id + "");
+	            db.setContent(content);
+	            
+	            e.consume();
+	    	}
+	    });
 	}
 	
 	@Override
@@ -144,7 +158,7 @@ public class EShape extends AShape {
 			if (idTS < 1 && id < 1) {
 				shapeController.getmOperationMode().setDisable(true);
 			} else {
-				Map<String, TSysParam> modes = MainStage.psClient.getTSysParam("SIGNAL_STATUS");
+				Map<String, TSysParam> modes = SingleFromDB.psClient.getTSysParam("SIGNAL_STATUS");
 				modes.values().forEach(m -> {
 					CheckMenuItem mi = new CheckMenuItem(m.getParamdescr());
 					mi.setId("miMode_" + m.getVal());
@@ -154,7 +168,7 @@ public class EShape extends AShape {
 				});
 			}
 			contextMenu.setOnShowing(e -> {
-				ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
+				ResourceBundle rb = Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName()));
 				shapeController.setElementText(rb);
 			});
 		} catch (IOException e) {
@@ -164,8 +178,7 @@ public class EShape extends AShape {
 	
 	public void setTS(int idSignal, int val) {
 		try {
-			MainStage.psClient.setTS(idSignal, val, Main.mainScheme.getIdScheme());
-			System.out.println(Main.mainScheme.getIdScheme());
+			SingleFromDB.psClient.setTS(idSignal, val, SingleObject.mainScheme.getIdScheme());
 		} catch (RemoteException | NumberFormatException e) {
 			e.printStackTrace();
 		}
@@ -214,7 +227,7 @@ public class EShape extends AShape {
 					t.setWrappingWidth(textVal);
 					t.setTextAlignment(TextAlignment.RIGHT);
 				} catch (Exception e) {
-					//e.printStackTrace();
+					//System.err.println(e.getMessage());
 				}
 			}
 		}
@@ -282,8 +295,8 @@ public class EShape extends AShape {
 	
 	private int getStateVal(int idSignal, String denom) {
 		try {
-			Tsignal tSignal = MainStage.tsignals.get(idSignal);
-			return MainStage.psClient.getSpTuCommand().stream()
+			Tsignal tSignal = SingleFromDB.tsignals.get(idSignal);
+			return SingleFromDB.psClient.getSpTuCommand().stream()
 				.filter(f -> f.getObjref() == tSignal.getStateref() && f.getDenom().equals(denom.toUpperCase()))
 				.collect(Collectors.toList()).get(0).getVal();
 		} catch (Exception e) {
@@ -301,25 +314,25 @@ public class EShape extends AShape {
 	}
 
 	public int getStatus() {
-		Tsignal tSignal = MainStage.tsignals.get(idTS);
+		Tsignal tSignal = SingleFromDB.tsignals.get(idTS);
 		return tSignal != null ? tSignal.getStatus() : status;
 	}
 	
 	public void setShapeFill(Shape sh, String colorName1, String colorName2) {
 		if (getStatus() == 1) {
-			sh.setFill(getColorByName(getValue().getIdTSValue() == getStateIdTS("ON") ? "red" : "Lime"));
+			sh.setFill(getColorByName(getValue().getIdTSValue() == getStateIdTS("ON") ? colorName1 : colorName2));
 		} else {
-			sh.setFill(getColorByName("yellow", getValue().getIdTSValue() == getStateIdTS("ON") ? "red" : "Lime"));
+			sh.setFill(getColorByName("yellow", getValue().getIdTSValue() == getStateIdTS("ON") ? colorName1 : colorName2));
 		}
 	}
 
 	public Tsignal gettSignalID() {
-		tSignalID = MainStage.tsignals.get(id);
+		tSignalID = SingleFromDB.tsignals.get(id);
 		return tSignalID;
 	}
 	
 	public Tsignal gettSignalIDTS() {
-		tSignalIDTS = MainStage.tsignals.get(idTS);
+		tSignalIDTS = SingleFromDB.tsignals.get(idTS);
 		return tSignalIDTS;
 	}
 }

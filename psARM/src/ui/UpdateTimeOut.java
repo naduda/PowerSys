@@ -2,6 +2,7 @@ package ui;
 
 import java.util.List;
 
+import ui.single.SingleObject;
 import controllers.Controller;
 import javafx.application.Platform;
 
@@ -21,16 +22,10 @@ public class UpdateTimeOut implements Runnable {
 	public void run() {
 		try {
 			while (isRun) {
-				if (Main.mainScheme != null) {
-					List<Integer> signals = type_ == 1 ? Main.mainScheme.getSignalsTI() : Main.mainScheme.getSignalsTS();
+				if (SingleObject.mainScheme != null) {
+					List<Integer> signals = type_ == 1 ? SingleObject.mainScheme.getSignalsTI() : SingleObject.mainScheme.getSignalsTS();
 					
-					signals.forEach(s -> {
-						Platform.runLater(new Runnable() {
-    	                    @Override public void run() {
-    	                    	Controller.updateSignal(s, type_, sec);
-    	                    }
-    	                });		
-					});
+					signals.forEach(s -> Platform.runLater(() -> Controller.updateSignal(s, type_, sec)));
 				}
 				
 				Thread.sleep(sec * 1000 / 2);

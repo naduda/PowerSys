@@ -26,6 +26,7 @@ public class ProgramSettings {
 	private SchemeSettings schemeSettings;
 	private String localeName;
 	private String showAlarmColumns;
+	private int iconWidth;
 	
 	public ProgramSettings() {
 		
@@ -65,6 +66,14 @@ public class ProgramSettings {
 
 	public void setShowAlarmColumns(String showAlarmColumns) {
 		this.showAlarmColumns = showAlarmColumns;
+	}
+	
+	public int getIconWidth() {
+		return iconWidth;
+	}
+
+	public void setIconWidth(int iconWidth) {
+		this.iconWidth = iconWidth;
 	}
 
 	public void saveToFile(String fileName) throws JAXBException {

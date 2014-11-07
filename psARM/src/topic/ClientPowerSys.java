@@ -32,15 +32,15 @@ import pr.model.UserEventJournalItem;
 import pr.model.VsignalView;
 import pr.powersys.IPowersys;
 import pr.powersys.MySocketFactory;
-import ui.Main;
+import ui.single.SingleObject;
 
 public class ClientPowerSys implements IPowersys {	
 	private IPowersys myServer;
 	
 	public ClientPowerSys() {
 		try {
-			MySocketFactory.setServer(Main.ipAddress);
-			myServer = (IPowersys) Naming.lookup(String.format("rmi://%s:%s/PowerSysService", Main.ipAddress, IPowersys.RMI_PORT));
+			MySocketFactory.setServer(SingleObject.ipAddress);
+			myServer = (IPowersys) Naming.lookup(String.format("rmi://%s:%s/PowerSysService", SingleObject.ipAddress, IPowersys.RMI_PORT));
 		} catch (NotBoundException | RemoteException | MalformedURLException e) {
 			System.err.println("PowerSysService is stoped");
 			System.exit(0);

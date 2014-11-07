@@ -8,9 +8,9 @@ import state.ProgramSettings;
 import state.SchemeSettings;
 import state.WindowState;
 import topic.ReceiveTopic;
-import ui.Main;
 import ui.MainStage;
 import ui.UpdateTimeOut;
+import ui.single.SingleObject;
 import controllers.interfaces.IControllerInit;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -27,14 +27,14 @@ public class LoginController implements IControllerInit, Initializable {
 	private static final int TIMEOUT_TI_SEC = 35;
 	private static final int TIMEOUT_TS_SEC = 600;
 	
-	@FXML Label lbAddress;
-	@FXML TextField txtAddress;
-	@FXML Button btnOK;
-	@FXML Button btnCancel;
+	@FXML private Label lbAddress;
+	@FXML private TextField txtAddress;
+	@FXML private Button btnOK;
+	@FXML private Button btnCancel;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		setElementText(Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName())));
+		setElementText(Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName())));
 	}
 	
 	@Override
@@ -47,12 +47,12 @@ public class LoginController implements IControllerInit, Initializable {
 	@FXML
 	private void btnOK(ActionEvent event) {
 		((Stage)btnOK.getScene().getWindow()).close();
-		Main.ipAddress = txtAddress.getText();
+		SingleObject.ipAddress = txtAddress.getText();
 		
 		MainStage stage = new MainStage("./ui/Main.xml");
-		Main.mainStage = stage;
+		SingleObject.mainStage = stage;
 		
-        new Thread(new ReceiveTopic(Main.ipAddress + ":7676"), "ReceiveTopic").start();
+        new Thread(new ReceiveTopic(SingleObject.ipAddress + ":7676"), "ReceiveTopic").start();
 
         final Task<Void> taskTI = new Task<Void>() {
 			@Override
@@ -86,7 +86,7 @@ public class LoginController implements IControllerInit, Initializable {
 	}
 	
 	private void setStageParams(Stage stage) {
-		ProgramSettings ps = Main.getProgramSettings();
+		ProgramSettings ps = SingleObject.getProgramSettings();
 		WindowState ws = ps.getWinState();
 		Window w = stage.getScene().getWindow();
 		w.setX(ws.getX());
@@ -95,24 +95,14 @@ public class LoginController implements IControllerInit, Initializable {
 		w.setHeight(ws.getHeight());
 		
 		MainStage.controller.getAlarmSplitPane().getDividers().get(0).positionProperty().addListener((o, ov, nv) -> {
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					MainStage.controller.getTreeSplitPane().setDividerPositions(ws.getTreeDividerPositions());
-	            }
-	        });	
+			Platform.runLater(() -> MainStage.controller.getTreeSplitPane().setDividerPositions(ws.getTreeDividerPositions()));	
 		});
 		
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				MainStage.controller.getAlarmSplitPane().setDividerPositions(ws.getAlarmDividerPositions());
-            }
-        });
+		Platform.runLater(() -> MainStage.controller.getAlarmSplitPane().setDividerPositions(ws.getAlarmDividerPositions()));
 		
 		SchemeSettings ss = ps.getSchemeSettings();
-		Main.mainScheme.getRoot().setScaleX(ss.getSchemeScale());
-		Main.mainScheme.getRoot().setScaleY(ss.getSchemeScale());
+		SingleObject.mainScheme.getRoot().setScaleX(ss.getSchemeScale());
+		SingleObject.mainScheme.getRoot().setScaleY(ss.getSchemeScale());
 		MainStage.controller.getMenuBarController().setLocaleName(ps.getLocaleName());
 	}
 }

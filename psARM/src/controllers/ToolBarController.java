@@ -2,17 +2,31 @@ package controllers;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.io.File;
 import java.net.URL;
+import java.rmi.RemoteException;
+import java.sql.Timestamp;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import pr.common.Utils;
+import pr.model.NormalModeJournalItem;
 import controllers.interfaces.IControllerInit;
 import controllers.interfaces.StageLoader;
 import controllers.journals.JAlarmsController;
-import ui.Main;
+import svg2fx.Convert;
+import svg2fx.fxObjects.EShape;
 import ui.MainStage;
-import ui.Scheme;
+import ui.single.SingleFromDB;
+import ui.single.SingleObject;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,6 +34,12 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
@@ -28,21 +48,42 @@ import javafx.scene.paint.Color;
 
 public class ToolBarController implements Initializable, IControllerInit {
 	private static final BooleanProperty showInfoProperty = new SimpleBooleanProperty();
+	private static final BooleanProperty showNormalMode = new SimpleBooleanProperty();
+	public static final DoubleProperty zoomProperty = new SimpleDoubleProperty();
+	
+	private static final double ZOOM_FACTOR = 0.1;
+	private static final double ZOOM_MAX = 5;
 	private static StageLoader infoStage;
 	private static InfoController infoController;
 	private Point2D infoStagePos;
 	
+	private final List<String> normalModeShapes = new ArrayList<>();
+	
+	@FXML private ToolBar tbMain;
+	@FXML private Slider zoomSlider; 
 	@FXML private Label lDataOn;
 	@FXML private Label lLastDate;
-	@FXML Button btnInfo;
+	@FXML private Button info;
+	@FXML private Button normalMode;
 	
 	@Override
 	public void initialize(URL url, ResourceBundle boundle) {
-		setElementText(Main.getResourceBundle());
+		setElementText(SingleObject.getResourceBundle());
+		zoomSlider.valueProperty().bindBidirectional(zoomProperty);
+		zoomSlider.setMin(ZOOM_FACTOR);
+		zoomSlider.setMax(ZOOM_MAX);
+		zoomSlider.setBlockIncrement(ZOOM_FACTOR);
+		zoomSlider.valueProperty().addListener((observ, oldValue, newValue) -> {
+			zoomSlider.setTooltip(new Tooltip(newValue + ""));
+		});
+		
+		zoomProperty.addListener((observ, oldValue, newValue) -> {
+			changeZoom((double)newValue);
+		});
 		
 		showInfoProperty.addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
-				btnInfo.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)));
+				info.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)));
 				if (infoStagePos != null) {
 					infoStage.setX(infoStagePos.getX());
 					infoStage.setY(infoStagePos.getY());
@@ -51,14 +92,91 @@ public class ToolBarController implements Initializable, IControllerInit {
 			} else {
 				infoStagePos = new Point2D(infoStage.getX(), infoStage.getY());
 				infoStage.hide();
-				btnInfo.setBorder(new Border(new BorderStroke(Color.TRANSPARENT, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)));
+				info.setBorder(new Border(new BorderStroke(Color.TRANSPARENT, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)));
+			}
+		});
+		
+		showNormalMode.addListener((observable, oldValue, newValue) -> {
+			if (newValue) {
+				try {
+					Timestamp dtBeg = Timestamp.valueOf(LocalDate.now().atTime(0, 0, 0));
+					Timestamp dtEnd = Timestamp.valueOf(LocalDate.now().plusDays(1).atTime(0, 0));
+					
+					List<String> signalsArr = new ArrayList<String>(1);
+					signalsArr.add("");
+					SingleObject.mainScheme.getSignalsTS().forEach(s -> {
+						signalsArr.set(0, signalsArr.get(0) + s + ",");
+					});
+					String signals = signalsArr.get(0).substring(0, signalsArr.get(0).length() - 1);
+					
+					String query = String.format("select path, nameSignal, idsignal, val, dt, (select min(dt) from d_arcvalts "
+							+ "where signalref = idsignal and dt > d.dt and val <> d.val) dt_new "
+							+ "from (select idSignal, signalpath(idSignal) as path, nameSignal, "
+							+ "coalesce(getval_ts(idSignal, '%s'::timestamp with time zone), baseval) as val, "
+							+ "getdt_ts(idSignal, '%s'::timestamp with time zone) as dt, baseval from t_signal s "
+							+ "where idSignal in (0, %s) union all select idSignal, signalpath(idSignal) as path, nameSignal, val, dt, baseval "
+							+ "from d_arcvalts join t_signal on signalref = idsignal "
+							+ "where idSignal in (0, %s) and dt > '%s' and dt < '%s') d where val <> baseval order by dt desc",
+							dtBeg, dtBeg, signals, signals, dtBeg, dtEnd);
+					
+					List<NormalModeJournalItem> items = SingleFromDB.psClient.getListNormalModeItems(query);
+					items.forEach(it -> {
+						if (it.getDt_new() == null) {
+							Convert.listSignals.stream().filter(f -> f.getKey().equals(it.getIdsignal())).forEach(s -> {
+								try {
+									EShape tt = SingleObject.mainScheme.getDeviceById(s.getValue());
+									tt.setNormalMode();
+									normalModeShapes.add(s.getValue());
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							});
+						}
+					});
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				normalMode.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)));
+			} else {
+				normalModeShapes.forEach(s -> {
+					try {
+						EShape tt = SingleObject.mainScheme.getDeviceById(s);
+						tt.clearNormalMode();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
+				normalMode.setBorder(new Border(new BorderStroke(Color.TRANSPARENT, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)));
 			}
 		});
 	}
 	
 	@FXML 
-	protected void testAction(ActionEvent event) {
-		System.out.println("test ToolBarController " + lLastDate.hashCode());
+	protected void zoomMinus(ActionEvent event) {
+		changeZoom(false);
+	}
+	
+	@FXML 
+	protected void zoomPlus(ActionEvent event) {
+		changeZoom(true);
+	}
+	
+	private void changeZoom(boolean isIncrease) {
+		DecimalFormat df = new DecimalFormat("0.0");
+		Group root = SingleObject.mainScheme.getRoot();
+		double k = Double.parseDouble(df.format(root.getScaleX()).replace(',', '.'));
+		
+		k = isIncrease ? k + ZOOM_FACTOR : k - ZOOM_FACTOR;
+		if (k >= ZOOM_FACTOR && k <= ZOOM_MAX) {
+			changeZoom(k);
+		}
+        zoomProperty.set(k);
+	}
+	
+	private void changeZoom(double zoom) {
+		Group root = SingleObject.mainScheme.getRoot();
+		root.setScaleX(zoom);
+        root.setScaleY(zoom);
 	}
 	
 	@FXML 
@@ -69,7 +187,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 	@FXML 
 	protected void info(ActionEvent event) {
 		if (infoStage == null) {
-			infoStage = new StageLoader("Info.xml", Main.getResourceBundle().getString("keyInfoTitle"), true);
+			infoStage = new StageLoader("Info.xml", SingleObject.getResourceBundle().getString("keyTooltip_info"), true);
 			infoStage.setOnCloseRequest(e -> {
 				infoStagePos = new Point2D(infoStage.getX(), infoStage.getY());
 				showInfoProperty.set(false);
@@ -77,17 +195,21 @@ public class ToolBarController implements Initializable, IControllerInit {
 			infoController = (InfoController) infoStage.getController();
 		}
 		infoController.updateStage();
-		showInfoProperty.set(showInfoProperty.get() ? false : true);
+		showInfoProperty.set(!showInfoProperty.get());
+	}
+	
+	@FXML 
+	protected void showNormalMode(ActionEvent event) {
+		showNormalMode.set(!showNormalMode.get());
 	}
 	
 	@FXML 
 	protected void showAlarms(ActionEvent event) {
 		Point p = MouseInfo.getPointerInfo().getLocation();
 		StageLoader stage = new StageLoader("journals/JournalAlarms.xml", 
-				Main.getResourceBundle().getString("keyJalarms"), p, true);
+				SingleObject.getResourceBundle().getString("keyJalarms"), p, true);
 		
 		JAlarmsController controller = (JAlarmsController) stage.getController();
-		System.out.println("=====================");
 		controller.setAlarmById(true);
 		
 	    stage.show();
@@ -103,7 +225,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 	}
 	
 	public void fitSchemeVertical() {
-		Group root = (Group) Main.mainScheme.getRoot();
+		Group root = (Group) SingleObject.mainScheme.getRoot();
 		double k = MainStage.bpScheme.getHeight() * 0.95 / root.getBoundsInLocal().getHeight();
 		root.setScaleY(k);
 		root.setScaleX(k);
@@ -115,7 +237,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 	}
 	
 	public void fitSchemeHorizontal() {
-		Group root = (Group) Main.mainScheme.getRoot();
+		Group root = (Group) SingleObject.mainScheme.getRoot();
 		double k = MainStage.bpScheme.getWidth() * 0.95 / root.getBoundsInLocal().getWidth();
 		root.setScaleY(k);
 		root.setScaleX(k);
@@ -123,9 +245,35 @@ public class ToolBarController implements Initializable, IControllerInit {
 	
 	@FXML 
 	protected void showChart(ActionEvent event) {
-		StageLoader stage = new StageLoader("Data.xml", Main.getResourceBundle().getString("keyDataTitle"), true);
+		if (SingleObject.selectedShape == null) {
+			System.out.println("selectedShape is NULL");
+			return;
+		}
+		StageLoader stage = new StageLoader("Data.xml", SingleObject.getResourceBundle().getString("keyDataTitle"), true);
 		DataController dataController = (DataController) stage.getController();
-		dataController.setIdSignal(Scheme.selectedShape.getIdSignal());
+		List<Integer> idSignals = new ArrayList<>();
+		idSignals.add(SingleObject.selectedShape.getIdSignal());
+		dataController.setIdSignals(idSignals);
+		
+		stage.getScene().setOnDragOver(e -> {
+			if (e.getGestureSource() != stage.getScene() && e.getDragboard().hasString()) {
+                e.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            }
+			e.consume();
+		});
+		
+		stage.getScene().setOnDragDropped(e -> {
+            Dragboard db = e.getDragboard();
+            int id = Integer.parseInt(db.getString());
+            
+            Platform.runLater(() -> dataController.addData(id));
+            
+            boolean success = false;
+            success = db.hasString();
+            e.setDropCompleted(success);
+            
+            event.consume();
+		});
 		
 	    stage.show();
 	}
@@ -134,5 +282,18 @@ public class ToolBarController implements Initializable, IControllerInit {
 	public void setElementText(ResourceBundle rb) {
 		lDataOn.setText(rb.getString("keyDataOn"));
 		if (infoController != null ) infoController.setElementText(rb);
+		
+		tbMain.getItems().filtered(f -> f.getClass().equals(Button.class)).forEach(it -> {
+			if (it.getId() != null) {
+				((Button)it).setTooltip(new Tooltip(rb.getString("keyTooltip_" + it.getId())));
+				File icon = new File(Utils.getFullPath("./Icon/" + it.getId() + ".png"));
+				if (icon.exists()) {
+					ImageView iw = new ImageView("file:/" + icon.getAbsolutePath());
+					iw.setFitHeight(SingleObject.getProgramSettings().getIconWidth());
+					iw.setPreserveRatio(true);
+					((Button)it).setGraphic(iw);
+				}
+			}
+		});
 	}
 }

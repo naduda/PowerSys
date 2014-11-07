@@ -1,8 +1,9 @@
 package ui.tables;
 
 import java.text.SimpleDateFormat;
+
 import pr.model.SwitchEquipmentJournalItem;
-import ui.MainStage;
+import ui.single.Constants;
 import javafx.beans.property.SimpleStringProperty;
 
 public class SwitchEquipmentTableItem {
@@ -17,7 +18,7 @@ public class SwitchEquipmentTableItem {
 		pSignal = new SimpleStringProperty(it.getNamesignal() != null ? it.getNamesignal() : "");
 		pState = new SimpleStringProperty(it.getTxtval() != null ? it.getTxtval() : "");
 		pDT = new SimpleStringProperty(it.getDt() != null ? dFormat.format(it.getDt()) : "");
-		pMode = new SimpleStringProperty(MainStage.getQuality(it.getRcode()));
+		pMode = new SimpleStringProperty(Constants.getQuality(it.getRcode()));
 	}
 	
 	public String getPSignal() {

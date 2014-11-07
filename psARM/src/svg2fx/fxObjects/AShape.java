@@ -3,7 +3,8 @@ package svg2fx.fxObjects;
 import java.util.Date;
 import java.util.StringTokenizer;
 
-import ui.Scheme;
+import ui.single.ProgramProperty;
+import ui.single.SingleObject;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
@@ -32,6 +33,9 @@ public abstract class AShape extends Group {
 	private final Timeline timeline = new Timeline();
 	
 	public final Rectangle rect = new Rectangle();
+	private boolean isUpdateSignal = true;
+	private Paint oldRectColor; 
+	private int updateInterval;
 	private DoubleProperty valueProp = new SimpleDoubleProperty();
 	private BooleanProperty tsignalProp = new SimpleBooleanProperty();
 	private Date lastDataDate;
@@ -72,14 +76,11 @@ public abstract class AShape extends Group {
 	    	double deadZoneCur = (Double)oldValue == 0 ? 0 : 
 	    		Math.abs(((Double)oldValue - (Double)newValue) * 100 / (Double)oldValue);
 	    	
-	    	if (deadZoneCur >= deadZone) {
-	    		onValueChange((Double) newValue);
-	    	}
+	    	if (deadZoneCur >= deadZone) onValueChange((Double) newValue);
 	    });
+	    
 	    tsignalProp.addListener((observable, oldValue, newValue) -> {
-	    	if (newValue) {
-	    		onSignalUpdate();
-	    	}
+	    	if (newValue) onSignalUpdate();
 	    });
 	}
 	
@@ -101,19 +102,29 @@ public abstract class AShape extends Group {
 	abstract void onSignalUpdate(); 
 	
 	public void setSelection(boolean isSelected) {
-		Scheme.selectedShapeChangeProperty.set(false);
+		boolean isChanged = !this.equals(SingleObject.selectedShape);
+		if (isChanged) {
+			ProgramProperty.selectedShapeChangeProperty.set(false);
+		}
 		if (isSelected) {
-			if (Scheme.selectedShape != null) {
-				Scheme.selectedShape.setSelection(false);
+			if (SingleObject.selectedShape != null) {
+				SingleObject.selectedShape.setSelection(false);
 			}
 			
+			oldRectColor = rect.getStroke();
 			rect.setStroke(Color.BLUE);
 			rect.getStrokeDashArray().addAll(2d, 5d);
 			
-			Scheme.selectedShape = (EShape) this;
-			Scheme.selectedShapeChangeProperty.set(true);
+			SingleObject.selectedShape = (EShape) this;
+			if (isChanged) ProgramProperty.selectedShapeChangeProperty.set(true);
 		} else {
-			rect.setStroke(Color.TRANSPARENT);
+			if (oldRectColor != null) {
+				rect.getStrokeDashArray().clear();
+				rect.setStroke(oldRectColor);
+				oldRectColor = null;
+			} else {
+				rect.setStroke(Color.TRANSPARENT);
+			}
 		}
 	}
 	
@@ -165,7 +176,8 @@ public abstract class AShape extends Group {
 	}
 	
 	public void updateSignal(int sec) {
-		if (lastDataDate == null) return;
+		if (updateInterval == 0) updateInterval = sec;
+		if (lastDataDate == null || !isUpdateSignal) return;
 		if ((System.currentTimeMillis() - lastDataDate.getTime()) < sec * 1000) {
 			if ((Color.WHITE).equals(rect.getStroke())) {
 				rect.setStroke(Color.TRANSPARENT);
@@ -176,6 +188,18 @@ public abstract class AShape extends Group {
 			rect.setStroke(Color.WHITE);
 			//timeline.play();
 		}
+	}
+	
+	public void setNormalMode() {
+		isUpdateSignal = false;
+		rect.getStrokeDashArray().clear();
+		rect.setStroke(Color.RED);
+	}
+	
+	public void clearNormalMode() {
+		isUpdateSignal = true;
+		rect.setStroke(Color.TRANSPARENT);
+		if (updateInterval > 0) updateSignal(updateInterval);
 	}
 	
 	public Paint getColorByName(String colorName) {

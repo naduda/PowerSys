@@ -10,13 +10,14 @@ import java.util.ResourceBundle;
 
 import controllers.Controller;
 import controllers.ShapeController;
+import controllers.ToolBarController;
 import pr.common.Utils;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
 import svg2fx.Convert;
 import svg2fx.fxObjects.EShape;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import ui.single.SingleFromDB;
+import ui.single.SingleObject;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +26,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
@@ -38,24 +38,27 @@ public class Scheme extends ScrollPane {
 	private final Group rootScheme = new Group();
 	private final List<Integer> signalsTI = new ArrayList<>();
 	private final List<Integer> signalsTS = new ArrayList<>();
-	public static EShape selectedShape;
-	public static final BooleanProperty selectedShapeChangeProperty = new SimpleBooleanProperty();
+	private final List<Integer> signalsTU = new ArrayList<>();
+	
 	private int idScheme = 0;
 	private String schemeName;
-	private double currentVvalue;
-	
-	private String bgColor = "-fx-background: black;";
 	
 	public Scheme() {
 		setContent(rootScheme);
-		setStyle(bgColor);
+		
 		Events events = new Events();
-		setOnScroll(event -> { events.setOnScroll(event); });
-		setOnKeyPressed(e -> { if (e.getCode() == KeyCode.SHIFT) currentVvalue = getVvalue(); });
+		addEventFilter(ScrollEvent.ANY, events::setOnScroll);
 	}
 	
 	public Scheme(String fileName) {
 		this();
+		
+		setOnMouseReleased(e -> {
+			if (SingleObject.selectedShape != null) {
+				SingleObject.selectedShape.setSelection(false);
+				SingleObject.selectedShape = null;
+			}
+		});
 		
 		setSchemeName(fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf(".")));
 		
@@ -66,7 +69,7 @@ public class Scheme extends ScrollPane {
 		Convert.listSignals.forEach(e -> {
 			if (e.getKey() != 0) {
 				try {
-					int typeSignal = MainStage.signals.get(e.getKey()).getTypesignalref();
+					int typeSignal = SingleFromDB.signals.get(e.getKey()).getTypesignalref();
 					
 					switch (typeSignal) {
 					case 1:
@@ -75,27 +78,31 @@ public class Scheme extends ScrollPane {
 					case 2:
 						signalsTS.add(e.getKey());
 						break;
+					case 3:
+						signalsTU.add(e.getKey());
+						break;
 					default:
 						break;
 					}
 				} catch (Exception e1) {
 					e1.printStackTrace();
-					System.err.println(e.getKey());
 				}
 			}
 		});
 		
 		try {
-			MainStage.psClient.getOldTI().values().forEach(s -> MainStage.controller.updateTI(this, s));
-			MainStage.psClient.getOldTS().values().forEach(s -> MainStage.controller.updateTI(this, s));
+			SingleFromDB.psClient.getOldTI().values().forEach(s -> MainStage.controller.updateTI(this, s));
+			SingleFromDB.psClient.getOldTS().values().forEach(s -> MainStage.controller.updateTI(this, s));
 			
 			setTransparants();
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-
-//		bgColor = String.format("-fx-background: %s;", doc.getPage().getFillColor());
-		setStyle(bgColor);
+		
+		if (Convert.backgroundColor != null) {
+			String bgColor = String.format("-fx-background: %s;", Convert.backgroundColor.toString().replace("0x", "#"));
+			setStyle(bgColor);
+		}
 	}
 	
 	@Override
@@ -137,11 +144,11 @@ public class Scheme extends ScrollPane {
 	}
 	
 	private void setTransparants() throws RemoteException {
-		List<Ttransparant> tTransparants = MainStage.psClient.getTtransparantsActive(getIdScheme());
+		List<Ttransparant> tTransparants = SingleFromDB.psClient.getTtransparantsActive(getIdScheme());
 		if (tTransparants != null) {
 			tTransparants.forEach(t -> {
 				try {
-					TtranspLocate transpLocate = MainStage.psClient.getTransparantLocate(t.getIdtr());
+					TtranspLocate transpLocate = SingleFromDB.psClient.getTransparantLocate(t.getIdtr());
 					addTransparant(t.getTp(), transpLocate.getX(), transpLocate.getY(), transpLocate.getH(), 
 							t.getIdtr());
 				} catch (Exception e) {
@@ -163,7 +170,7 @@ public class Scheme extends ScrollPane {
 	private Shape createCircle(int idTransarant, double xT, double yT, double sizeT, int ident) {
 		Circle n = new Circle(xT + sizeT / 2, yT + sizeT / 2, sizeT / 2);
 		n.setStroke(Color.TRANSPARENT);
-		n.setFill(new ImagePattern(MainStage.imageMap.get(idTransarant)));
+		n.setFill(new ImagePattern(SingleFromDB.getImageMap().get(idTransarant)));
 		n.setId("transparant_" + ident);
 		addContextMenu(n);
 		
@@ -184,7 +191,7 @@ public class Scheme extends ScrollPane {
 		        @Override
 		        public void handle(MouseEvent t) {
 		            if(t.getButton().toString().equals("SECONDARY")) {
-		            	ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
+		            	ResourceBundle rb = Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName()));
 		            	shapeController.setElementText(rb);
 		            	contextMenu.show(sh, t.getScreenX(), t.getSceneY());
 		            }
@@ -222,7 +229,7 @@ public class Scheme extends ScrollPane {
 	public Group getRoot() {
 		return root;
 	}
-	//	--------------------------------------------------------------
+//	--------------------------------------------------------------
 	private final class Events {
 		public void setOnScroll(ScrollEvent event) {
 			double deltaY = event.getDeltaY();
@@ -252,9 +259,10 @@ public class Scheme extends ScrollPane {
 
                 setHvalue(getHvalue() + deltaX / (newW - getWidth()));
                 setVvalue(getVvalue() + deltaY / (newH - getHeight()));
+                
+                ToolBarController.zoomProperty.set(root.getScaleX());
             } else if (event.isShiftDown()) {
-            	setVvalue(currentVvalue);
-            	setHvalue(deltaY < 0 ? getHvalue() + 0.05 : getHvalue() - 0.05);
+            	setHvalue(event.getDeltaX() < 0 ? getHvalue() + 0.05 : getHvalue() - 0.05);
             }
 		}
 	}
@@ -264,9 +272,7 @@ public class Scheme extends ScrollPane {
 		private double maxX = root.getBoundsInLocal().getMaxX();
 		private double maxY = root.getBoundsInLocal().getMaxY();
     	
-		public TransparantEventHandler() {
-			
-		}
+		public TransparantEventHandler() {}
 		
 		public TransparantEventHandler(int ident) {
 			this();
@@ -285,15 +291,15 @@ public class Scheme extends ScrollPane {
 	        	y = y < r ? r : y - r > maxY ? maxY - r : y - r;
 	        	
 				try {
-					MainStage.psClient.updateTtranspLocate(ident, Main.mainScheme.getIdScheme(), 
+					SingleFromDB.psClient.updateTtranspLocate(ident, SingleObject.mainScheme.getIdScheme(), 
 							(int)x, (int)y, (int)r * 2, (int)r * 2);
 					
-					MainStage.psClient.updateTtransparantLastUpdate(ident);
+					SingleFromDB.psClient.updateTtransparantLastUpdate(ident);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			} else if (e.getEventType().equals(MouseEvent.MOUSE_DRAGGED)) {
-				Point2D p = Main.mainScheme.getRoot().sceneToLocal(((MouseEvent)e).getSceneX(), ((MouseEvent)e).getSceneY());
+				Point2D p = SingleObject.mainScheme.getRoot().sceneToLocal(((MouseEvent)e).getSceneX(), ((MouseEvent)e).getSceneY());
 				double x = p.getX();
 	        	double y = p.getY();
 	            c.relocate(x < r ? r : x - r > maxX ? maxX - r : x - r, 

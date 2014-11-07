@@ -1,8 +1,9 @@
 package ui.tables;
 
 import java.util.stream.Collectors;
+
 import pr.model.Alarm;
-import ui.MainStage;
+import ui.single.SingleFromDB;
 
 public class AlarmMessageParcer {
 
@@ -62,7 +63,7 @@ public class AlarmMessageParcer {
 		String toReplace = arr[1];
 		
 		try {
-			mes = MainStage.psClient.getTSysParam("SIGNAL_STATUS").values().stream()
+			mes = SingleFromDB.psClient.getTSysParam("SIGNAL_STATUS").values().stream()
 			.filter(f -> Integer.parseInt(f.getVal()) == (int)a.getObjval())
 			.collect(Collectors.toList()).get(0).getParamdescr();
 			

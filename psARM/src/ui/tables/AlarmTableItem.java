@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
-import ui.MainStage;
+import ui.single.SingleFromDB;
 import pr.model.Alarm;
 import pr.model.TSysParam;
 import javafx.beans.property.SimpleStringProperty;
@@ -34,15 +34,15 @@ public class AlarmTableItem {
 	
 	public AlarmTableItem(Alarm a) {
 		try {
-			sysParamsEvent = MainStage.psClient.getTSysParam("ALARM_EVENT");
-			sysParamsPriority = MainStage.psClient.getTSysParam("ALARM_PRIORITY");
-			sysParamsLogState = MainStage.psClient.getTSysParam("LOG_STATE");
+			sysParamsEvent = SingleFromDB.psClient.getTSysParam("ALARM_EVENT");
+			sysParamsPriority = SingleFromDB.psClient.getTSysParam("ALARM_PRIORITY");
+			sysParamsLogState = SingleFromDB.psClient.getTSysParam("LOG_STATE");
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 		
-		a.setpObject(MainStage.signals.get(a.getObjref()).getNamesignal());
-		a.setpLocation(MainStage.signals.get(a.getObjref()).getSignalpath());
+		a.setpObject(SingleFromDB.signals.get(a.getObjref()).getNamesignal());
+		a.setpLocation(SingleFromDB.signals.get(a.getObjref()).getSignalpath());
 		
     	AlarmMessageParcer.setAlarmMessage(a);
 
@@ -62,7 +62,7 @@ public class AlarmTableItem {
 		pLogState = new SimpleStringProperty(a.getpLogState() != null ? a.getpLogState() : "");
 		pConfirmDT = new SimpleStringProperty(a.getConfirmdt() != null ? dFormat.format(a.getConfirmdt()) : "");
 		pUserRef = new SimpleStringProperty(a.getUserref() == 0 ? "" : 
-			a.getUserref() == -1 ? "Administrator" : MainStage.users.get(a.getUserref()).getFio());
+			a.getUserref() == -1 ? "Administrator" : SingleFromDB.users.get(a.getUserref()).getFio());
 		pLogNote = new SimpleStringProperty(a.getLognote() != null ? a.getLognote() : "");
 		pAlarmPriority = new SimpleStringProperty(a.getpAlarmPriority() != null ? a.getpAlarmPriority() : "");
 		pEventType = new SimpleStringProperty(a.getpEventType() != null ? a.getpEventType() : "");

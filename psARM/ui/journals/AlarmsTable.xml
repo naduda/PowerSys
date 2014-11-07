@@ -19,39 +19,18 @@
 
 				<left>
 					<ToolBar fx:id="tbAlarms" >
-						<Label fx:id="lAlarms" text="Сигналізація" underline="true" styleClass="alarms-text" />
-						<Button text="" onAction="#kvitOne" styleClass="toolBarButton">
-							<graphic>
-								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-									<Image url="@../../Icon/kvitOne.png"/>
-								</ImageView>
-							</graphic>
-						</Button>
-						<Button text="" onAction="#kvitPS" styleClass="toolBarButton">
-							<graphic>
-								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-									<Image url="@../../Icon/kvitPS.png"/>
-								</ImageView>
-							</graphic>
-						</Button>
-						<Button text="" onAction="#kvitAll" styleClass="toolBarButton">
-							<graphic>
-								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-									<Image url="@../../Icon/kvitAll.png"/>
-								</ImageView>
-							</graphic>
-						</Button>
+						<Label fx:id="lAlarms" underline="true" styleClass="alarms-text" />
+						<Button fx:id="kvitOne" onAction="#kvitOne" styleClass="toolBarButton" />
+						<Button fx:id="kvitPS" onAction="#kvitPS" styleClass="toolBarButton" />
+						<Button fx:id="kvitAll" onAction="#kvitAll" styleClass="toolBarButton" />
 						<Separator/>
-						<Label fx:id="lPriority" text="Пріоритет"/>
+						<Label fx:id="lPriority" />
 						<ChoiceBox fx:id="cbPriority">
 							<items>
 								<FXCollections fx:factory="observableArrayList">
 									<String fx:value="Будь-який"/>
 								</FXCollections>
 							</items>
-							<value>
-								<String fx:value="Будь-який" />
-							</value>
 						</ChoiceBox>
 						<Separator/>
 						<Label fx:id="lEvent"/>
@@ -61,28 +40,24 @@
 									<String fx:value="Будь-який"/>
 								</FXCollections>
 							</items>
-							<value>
-								<String fx:value="Будь-який" />
-							</value>
 						</ChoiceBox>
 						<Separator/>
 						<Separator/>
-						<Button fx:id="btnSorting" onAction="#filterColumnClick" text="DefaultSorting"/>
+						<Button fx:id="btnSorting" onAction="#filterColumnClick"/>
 						<MenuButton fx:id="cbColumns" text="Columns"/>
 						<Separator/>
 					</ToolBar>
 				</left>
 
 				<center>
-					<HBox styleClass="tool-bar">
-					</HBox>
+					<HBox styleClass="tool-bar" />
 				</center>
 
 				<right>
 					<HBox fx:id="hBoxCount" alignment="center_right" styleClass="tool-bar">
 						<padding><Insets top="0" right="10" bottom="0" left="0"/></padding>
 						<Label fx:id="lCount"/>
-						<Text fx:id="tCount" text="" />
+						<Text fx:id="tCount" />
 					</HBox>
 				</right>
 			</BorderPane>

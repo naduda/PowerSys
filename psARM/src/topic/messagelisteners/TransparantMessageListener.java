@@ -6,8 +6,8 @@ import javafx.scene.Group;
 import javafx.scene.shape.Shape;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
-import ui.Main;
-import ui.MainStage;
+import ui.single.SingleFromDB;
+import ui.single.SingleObject;
 
 public class TransparantMessageListener extends AbstarctMessageListener {
 
@@ -15,22 +15,22 @@ public class TransparantMessageListener extends AbstarctMessageListener {
 	void runLogic(Object obj) {
 		try {
 			Ttransparant t = (Ttransparant) obj;
-			Group root = Main.mainScheme.getRoot();
+			Group root = SingleObject.mainScheme.getRoot();
 			if (t.getClosetime() == null) {
-				TtranspLocate transpLocate = MainStage.psClient.getTransparantLocate(t.getIdtr());
+				TtranspLocate transpLocate = SingleFromDB.psClient.getTransparantLocate(t.getIdtr());
 				if (t.getSettime().equals(t.getLastupdate())) {
 					int counter = 0;
 					while (transpLocate == null || counter > 5) {
 						try {
 							Thread.sleep(500);
-							transpLocate = MainStage.psClient.getTransparantLocate(t.getIdtr());
+							transpLocate = SingleFromDB.psClient.getTransparantLocate(t.getIdtr());
 							counter++;
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
 					}
 					if (transpLocate != null) {
-						Main.mainScheme.addTransparant(t.getTp(), transpLocate.getX(), 
+						SingleObject.mainScheme.addTransparant(t.getTp(), transpLocate.getX(), 
 								transpLocate.getY(), transpLocate.getH(), t.getIdtr());
 					}
 				} else {

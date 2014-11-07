@@ -16,8 +16,9 @@ import controllers.interfaces.StageLoader;
 import controllers.journals.JAlarmsController;
 import pr.common.Utils;
 import pr.model.DvalTS;
-import ui.Main;
 import ui.MainStage;
+import ui.single.SingleFromDB;
+import ui.single.SingleObject;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -33,32 +34,32 @@ public class MenuBarController implements Initializable, IControllerInit {
 	private final Label lMenuExit = new Label();
 	private JAlarmsController jAlarmController;
 	
-	@FXML Menu menuFile;
-	@FXML MenuItem miOpenScheme;
-	@FXML MenuItem miOpenProject;
-	@FXML Menu menuTrend;
-	@FXML MenuItem miOpenTrend;
-	@FXML MenuItem miCreateTrend;
-	@FXML MenuItem miLogin;
-	@FXML MenuItem miExit;
-	@FXML Menu menuJournals;
-	@FXML MenuItem miJAlarms;
-	@FXML MenuItem miJControl;
-	@FXML MenuItem miJNormalMode;
-	@FXML MenuItem miJswitchEq;
-	@FXML MenuItem miJuserEvents;
-	@FXML Menu menuReports;
-	@FXML Menu menuTools;
-	@FXML MenuItem miSetBaseVal;
-	@FXML Menu menuSettings;
-	@FXML Menu menuLanguage;
-	@FXML Menu menuExit;
-	@FXML Menu menuAbout;
+	@FXML private Menu menuFile;
+	@FXML private MenuItem miOpenScheme;
+	@FXML private MenuItem miOpenProject;
+	@FXML private Menu menuTrend;
+	@FXML private MenuItem miOpenTrend;
+	@FXML private MenuItem miCreateTrend;
+	@FXML private MenuItem miLogin;
+	@FXML private MenuItem miExit;
+	@FXML private Menu menuJournals;
+	@FXML private MenuItem miJAlarms;
+	@FXML private MenuItem miJControl;
+	@FXML private MenuItem miJNormalMode;
+	@FXML private MenuItem miJswitchEq;
+	@FXML private MenuItem miJuserEvents;
+	@FXML private Menu menuReports;
+	@FXML private Menu menuTools;
+	@FXML private MenuItem miSetBaseVal;
+	@FXML private Menu menuSettings;
+	@FXML private Menu menuLanguage;
+	@FXML private Menu menuExit;
+	@FXML private Menu menuAbout;
 	
 	@Override
 	public void initialize(URL url, ResourceBundle boundle) {
 		try {
-			setElementText(Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName())));
+			setElementText(Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName())));
 		} catch (Exception e) {
 			setElementText(Controller.getResourceBundle(new Locale("en")));
 		}
@@ -90,7 +91,7 @@ public class MenuBarController implements Initializable, IControllerInit {
 	private void openJalarms(ActionEvent event) {
 		Point p = MouseInfo.getPointerInfo().getLocation();
 		StageLoader stage = new StageLoader("journals/JournalAlarms.xml", 
-				Main.getResourceBundle().getString("keyJalarms"), p, true);	
+				SingleObject.getResourceBundle().getString("keyJalarms"), p, true);	
 		jAlarmController = (JAlarmsController) stage.getController();
 		
 	    stage.show();
@@ -100,7 +101,7 @@ public class MenuBarController implements Initializable, IControllerInit {
 	private void openJControl(ActionEvent event) {
 		Point p = MouseInfo.getPointerInfo().getLocation();
 		StageLoader stage = new StageLoader("journals/JournalControl.xml", 
-				Main.getResourceBundle().getString("keyJcontrol"), p, true);
+				SingleObject.getResourceBundle().getString("keyJcontrol"), p, true);
 		
 	    stage.show();
 	}
@@ -109,7 +110,7 @@ public class MenuBarController implements Initializable, IControllerInit {
 	private void openJNormalMode(ActionEvent event) {
 		Point p = MouseInfo.getPointerInfo().getLocation();
 		StageLoader stage = new StageLoader("journals/JournalNormalMode.xml", 
-				Main.getResourceBundle().getString("keyJNormalMode"), p, true);
+				SingleObject.getResourceBundle().getString("keyJNormalMode"), p, true);
 		
 	    stage.show();
 	}
@@ -117,7 +118,7 @@ public class MenuBarController implements Initializable, IControllerInit {
 	@FXML
 	private void openJswitchEq(ActionEvent event) {
 		StageLoader stage = new StageLoader("journals/JournalSwitchEquipment.xml", 
-				Main.getResourceBundle().getString("keyJswitchingEquipment"), true);
+				SingleObject.getResourceBundle().getString("keyJswitchingEquipment"), true);
 		
 	    stage.show();
 	}
@@ -125,7 +126,7 @@ public class MenuBarController implements Initializable, IControllerInit {
 	@FXML
 	private void openJuserEvent(ActionEvent event) {
 		StageLoader stage = new StageLoader("journals/JournalUserEvents.xml", 
-				Main.getResourceBundle().getString("keyJuserEvent"), true);
+				SingleObject.getResourceBundle().getString("keyJuserEvent"), true);
 		
 	    stage.show();
 	}
@@ -133,18 +134,18 @@ public class MenuBarController implements Initializable, IControllerInit {
 	@FXML
 	private void setBaseVal(ActionEvent event) {
 		try {
-			final Map<Integer, DvalTS> oldTS =  MainStage.psClient.getOldTS();
+			final Map<Integer, DvalTS> oldTS =  SingleFromDB.psClient.getOldTS();
 			final List<String> query = new ArrayList<>();
 			query.add("");
-			Main.mainScheme.getSignalsTS().forEach(s -> {
+			SingleObject.mainScheme.getSignalsTS().forEach(s -> {
 				DvalTS ts = oldTS.get(s);
 				if (ts != null) {
-					MainStage.signals.get(ts.getSignalref()).setBaseval(ts.getVal());
+					SingleFromDB.signals.get(ts.getSignalref()).setBaseval(ts.getVal());
 					String sq = String.format("update t_signal set baseval=%s where idSignal=%s;", ts.getVal(), s);
 					query.set(0, query.get(0) + sq);
 				}
 			});
-			MainStage.psClient.update(query.get(0));
+			SingleFromDB.psClient.update(query.get(0));
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -160,7 +161,7 @@ public class MenuBarController implements Initializable, IControllerInit {
 		MenuItem mi = (MenuItem)event.getSource();
 		localeName = mi.getId();
 		MainStage.controller.setElementText(Controller.getResourceBundle(new Locale(localeName)));
-		Main.getProgramSettings().setLocaleName(localeName);
+		SingleObject.getProgramSettings().setLocaleName(localeName);
 	}
 	
 	@Override

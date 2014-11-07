@@ -7,6 +7,7 @@ public class LinkedValue implements Serializable {
 	
 	private Object dt;
 	private Object val;
+	private int id;
 	
 	public LinkedValue() {
 		
@@ -36,5 +37,13 @@ public class LinkedValue implements Serializable {
 
 	public void setVal(Object val) {
 		this.val = val;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 }

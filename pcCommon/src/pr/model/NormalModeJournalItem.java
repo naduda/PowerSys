@@ -8,6 +8,7 @@ public class NormalModeJournalItem implements Serializable {
 	
 	private String path;
 	private String namesignal;
+	private int idsignal;
 	private double val;
 	private Timestamp dt;
 	private Timestamp dt_new;
@@ -54,5 +55,13 @@ public class NormalModeJournalItem implements Serializable {
 
 	public void setDt_new(Timestamp dt_new) {
 		this.dt_new = dt_new;
+	}
+
+	public int getIdsignal() {
+		return idsignal;
+	}
+
+	public void setIdsignal(int idsignal) {
+		this.idsignal = idsignal;
 	}
 }

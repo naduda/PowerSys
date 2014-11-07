@@ -12,6 +12,8 @@ import svg2fx.svgObjects.G;
 import svg2fx.svgObjects.SVG;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Rectangle;
 
 public class Convert {
 	
@@ -19,6 +21,7 @@ public class Convert {
 	public static ScriptEngine engine = manager.getEngineByName("JavaScript");
 	public static List<LinkedValue> listSignals = new ArrayList<>();
 	public static int idScheme = 0;
+	public static Paint backgroundColor;
 	
 	private static boolean wasInRoot = false;
 	private static Node getFXgroup(G g, boolean isInRoot, SVG svg) {
@@ -77,6 +80,25 @@ public class Convert {
 		} catch (Exception e) {
 			System.out.println("idScheme not set");
 		}
-		return getFXgroup(svg.getG(), false, svg);
+		
+		Group ret = new Group();
+		svg.getG().forEach(g -> {
+			Node gFX = getFXgroup(g, false, svg);
+			
+			if (g.getTitle().toLowerCase().indexOf("background") != -1) {
+				try {
+					Node r = gFX;
+					while (!r.getClass().equals(Rectangle.class)) {
+						r = ((Group)r).getChildren().get(0);
+					}
+					backgroundColor = ((Rectangle)r).getFill();
+				} catch (Exception e) {
+					System.out.println("Can't find background");
+				}
+			} else {
+				ret.getChildren().add(gFX);
+			}
+		});
+		return ret;
 	}
 }

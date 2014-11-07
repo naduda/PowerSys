@@ -1,11 +1,13 @@
 package topic.messagelisteners;
 
 import javafx.application.Platform;
+
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
-import ui.Main;
+import ui.single.SingleObject;
+
 public abstract class AbstarctMessageListener implements MessageListener {
 
 	@Override
@@ -13,12 +15,8 @@ public abstract class AbstarctMessageListener implements MessageListener {
 		try {
 			if (msg instanceof ObjectMessage) {				
 				Object obj = ((ObjectMessage)msg).getObject();
-				if (Main.mainScheme != null) {
-					Platform.runLater(new Runnable() {
-		                @Override public void run() {
-		                	runLogic(obj);
-		                }
-		            });
+				if (SingleObject.mainScheme != null) {
+					Platform.runLater(() -> runLogic(obj));
 		    	}
 			}
 		} catch (Exception e) {

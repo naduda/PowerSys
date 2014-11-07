@@ -1,6 +1,7 @@
 package svg2fx.svgObjects;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -25,7 +26,7 @@ public class SVG {
 	@XmlElement(name="defs", namespace="http://www.w3.org/2000/svg")
 	private Def defs;
 	@XmlElement(name="g", namespace="http://www.w3.org/2000/svg")
-	private G g;
+	private List<G> g;
 
 	public String getWidth() {
 		return width;
@@ -88,11 +89,11 @@ public class SVG {
 		this.defs = defs;
 	}
 
-	public G getG() {
+	public List<G> getG() {
 		return g;
 	}
 
-	public void setG(G g) {
+	public void setG(List<G> g) {
 		this.g = g;
 	}
 }

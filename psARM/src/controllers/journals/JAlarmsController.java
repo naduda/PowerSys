@@ -6,15 +6,16 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import pr.model.Alarm;
-import ui.MainStage;
-import ui.Scheme;
+import ui.single.ProgramProperty;
+import ui.single.SingleFromDB;
+import ui.single.SingleObject;
 import ui.tables.AlarmTableItem;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 
 public class JAlarmsController extends AJournal {
-	private final BooleanProperty selectedShapeChangeProperty = new SimpleBooleanProperty();
+	private final BooleanProperty selectedShapeChangeProperty = new SimpleBooleanProperty();	
 	
 	private boolean isAlarmById = false;
 	
@@ -31,7 +32,7 @@ public class JAlarmsController extends AJournal {
 			setItems(Timestamp.valueOf(getTbJournalController().dpBegin.getValue().atTime(0, 0)), 
 					Timestamp.valueOf(getTbJournalController().dpEnd.getValue().atTime(0, 0)));
 			
-			selectedShapeChangeProperty.bind(Scheme.selectedShapeChangeProperty);
+			selectedShapeChangeProperty.bind(ProgramProperty.selectedShapeChangeProperty);
 			selectedShapeChangeProperty.addListener((observable, oldValue, newValue) -> {
 				if (newValue) {
 					setItems(Timestamp.valueOf(getTbJournalController().dpBegin.getValue().atTime(0, 0)), 
@@ -49,10 +50,10 @@ public class JAlarmsController extends AJournal {
 		try {
 			List<Alarm> alarms = null;
 			if (isAlarmById) {
-				alarms = MainStage.psClient.getAlarmsPeriodById(dtBeg, dtEnd, 
-						Scheme.selectedShape.getIdTS() > 0 ? Scheme.selectedShape.getIdTS() : Scheme.selectedShape.getIdSignal());
+				alarms = SingleFromDB.psClient.getAlarmsPeriodById(dtBeg, dtEnd, 
+						SingleObject.selectedShape.getIdTS() > 0 ? SingleObject.selectedShape.getIdTS() : SingleObject.selectedShape.getIdSignal());
 			} else {
-				alarms = MainStage.psClient.getAlarmsPeriod(dtBeg, dtEnd);
+				alarms = SingleFromDB.psClient.getAlarmsPeriod(dtBeg, dtEnd);
 			}
 			
 			bpTableController.clearTable();
@@ -62,8 +63,9 @@ public class JAlarmsController extends AJournal {
 		}
 	}
 	
-	@Override
+	@Override //We need kill super method. Don't remove it )))
 	public void setElementText(ResourceBundle rb) {
 		
 	}
+	
 }

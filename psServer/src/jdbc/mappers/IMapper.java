@@ -77,17 +77,37 @@ public interface IMapper {
 			+ "where confirmdt > #{confirmdt} order by confirmdt desc")
 	List<Alarm> getAlarmsConfirm(Timestamp confirmdt);
 	
-	@Select("select dt, val from d_valti where signalref = #{signalref} order by dt")
+	@Select("select dt, val, signalref from d_valti where signalref = #{signalref} order by dt")
+	@Results(value = {
+			@Result(property="dt", column="dt"),
+			@Result(property="val", column="val"),
+			@Result(property="id", column="signalref")
+	})
 	List<LinkedValue> getData(int signalref);
 	
-	@Select("select dt, val from d_arcvalti where signalref = #{signalref} and dt > #{dtBeg} and dt < #{dtEnd} order by dt")
+	@Select("select dt, val, signalref from d_arcvalti where signalref = #{signalref} and dt > #{dtBeg} and dt < #{dtEnd} order by dt")
+	@Results(value = {
+			@Result(property="dt", column="dt"),
+			@Result(property="val", column="val"),
+			@Result(property="id", column="signalref")
+	})
 	List<LinkedValue> getDataArc(@Param("signalref")int signalref, @Param("dtBeg")Timestamp dtBeg, @Param("dtEnd")Timestamp dtEnd);
 	
-	@Select("select dt, val from f_valti(#{id}, #{dtbeg}, #{dtend}, #{inter}) order by dt")
+	@Select("select dt, val, signalref from f_valti(#{id}, #{dtbeg}, #{dtend}, #{inter}) order by dt")
+	@Results(value = {
+			@Result(property="dt", column="dt"),
+			@Result(property="val", column="val"),
+			@Result(property="id", column="signalref")
+	})
 	List<LinkedValue> getDataIntegr(@Param("id") int idSignal, @Param("dtbeg") Timestamp dtBeg, 
 			@Param("dtend") Timestamp dtEnd, @Param("inter") int period);
 	
-	@Select("select dt, val from f_arcvalti(#{id}, #{dtbeg}, #{dtend}, #{inter}) order by dt")
+	@Select("select dt, val, signalref from f_arcvalti(#{id}, #{dtbeg}, #{dtend}, #{inter}) order by dt")
+	@Results(value = {
+			@Result(property="dt", column="dt"),
+			@Result(property="val", column="val"),
+			@Result(property="id", column="signalref")
+	})
 	List<LinkedValue> getDataIntegrArc(@Param("id") int idSignal, @Param("dtbeg") Timestamp dtBeg, 
 			@Param("dtend") Timestamp dtEnd, @Param("inter") int period);
 	

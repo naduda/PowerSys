@@ -8,9 +8,8 @@ import java.util.ResourceBundle;
 
 import controllers.interfaces.IControllerInit;
 import pr.model.Transparant;
-import ui.Main;
-import ui.MainStage;
-import ui.Scheme;
+import ui.single.SingleFromDB;
+import ui.single.SingleObject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -30,17 +29,16 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 public class TransparantController implements Initializable, IControllerInit {
-	@FXML ListView<Transparant> lvTransparants;
-	@FXML TextArea txtArea;
-	@FXML Button btnOK;
-	@FXML Button btnCancel;
+	@FXML private ListView<Transparant> lvTransparants;
+	@FXML private TextArea txtArea;
+	@FXML private Button btnOK;
+	@FXML private Button btnCancel;
 	
-	@FXML Label lListTransp;
-	@FXML Label lReason;
-	@FXML Label lImportance;
+	@FXML private Label lListTransp;
+	@FXML private Label lReason;
+	@FXML private Label lImportance;
 	
 	private boolean edit = false;
 	private int trref;
@@ -48,18 +46,11 @@ public class TransparantController implements Initializable, IControllerInit {
 	
 	@Override
 	public void initialize(URL url, ResourceBundle bundle) {
-		List<Transparant> transpList = new ArrayList<Transparant>(MainStage.transpMap.values());
+		List<Transparant> transpList = new ArrayList<Transparant>(SingleFromDB.transpMap.values());
 		ObservableList<Transparant> items = FXCollections.observableArrayList(transpList);
 		
-		lvTransparants.setItems(items);
-		
-		lvTransparants.setCellFactory(new Callback<ListView<Transparant>, ListCell<Transparant>>() {
-			@Override
-                public ListCell<Transparant> call(ListView<Transparant> list) {
-                    return new CellStyle();
-                }
-            }
-        );
+		lvTransparants.setItems(items);		
+		lvTransparants.setCellFactory(list -> new CellStyle());
 		
 		lvTransparants.setOnMouseReleased(e -> {
 			if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 2) {
@@ -86,7 +77,7 @@ public class TransparantController implements Initializable, IControllerInit {
             if (item != null) {
 	            Rectangle rect = new Rectangle(IMAGE_SIZE, IMAGE_SIZE);
 	            if (item != null) {
-	                rect.setFill(new ImagePattern(MainStage.imageMap.get(item.getIdtr())));
+	                rect.setFill(new ImagePattern(SingleFromDB.getImageMap().get(item.getIdtr())));
 	                setGraphic(rect);
 	                setText(item.getDescr());
 	            }
@@ -117,7 +108,7 @@ public class TransparantController implements Initializable, IControllerInit {
 		Circle c = (Circle) transparant;
 		double r = c.getRadius();
 		
-		Group root = Main.mainScheme.getRoot();
+		Group root = SingleObject.mainScheme.getRoot();
 		double maxX = root.getBoundsInLocal().getMaxX();
 		double maxY = root.getBoundsInLocal().getMaxY();
 		Bounds bounds = c.boundsInParentProperty().getValue();
@@ -127,30 +118,30 @@ public class TransparantController implements Initializable, IControllerInit {
     	y = y < r ? r : y - r > maxY ? maxY - r : y - r;
     	
 		try {
-			MainStage.psClient.updateTtranspLocate(trref, Main.mainScheme.getIdScheme(), 
+			SingleFromDB.psClient.updateTtranspLocate(trref, SingleObject.mainScheme.getIdScheme(), 
 					(int)x, (int)y, (int)r * 2, (int)r * 2);
 			
-			MainStage.psClient.updateTtransparantLastUpdate(trref);
-			MainStage.psClient.updateTtranspHistory(trref, txtArea.getText());
+			SingleFromDB.psClient.updateTtransparantLastUpdate(trref);
+			SingleFromDB.psClient.updateTtranspHistory(trref, txtArea.getText());
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	private void addTransparant() {
-		Bounds shBounds = Scheme.selectedShape.getBoundsInParent();
+		Bounds shBounds = SingleObject.selectedShape.getBoundsInParent();
 		Point2D mp = new Point2D(shBounds.getMinX(), shBounds.getMinY());
 		
 		Transparant selectedTransp = lvTransparants.getSelectionModel().getSelectedItem();
 		try {
-			int idtr = MainStage.psClient.getMaxTranspID();
-			MainStage.psClient.insertTtransparant(idtr, 0, "", selectedTransp.getIdtr(), Main.mainScheme.getIdScheme());
-			MainStage.psClient.insertTtranspHistory(idtr, -1, txtArea.getText(), 0);
+			int idtr = SingleFromDB.psClient.getMaxTranspID();
+			SingleFromDB.psClient.insertTtransparant(idtr, 0, "", selectedTransp.getIdtr(), SingleObject.mainScheme.getIdScheme());
+			SingleFromDB.psClient.insertTtranspHistory(idtr, -1, txtArea.getText(), 0);
 			
 			Thread.sleep(1000);
 			
-			MainStage.psClient.deleteTtranspLocate(idtr, Main.mainScheme.getIdScheme());
-			MainStage.psClient.insertTtranspLocate(idtr, Main.mainScheme.getIdScheme(), (int)shBounds.getMaxX(), (int)mp.getY(), 43, 43);
+			SingleFromDB.psClient.deleteTtranspLocate(idtr, SingleObject.mainScheme.getIdScheme());
+			SingleFromDB.psClient.insertTtranspLocate(idtr, SingleObject.mainScheme.getIdScheme(), (int)shBounds.getMaxX(), (int)mp.getY(), 43, 43);
 		} catch (RemoteException | InterruptedException e) {
 			e.printStackTrace();
 		}

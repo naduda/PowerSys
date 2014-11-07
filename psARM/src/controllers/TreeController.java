@@ -8,9 +8,9 @@ import java.util.ResourceBundle;
 
 import controllers.interfaces.IControllerInit;
 import pr.common.Utils;
-import ui.Main;
 import ui.MainStage;
 import ui.Scheme;
+import ui.single.SingleObject;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
@@ -22,7 +22,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.util.Callback;
 
 public class TreeController implements Initializable, IControllerInit {
 
@@ -36,7 +35,7 @@ public class TreeController implements Initializable, IControllerInit {
 	@Override
 	public void initialize(URL url, ResourceBundle boundle) {
 		try {
-			setElementText(Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName())));
+			setElementText(Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName())));
 		} catch (Exception e) {
 			setElementText(Controller.getResourceBundle(new Locale("en")));
 		}
@@ -60,12 +59,7 @@ public class TreeController implements Initializable, IControllerInit {
 	final ContextMenu rootContextMenu = new ContextMenu();
 	
 	public void addContMenu() {
-		tvSchemes.setCellFactory(new Callback<TreeView<Scheme>, TreeCell<Scheme>>(){
-            @Override
-            public TreeCell<Scheme> call(TreeView<Scheme> p) {
-                return new SchemeTreeCellImpl();
-            }
-        });
+		tvSchemes.setCellFactory(p -> new SchemeTreeCellImpl());
 	}
 	
 	private final class SchemeTreeCellImpl extends TreeCell<Scheme> {
@@ -82,12 +76,12 @@ public class TreeController implements Initializable, IControllerInit {
 				MenuItem miClose = new MenuItem("Закрити", new ImageView(image));
 				miClose.setOnAction(e -> {
 					MainStage.schemes.remove(((Scheme)getItem()).getIdScheme());
-					Main.mainScheme.getSignalsTI().clear();
-					Main.mainScheme.getSignalsTS().clear();
+					SingleObject.mainScheme.getSignalsTI().clear();
+					SingleObject.mainScheme.getSignalsTS().clear();
 					TreeItem<Scheme> selectedItem = (TreeItem<Scheme>)tvSchemes.getSelectionModel().getSelectedItem();
 					trSchemes.getChildren().remove(selectedItem);
 					if (trSchemes.getChildren().size() == 0) {
-						Main.mainScheme = null;
+						SingleObject.mainScheme = null;
 						MainStage.bpScheme.setCenter(new Scheme());
 					}
 				});
@@ -135,8 +129,8 @@ public class TreeController implements Initializable, IControllerInit {
 		public void updateSelected(boolean selected) {
 			super.updateSelected(selected);
 			if (selected) {
-				Main.mainScheme = MainStage.schemes.get(((Scheme)getItem()).getIdScheme());
-				MainStage.bpScheme.setCenter(Main.mainScheme);
+				SingleObject.mainScheme = MainStage.schemes.get(((Scheme)getItem()).getIdScheme());
+				MainStage.bpScheme.setCenter(SingleObject.mainScheme);
 			}
 		}
 

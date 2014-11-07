@@ -7,16 +7,16 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import pr.model.SwitchEquipmentJournalItem;
-import ui.Main;
-import ui.MainStage;
+import ui.single.SingleFromDB;
+import ui.single.SingleObject;
 import ui.tables.SwitchEquipmentTableItem;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 
 public class JSwitchEquipmentController extends TableController {
-	@FXML Label lCount;
-	@FXML Text tCount;
+	@FXML private Label lCount;
+	@FXML private Text tCount;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -24,7 +24,7 @@ public class JSwitchEquipmentController extends TableController {
 		
 		List<String> signalsArr = new ArrayList<String>(1);
 		signalsArr.add("");
-		Main.mainScheme.getSignalsTS().forEach(s -> {
+		SingleObject.mainScheme.getSignalsTS().forEach(s -> {
 			signalsArr.set(0, signalsArr.get(0) + s + ",");
 		});
 		String signals = signalsArr.get(0).substring(0, signalsArr.get(0).length() - 1);
@@ -35,7 +35,7 @@ public class JSwitchEquipmentController extends TableController {
 					+ "from t_signal t where t.typesignalref = 2 and t.idsignal in (%s)) as t "
 					+ "order by t.namesignal", signals);
 			
-			List<SwitchEquipmentJournalItem> items = MainStage.psClient.getSwitchJournalItems(query);
+			List<SwitchEquipmentJournalItem> items = SingleFromDB.psClient.getSwitchJournalItems(query);
 			items.forEach(it -> addItem(new SwitchEquipmentTableItem(it)));
 			tCount.setText(items.size() + "");
 		} catch (RemoteException e) {

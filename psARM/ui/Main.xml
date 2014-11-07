@@ -35,7 +35,7 @@
 	<bottom>
 		<ToolBar fx:id="status">
 	   		<Label fx:id="statusLabel" text="Status bar" />
-	   		<Button fx:id="showAlarm" text="showAlarm" onAction="#showAlarm"/>
+	   		<Button fx:id="showAlarm" onAction="#showAlarm"/>
 	   </ToolBar>
 	</bottom>
 

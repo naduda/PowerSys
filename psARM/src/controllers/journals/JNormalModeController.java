@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pr.model.NormalModeJournalItem;
-import ui.Main;
-import ui.MainStage;
+import ui.single.SingleFromDB;
+import ui.single.SingleObject;
 import ui.tables.NormalModeTableItem;
 
 public class JNormalModeController extends AJournal {
@@ -17,13 +17,13 @@ public class JNormalModeController extends AJournal {
 		bpTableController.clearTable();
 		List<String> signalsArr = new ArrayList<String>(1);
 		signalsArr.add("");
-		Main.mainScheme.getSignalsTS().forEach(s -> {
+		SingleObject.mainScheme.getSignalsTS().forEach(s -> {
 			signalsArr.set(0, signalsArr.get(0) + s + ",");
 		});
 		String signals = signalsArr.get(0).substring(0, signalsArr.get(0).length() - 1);
 		
 		try {
-			String query = String.format("select path, nameSignal, val, dt, (select min(dt) from d_arcvalts "
+			String query = String.format("select path, nameSignal, idsignal, val, dt, (select min(dt) from d_arcvalts "
 					+ "where signalref = idsignal and dt > d.dt and val <> d.val) dt_new "
 					+ "from (select idSignal, signalpath(idSignal) as path, nameSignal, "
 					+ "coalesce(getval_ts(idSignal, '%s'::timestamp with time zone), baseval) as val, "
@@ -33,7 +33,7 @@ public class JNormalModeController extends AJournal {
 					+ "where idSignal in (0, %s) and dt > '%s' and dt < '%s') d where val <> baseval order by dt desc",
 					dtBeg, dtBeg, signals, signals, dtBeg, dtEnd);
 			
-			List<NormalModeJournalItem> items = MainStage.psClient.getListNormalModeItems(query);
+			List<NormalModeJournalItem> items = SingleFromDB.psClient.getListNormalModeItems(query);
 			items.forEach(it -> bpTableController.addItem(new NormalModeTableItem(it)));
 		} catch (RemoteException e) {
 			e.printStackTrace();

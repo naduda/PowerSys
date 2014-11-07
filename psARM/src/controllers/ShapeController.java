@@ -12,8 +12,8 @@ import pr.common.Utils;
 import pr.model.TtranspHistory;
 import pr.model.Ttransparant;
 import svg2fx.fxObjects.EShape;
-import ui.Main;
-import ui.MainStage;
+import ui.single.SingleFromDB;
+import ui.single.SingleObject;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,15 +28,10 @@ import javafx.stage.Stage;
 
 public class ShapeController implements IControllerInit {
 
-	@FXML Menu mOperationMode;
-	@FXML MenuItem miAddTransparant;
-	@FXML MenuItem miEdit;
-	@FXML MenuItem miDelete;
-	
-	@FXML
-	protected void add(ActionEvent event) {
-		System.out.println("test ShapeController add");
-	}
+	@FXML private Menu mOperationMode;
+	@FXML private MenuItem miAddTransparant;
+	@FXML private MenuItem miEdit;
+	@FXML private MenuItem miDelete;
 	
 	@FXML
 	protected void addTransparant(ActionEvent event) {
@@ -55,12 +50,12 @@ public class ShapeController implements IControllerInit {
 				Scene scene = new Scene(root);
 				transparantStage.setScene(scene);
 				transparantStage.initModality(Modality.WINDOW_MODAL);
-				transparantStage.initOwner(Main.mainStage);
+				transparantStage.initOwner(SingleObject.mainStage);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
+		ResourceBundle rb = Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName()));
 		transparantStage.setTitle(rb.getString("keyFormTitle"));
 		controller.setElementText(rb);
 		return transparantStage;
@@ -72,10 +67,10 @@ public class ShapeController implements IControllerInit {
 		int trref = getTranspID(transp);
 
 		try {
-			MainStage.psClient.updateTtransparantCloseTime(trref);
-			MainStage.psClient.deleteTtranspLocate(trref, Main.mainScheme.getIdScheme());
+			SingleFromDB.psClient.updateTtransparantCloseTime(trref);
+			SingleFromDB.psClient.deleteTtranspLocate(trref, SingleObject.mainScheme.getIdScheme());
 			
-			Main.mainScheme.getRoot().getChildren().remove(transp);
+			SingleObject.mainScheme.getRoot().getChildren().remove(transp);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -83,7 +78,7 @@ public class ShapeController implements IControllerInit {
 	
 	private Shape getSelectedTransparant(ActionEvent event) {
 		String id = ((MenuItem)event.getSource()).getParentPopup().getId();
-		return (Shape) Main.mainScheme.getRoot().lookup("#" + id);
+		return (Shape) SingleObject.mainScheme.getRoot().lookup("#" + id);
 	}
 	
 	private int getTranspID(Shape t) {
@@ -97,15 +92,15 @@ public class ShapeController implements IControllerInit {
 		Shape transp = getSelectedTransparant(event);		
 		int trref = getTranspID(transp);
 		try {
-			TtranspHistory transpHistory = MainStage.psClient.getTtranspHistory(trref);
+			TtranspHistory transpHistory = SingleFromDB.psClient.getTtranspHistory(trref);
 			Stage stage = getTransparantStage("Edit transparant");
 			controller.setTxtArea(transpHistory.getTxt());
 			controller.setTrref(trref);
 			controller.setTransparant(transp);
 			controller.setEdit(true);
-			ResourceBundle rb = Controller.getResourceBundle(new Locale(Main.getProgramSettings().getLocaleName()));
+			ResourceBundle rb = Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName()));
 			controller.setOKtext(rb.getString("keyEdit"));
-			Ttransparant tTransparant = MainStage.psClient.getTtransparantById(trref);
+			Ttransparant tTransparant = SingleFromDB.psClient.getTtransparantById(trref);
 			controller.selectTransparantById(tTransparant.getTp() - 1);
 			controller.disableListView();
 			stage.show();
@@ -130,14 +125,14 @@ public class ShapeController implements IControllerInit {
 		CheckMenuItem mi = (CheckMenuItem)event.getSource();
 		String id = mi.getParentMenu().getParentPopup().getId();
 		id = id.substring(id.indexOf("_") + 1);
-		EShape sh = (EShape) Main.mainScheme.getRoot().lookup("#" + id);
+		EShape sh = (EShape) SingleObject.mainScheme.getRoot().lookup("#" + id);
 		int newStatus = Integer.parseInt(mi.getId().substring(mi.getId().indexOf("_") + 1));
 		if (newStatus != sh.getStatus()) {
 			try {
-				MainStage.psClient.updateTsignalStatus(sh.gettSignalIDTS().getIdsignal(), newStatus);
-				MainStage.tsignals.get(sh.gettSignalIDTS().getIdsignal()).setStatus(newStatus);
+				SingleFromDB.psClient.updateTsignalStatus(sh.gettSignalIDTS().getIdsignal(), newStatus);
+				SingleFromDB.tsignals.get(sh.gettSignalIDTS().getIdsignal()).setStatus(newStatus);
 				
-				MainStage.psClient.insertDeventLog(5, sh.gettSignalIDTS().getIdsignal(), 
+				SingleFromDB.psClient.insertDeventLog(5, sh.gettSignalIDTS().getIdsignal(), 
 						new Timestamp(System.currentTimeMillis()), newStatus, sh.getStatus(), -1);		
 			} catch (RemoteException e) {
 				e.printStackTrace();

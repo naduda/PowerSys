@@ -2,19 +2,23 @@
   -fx-font-family: "Courier New";
   -fx-font-weight: bold;
 }
+
 .alarms-text {
   -fx-text-fill: blue;
 }
+
 .toolBarButton {
     -fx-text-fill: green;
     -fx-background-radius: 1 1 1 1;
     -fx-background-color: Transparent;
-    -fx-background-repeat:no-repeat;
+    -fx-background-repeat: no-repeat;
     -fx-border: none;
 }
+
 .toolBarButton:hover{
     -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), transparent;
 }
+
 .titled-pane > .title{
    -fx-padding: 0 0 0 -9;
 }

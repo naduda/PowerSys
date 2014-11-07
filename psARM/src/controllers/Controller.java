@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -21,13 +22,15 @@ import state.SchemeSettings;
 import state.WindowState;
 import svg2fx.Convert;
 import svg2fx.fxObjects.EShape;
-import ui.Main;
 import ui.MainStage;
 import ui.Scheme;
+import ui.single.SingleFromDB;
+import ui.single.SingleObject;
 import pr.model.DvalTI;
 import pr.model.LinkedValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.InputEvent;
@@ -37,7 +40,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 
-public class Controller implements IControllerInit {
+public class Controller implements IControllerInit, Initializable {
 	private final DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	private static final int WORK_STATUS = 1;
 	
@@ -49,9 +52,16 @@ public class Controller implements IControllerInit {
 	@FXML private BorderPane bpScheme;
 	@FXML private SplitPane vSplitPane;
 	@FXML private SplitPane hSplitPane;
+	@FXML private Button showAlarm;
 	
 	public static ResourceBundle getResourceBundle(Locale locale) {
-		return ResourceBundle.getBundle("Language", locale, Main.classLoader, new UTF8Control());
+		return ResourceBundle.getBundle("Language", locale, SingleObject.getClassLoader(), new UTF8Control());
+	}
+	
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		showAlarm.setText(isHide ? SingleObject.getResourceBundle().getString("keyShowAlarms") : 
+			SingleObject.getResourceBundle().getString("keyHideAlarms"));
 	}
 	
 	@Override
@@ -60,11 +70,15 @@ public class Controller implements IControllerInit {
 		toolBarController.setElementText(rb);
 		spTreeController.setElementText(rb);
 		bpAlarmsController.setElementText(rb);
+		
+		showAlarm.setText(isHide ? rb.getString("keyShowAlarms") : rb.getString("keyHideAlarms"));
 	}
 	
 	public static void exitProgram() {
-		Window w = Main.mainScheme.getScene().getWindow();
-		WindowState ws = new WindowState(w.getX(), w.getY(), w.getWidth(), w.getHeight());
+		Window w = SingleObject.mainScheme.getScene().getWindow();
+		WindowState ws = new WindowState(w.getX() < 0 ? 0 : w.getX(), w.getY() < 0 ? 0 : w.getY(), 
+				w.getX() < 0 ? w.getX() + w.getWidth(): w.getWidth(), 
+				w.getY() < 0 ? w.getY() + w.getHeight() : w.getHeight());
 		
 		ws.setAlarmDividerPositions(MainStage.controller.getAlarmSplitPane().getDividers().get(0).getPosition());
 		ws.setTreeDividerPositions(MainStage.controller.getTreeSplitPane().getDividers().get(0).getPosition());
@@ -73,8 +87,8 @@ public class Controller implements IControllerInit {
 		ps.setLocaleName(MainStage.controller.menuBarController.getLocaleName());
 		SchemeSettings ss = new SchemeSettings();
 		ps.setSchemeSettings(ss);
-		ss.setSchemeName(Main.mainScheme.getSchemeName());
-		ss.setSchemeScale(Main.mainScheme.getRoot().getScaleX());
+		ss.setSchemeName(SingleObject.mainScheme.getSchemeName());
+		ss.setSchemeScale(SingleObject.mainScheme.getRoot().getScaleX());
 		
 		final LinkedValue lv = new LinkedValue("", "");
 		MainStage.controller.getAlarmsController().getTvTable().getColumns().forEach(c -> {
@@ -82,8 +96,10 @@ public class Controller implements IControllerInit {
 		});
 		ps.setShowAlarmColumns(lv.getVal().toString());
 		
+		ps.setIconWidth(ps.getIconWidth() == 0 ? 16 : ps.getIconWidth());
+		
 		try {
-			ps.saveToFile(Main.FILE_SETTINGS);
+			ps.saveToFile(SingleObject.FILE_SETTINGS);
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
@@ -127,34 +143,35 @@ public class Controller implements IControllerInit {
 	@FXML
 	private void showAlarm(ActionEvent event) {
 		showHideAlarmPanel();
-		Button btn = (Button) event.getSource();
-		btn.setText(isHide ? "showAlarms" : "hideAlarms");
+		showAlarm.setText(isHide ? SingleObject.getResourceBundle().getString("keyShowAlarms") : 
+			SingleObject.getResourceBundle().getString("keyHideAlarms"));
 	}
 	
 	public void updateTI(DvalTI ti) {
-		updateTI(Main.mainScheme, ti);
+		updateTI(SingleObject.mainScheme, ti);
 	}
 	
 	public void updateTI(Scheme mainScheme, DvalTI ti) {		
 		Convert.listSignals.stream().filter(f -> f.getKey().equals(ti.getSignalref())).forEach(s -> {
 			try {
 				EShape tt = mainScheme.getDeviceById(s.getValue());
+				
 				tt.setValue(ti.getVal(), s.getTypeSignal());
 				tt.setRcode(ti.getRcode());
 				tt.setDt(ti.getDt());
 				
 				toolBarController.updateLabel(df.format(ti.getServdt()));
 			} catch (Exception e) {
-				
+				e.printStackTrace();
 			}
 		});	
 	}
 	
 	public static void updateSignal(int idSigal, int type_, int sec) {
 		Convert.listSignals.stream().filter(f -> f.getKey().equals(idSigal)).forEach(s -> {
-			EShape tt = Main.mainScheme.getDeviceById(s.getValue());
+			EShape tt = SingleObject.mainScheme.getDeviceById(s.getValue());
 			if (tt == null) return;
-			int status = MainStage.signals.get(idSigal).getStatus();
+			int status = SingleFromDB.signals.get(idSigal).getStatus();
 			if (status == WORK_STATUS) {
 				tt.updateSignal(sec);
 			}
@@ -203,11 +220,8 @@ public class Controller implements IControllerInit {
 	            stream = loader.getResourceAsStream(resourceName);
 	        }
 	        if (stream != null) {
-	            try {
-	                bundle = new PropertyResourceBundle(new InputStreamReader(stream, "UTF-8"));
-	            } finally {
-	                stream.close();
-	            }
+	        	bundle = new PropertyResourceBundle(new InputStreamReader(stream, StandardCharsets.UTF_8));
+	            stream.close();
 	        }
 	        return bundle;
 	    }

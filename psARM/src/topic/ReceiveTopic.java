@@ -35,7 +35,7 @@ public class ReceiveTopic extends javafx.concurrent.Task<Void> {
 		try {
 			factory = new com.sun.messaging.ConnectionFactory();
 			String prop = ip.length() == 0 ? "mq://127.0.0.1:7676,mq://127.0.0.1:7676" : "mq://" + ip + ",mq://" + ip;
-			System.out.println(prop.toUpperCase());
+			
 			factory.setProperty(ConnectionConfiguration.imqAddressList, prop);
 			connection = (TopicConnection) factory.createTopicConnection("admin","admin");
 			session = connection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);

@@ -4,7 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import controllers.interfaces.IControllerInit;
-import ui.Main;
+import ui.single.SingleObject;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -22,15 +22,15 @@ public class TableController implements Initializable, IControllerInit {
 	public final FilteredList<Object> filteredData = new FilteredList<>(data, p -> true);
 	public final SortedList<Object> sortedData = new SortedList<>(filteredData);
 	
-	@FXML TableView<Object> tvTable;
+	@FXML public TableView<Object> tvTable;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		tvTable.getColumns().forEach(c -> { c.setCellValueFactory(p -> Bindings.selectString(p.getValue(), c.getId())); });
+		tvTable.getColumns().forEach(c -> c.setCellValueFactory(p -> Bindings.selectString(p.getValue(), c.getId())));
 		sortedData.comparatorProperty().bind(tvTable.comparatorProperty());
 		tvTable.setItems(sortedData);
 		
-		setElementText(Main.getResourceBundle());
+		setElementText(SingleObject.getResourceBundle());
 	}
 	
 	@Override

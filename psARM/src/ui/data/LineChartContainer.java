@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import pr.model.LinkedValue;
+import pr.model.VsignalView;
+import ui.single.SingleFromDB;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -34,11 +36,13 @@ public class LineChartContainer extends StackPane {
 	private final DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
 	private final DecimalFormat decimalFormat = new DecimalFormat("0.000", decimalFormatSymbols);
 	
-	private final XYChart.Series<Number, Number> series = new XYChart.Series<>();
+	private XYChart.Series<Number, Number> series = new XYChart.Series<>();
 	private final NumberAxis xAxis = new NumberAxis(0, 0, 0);
 	private final NumberAxis yAxis = new NumberAxis(0, 0, 0);
 	private final LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
 	private List<LinkedValue> dataListAll;
+	
+	private List<Integer> idSignals;
 	
 	private LineChartContainer() {
 		decimalFormatSymbols.setDecimalSeparator('.');
@@ -54,15 +58,14 @@ public class LineChartContainer extends StackPane {
 		setUpZooming(zoomRect, lineChart);
 	}
 	
-	public LineChartContainer(String titleChart, String titleLegend, String xLabel, String yLabel, List<LinkedValue> dataList) {
+	public LineChartContainer(String titleChart, String xLabel, List<LinkedValue> dataList, List<Integer> idSignals) {
 		this();
+		this.idSignals = idSignals;
 		
-		series.setName(titleLegend);
-		xAxis.setLabel(xLabel);
-		yAxis.setLabel(yLabel);
 		lineChart.setTitle(titleChart);
-        
-        setData(dataList);
+		xAxis.setLabel(xLabel);
+		
+		setData(dataList);
 	}
 	
 	public void setData(List<LinkedValue> dataList) {
@@ -71,48 +74,71 @@ public class LineChartContainer extends StackPane {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void setData1000(List<LinkedValue> dataList) {
-		series.getData().clear();
-		
-		int koef = dataList.size() > MAX_COUNT_POINTS ? (int) dataList.size() / MAX_COUNT_POINTS : 1;
-		
-		List<LinkedValue> dataList1000 = new ArrayList<LinkedValue>();
-		dataList1000.add(dataList.get(0));
-		
-		while (dataList1000.size() * koef < dataList.size()) {
-			dataList1000.add(dataList.get(dataList1000.size() * koef));
-		}
-		
-		List<LinkedValue> data = new ArrayList<>();
-        LinkedValue prevLV = null;
-        for (LinkedValue linkedValue : dataList1000) {
-			if (prevLV != null) {
-				data.add(new LinkedValue(linkedValue.getDt(), prevLV.getVal()));
+	private void setData1000(List<LinkedValue> dataList) {		
+		lineChart.getData().clear();
+		xLowerBound = -1;
+		xUpperBound = -1;
+	    yLowerBound = -1;
+	    yUpperBound = -1;
+	    
+		idSignals.forEach(idSignal -> {
+			series = new XYChart.Series<>();
+			
+			VsignalView signal = SingleFromDB.signals.get(idSignal);
+			series.setName(signal.getNamesignal());
+			yAxis.setLabel("Value, " + signal.getNameunit());
+			List<LinkedValue> dataSignal = dataList.stream().filter(f -> f.getId() == idSignal).collect(Collectors.toList());
+			
+			int koef = dataSignal.size() > MAX_COUNT_POINTS ? (int) dataList.size() / MAX_COUNT_POINTS : 1;
+			
+			List<LinkedValue> dataList1000 = new ArrayList<LinkedValue>();
+			dataList1000.add(dataSignal.get(0));
+			
+			while (dataList1000.size() * koef < dataSignal.size()) {
+				dataList1000.add(dataSignal.get(dataList1000.size() * koef));
 			}
-			prevLV = linkedValue;
-			data.add(linkedValue);
-		}
-		
-		data.forEach(d -> {
-        	Timestamp ts = (Timestamp) d.getDt();
-        	series.getData().add(new XYChart.Data(ts.getTime(), d.getVal()));
-        });
-		
-		setChartBounds(dataList1000);
-		setToolTips();
+			
+			List<LinkedValue> data = new ArrayList<>();
+	        LinkedValue prevLV = null;
+	        for (LinkedValue linkedValue : dataList1000) {
+				if (prevLV != null) {
+					data.add(new LinkedValue(linkedValue.getDt(), prevLV.getVal()));
+				}
+				prevLV = linkedValue;
+				data.add(linkedValue);
+			}
+			
+			data.forEach(d -> {
+	        	Timestamp ts = (Timestamp) d.getDt();
+	        	series.getData().add(new XYChart.Data(ts.getTime(), d.getVal()));
+	        });
+			
+			setChartBounds(dataList1000);
+			setToolTips();
+			
+			lineChart.getData().add(series);
+		});
 	}
 	
+	private double xLowerBound = -1;
+	private double xUpperBound = -1;
+    private double yLowerBound = -1;
+    private double yUpperBound = -1;
 	private void setChartBounds(List<LinkedValue> dataList) {
-		double xLowerBound = dataList.stream().mapToDouble(e -> ((Timestamp)e.getDt()).getTime()).min().getAsDouble();
-		double xUpperBound = dataList.stream().mapToDouble(e -> ((Timestamp)e.getDt()).getTime()).max().getAsDouble();
-        double delta = xUpperBound - xLowerBound;
-        xLowerBound = xLowerBound - delta * VIDSTUP;
-        xUpperBound = xUpperBound + delta * VIDSTUP;
-        double yLowerBound = dataList.stream().mapToDouble(e -> (Double)e.getVal()).min().getAsDouble();
-        double yUpperBound = dataList.stream().mapToDouble(e -> (Double)e.getVal()).max().getAsDouble();
-        delta = yUpperBound - yLowerBound;
-        yLowerBound = delta == 0 ? yLowerBound * 0.995 : yLowerBound - delta * VIDSTUP;
-        yUpperBound = delta == 0 ? yUpperBound * 1.005 : yUpperBound + delta * VIDSTUP;
+		double xLowerBoundNew = dataList.stream().mapToDouble(e -> ((Timestamp)e.getDt()).getTime()).min().getAsDouble();
+		double xUpperBoundNew = dataList.stream().mapToDouble(e -> ((Timestamp)e.getDt()).getTime()).max().getAsDouble();
+        double delta = xUpperBoundNew - xLowerBoundNew;
+        xLowerBoundNew = xLowerBoundNew - delta * VIDSTUP;
+        xUpperBoundNew = xUpperBoundNew + delta * VIDSTUP;
+        xLowerBound = xLowerBound == -1 ? xLowerBoundNew : xLowerBound < xLowerBoundNew ? xLowerBound : xLowerBoundNew;
+        xUpperBound = xUpperBound == -1 ? xUpperBoundNew : xUpperBound > xUpperBoundNew ? xUpperBound : xUpperBoundNew;
+        double yLowerBoundNew = dataList.stream().mapToDouble(e -> (Double)e.getVal()).min().getAsDouble();
+        double yUpperBoundNew = dataList.stream().mapToDouble(e -> (Double)e.getVal()).max().getAsDouble();
+        delta = yUpperBoundNew - yLowerBoundNew;
+        yLowerBoundNew = delta == 0 ? yLowerBoundNew * 0.995 : yLowerBoundNew - delta * VIDSTUP;
+        yUpperBoundNew = delta == 0 ? yUpperBoundNew * 1.005 : yUpperBoundNew + delta * VIDSTUP;
+        yLowerBound = yLowerBound == -1 ? yLowerBoundNew : yLowerBound < yLowerBoundNew ? yLowerBound : yLowerBoundNew;
+        yUpperBound = yUpperBound == -1 ? yUpperBoundNew : yUpperBound > yUpperBoundNew ? yUpperBound : yUpperBoundNew;
         
         xAxis.setLowerBound(xLowerBound);
         xAxis.setUpperBound(xUpperBound);
@@ -139,18 +165,11 @@ public class LineChartContainer extends StackPane {
 	
 	private void setToolTips() {
 		lineChart.getData().forEach(s -> {
-			List<Boolean> bool = new ArrayList<>();
-			bool.add(true);
 			s.getData().forEach(d -> {
 				String textDate = new SimpleDateFormat("HH:mm:ss").format(d.getXValue());
         		String textValue = decimalFormat.format(d.getYValue());
-        		
-        		if (bool.get(0)) {
-        			Tooltip.install(d.getNode(), new Tooltip(textDate + " - " + textValue));
-        		}
-        		boolean b = !bool.get(0);
-        		bool.clear();
-        		bool.add(b);
+
+        		Tooltip.install(d.getNode(), new Tooltip(textDate + " - " + textValue));
 			});
 		});
 	}
