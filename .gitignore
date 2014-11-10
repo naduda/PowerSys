@@ -35,6 +35,8 @@ $RECYCLE.BIN/
 .Trashes
 
 #Eclipse
-*.class
+bin/
 
 #Idea
+.idea
+*.iml
