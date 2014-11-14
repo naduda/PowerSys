@@ -36,6 +36,7 @@ $RECYCLE.BIN/
 
 #Eclipse
 bin/
+logs/
 
 #Idea
 .idea
