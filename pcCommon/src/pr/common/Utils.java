@@ -1,8 +1,5 @@
 package pr.common;
 
-import java.util.Calendar;
-import java.util.Date;
-
 public class Utils {
 	
 	/*
@@ -37,34 +34,5 @@ public class Utils {
 		}
 		
 		return res.replace("\\", "/");
-	}
-	
-	/**
-	 * Повертає різницю між двома датами
-	 * period: 0 - ms, 1 - s, 2 - mi, 3 - h, 4 - d
-	 */
-	public static long dateDiff(Date earlier, Date heigher, int period) {
-		Calendar calendar1 = Calendar.getInstance();
-	    Calendar calendar2 = Calendar.getInstance();
-	    calendar1.setTime(earlier);
-	    calendar2.setTime(heigher);
-	    long milliseconds1 = calendar1.getTimeInMillis();
-	    long milliseconds2 = calendar2.getTimeInMillis();
-	    long diff = milliseconds2 - milliseconds1;
-	    
-	    switch (period) {
-		case 0:
-			return diff;
-		case 1:
-			return diff / 1000;
-		case 2:
-			return diff / (60 * 1000);
-		case 3:
-			return diff / (60 * 60 * 1000);
-		case 4:
-			return diff / (24 * 60 * 60 * 1000);
-		default:
-			return 0;
-		}
 	}
 }

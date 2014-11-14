@@ -5,12 +5,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 import controllers.interfaces.IControllerInit;
 import pr.common.Utils;
+import pr.log.LogFiles;
+import single.SingleObject;
 import ui.MainStage;
 import ui.Scheme;
-import ui.single.SingleObject;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
@@ -34,11 +36,7 @@ public class TreeController implements Initializable, IControllerInit {
 	
 	@Override
 	public void initialize(URL url, ResourceBundle boundle) {
-		try {
-			setElementText(Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName())));
-		} catch (Exception e) {
-			setElementText(Controller.getResourceBundle(new Locale("en")));
-		}
+		setElementText(Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName())));
 	}
 	
 	@Override
@@ -63,9 +61,7 @@ public class TreeController implements Initializable, IControllerInit {
 	}
 	
 	private final class SchemeTreeCellImpl extends TreeCell<Scheme> {
-
 		private static final double IMAGE_SIZE = 16;
-		
 		private Scheme scheme;
         private ContextMenu addMenu = new ContextMenu();
  
@@ -75,10 +71,10 @@ public class TreeController implements Initializable, IControllerInit {
 				Image image = new Image(fImage.toURI().toURL().toExternalForm(), IMAGE_SIZE, IMAGE_SIZE, true, false);
 				MenuItem miClose = new MenuItem("Закрити", new ImageView(image));
 				miClose.setOnAction(e -> {
-					MainStage.schemes.remove(((Scheme)getItem()).getIdScheme());
+					MainStage.schemes.remove(getItem().getIdScheme());
 					SingleObject.mainScheme.getSignalsTI().clear();
 					SingleObject.mainScheme.getSignalsTS().clear();
-					TreeItem<Scheme> selectedItem = (TreeItem<Scheme>)tvSchemes.getSelectionModel().getSelectedItem();
+					TreeItem<Scheme> selectedItem = tvSchemes.getSelectionModel().getSelectedItem();
 					trSchemes.getChildren().remove(selectedItem);
 					if (trSchemes.getChildren().size() == 0) {
 						SingleObject.mainScheme = null;
@@ -88,25 +84,20 @@ public class TreeController implements Initializable, IControllerInit {
 				
 				addMenu.getItems().add(miClose);
 			} catch (MalformedURLException e) {
-				System.err.println("Error in SchemeTreeCellImpl - class: TreeController");
+				LogFiles.log.log(Level.SEVERE, "void SchemeTreeCellImpl()", e);
 			}
         }
         
         @Override
         public void startEdit() {
-        	System.out.println("startEdit");
             super.startEdit();
- 
-            if (scheme == null) {
-                //createTextField();
-            }
+
             setText(null);
             setGraphic(scheme);
         }
  
         @Override
         public void cancelEdit() {
-        	System.out.println("cancelEdit");
             super.cancelEdit();
             setGraphic(getTreeItem().getGraphic());
         }
@@ -129,7 +120,7 @@ public class TreeController implements Initializable, IControllerInit {
 		public void updateSelected(boolean selected) {
 			super.updateSelected(selected);
 			if (selected) {
-				SingleObject.mainScheme = MainStage.schemes.get(((Scheme)getItem()).getIdScheme());
+				SingleObject.mainScheme = MainStage.schemes.get(getItem().getIdScheme());
 				MainStage.bpScheme.setCenter(SingleObject.mainScheme);
 			}
 		}

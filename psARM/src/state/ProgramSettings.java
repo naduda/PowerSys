@@ -81,7 +81,7 @@ public class ProgramSettings {
 		Marshaller m = context.createMarshaller();
 		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 		
-		m.marshal(this, System.out);
+		//m.marshal(this, System.out);
 		m.marshal(this, new File(fileName));
 	}
 	

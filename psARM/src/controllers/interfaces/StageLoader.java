@@ -3,6 +3,7 @@ package controllers.interfaces;
 import java.awt.Point;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,7 +11,8 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import pr.common.Utils;
-import ui.single.SingleObject;
+import pr.log.LogFiles;
+import single.SingleObject;
 
 public class StageLoader extends Stage {
 
@@ -30,9 +32,7 @@ public class StageLoader extends Stage {
 				initOwner(SingleObject.mainStage.getScene().getWindow());
 			}
 		} catch (IOException e) {
-			System.out.println("------------------------------------------");
-			e.printStackTrace();
-			System.out.println("------------------------------------------");
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 	

@@ -11,17 +11,25 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
+import javafx.print.*;
+import javafx.scene.Node;
+import javafx.scene.transform.Scale;
+import javafx.scene.transform.Translate;
+import javafx.stage.FileChooser;
 import pr.common.Utils;
+import pr.common.WMF2PNG;
+import pr.log.LogFiles;
 import pr.model.NormalModeJournalItem;
 import controllers.interfaces.IControllerInit;
 import controllers.interfaces.StageLoader;
 import controllers.journals.JAlarmsController;
+import single.SingleFromDB;
+import single.SingleObject;
 import svg2fx.Convert;
 import svg2fx.fxObjects.EShape;
 import ui.MainStage;
-import ui.single.SingleFromDB;
-import ui.single.SingleObject;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -73,13 +81,11 @@ public class ToolBarController implements Initializable, IControllerInit {
 		zoomSlider.setMin(ZOOM_FACTOR);
 		zoomSlider.setMax(ZOOM_MAX);
 		zoomSlider.setBlockIncrement(ZOOM_FACTOR);
-		zoomSlider.valueProperty().addListener((observ, oldValue, newValue) -> {
-			zoomSlider.setTooltip(new Tooltip(newValue + ""));
-		});
+		zoomSlider.valueProperty().addListener((observ, oldValue, newValue) ->
+				zoomSlider.setTooltip(new Tooltip(newValue + ""))
+		);
 		
-		zoomProperty.addListener((observ, oldValue, newValue) -> {
-			changeZoom((double)newValue);
-		});
+		zoomProperty.addListener((observ, oldValue, newValue) -> changeZoom((double)newValue));
 		
 		showInfoProperty.addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
@@ -102,11 +108,9 @@ public class ToolBarController implements Initializable, IControllerInit {
 					Timestamp dtBeg = Timestamp.valueOf(LocalDate.now().atTime(0, 0, 0));
 					Timestamp dtEnd = Timestamp.valueOf(LocalDate.now().plusDays(1).atTime(0, 0));
 					
-					List<String> signalsArr = new ArrayList<String>(1);
+					List<String> signalsArr = new ArrayList<>(1);
 					signalsArr.add("");
-					SingleObject.mainScheme.getSignalsTS().forEach(s -> {
-						signalsArr.set(0, signalsArr.get(0) + s + ",");
-					});
+					SingleObject.mainScheme.getSignalsTS().forEach(s -> signalsArr.set(0, signalsArr.get(0) + s + ","));
 					String signals = signalsArr.get(0).substring(0, signalsArr.get(0).length() - 1);
 					
 					String query = String.format("select path, nameSignal, idsignal, val, dt, (select min(dt) from d_arcvalts "
@@ -134,7 +138,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 						}
 					});
 				} catch (RemoteException e) {
-					e.printStackTrace();
+					LogFiles.log.log(Level.SEVERE, "void initialize(...)", e);
 				}
 				normalMode.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)));
 			} else {
@@ -143,7 +147,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 						EShape tt = SingleObject.mainScheme.getDeviceById(s);
 						tt.clearNormalMode();
 					} catch (Exception e) {
-						e.printStackTrace();
+						LogFiles.log.log(Level.SEVERE, "void initialize(...)", e);
 					}
 				});
 				normalMode.setBorder(new Border(new BorderStroke(Color.TRANSPARENT, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)));
@@ -197,14 +201,58 @@ public class ToolBarController implements Initializable, IControllerInit {
 		infoController.updateStage();
 		showInfoProperty.set(!showInfoProperty.get());
 	}
+
+	@FXML
+	protected void save(ActionEvent event) {
+		FileChooser fileChooser = new FileChooser();
+		FileChooser.ExtensionFilter extentionFilter = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.png");
+		fileChooser.getExtensionFilters().add(extentionFilter);
+		fileChooser.setTitle(SingleObject.getResourceBundle().getString("keyTooltip_save"));
+		File file = fileChooser.showSaveDialog(SingleObject.mainStage);
+		if (file != null) {
+			WMF2PNG.svg2png(SingleObject.schemeInputStream,
+					Math.max(Float.parseFloat(SingleObject.svg.getHeight()), Float.parseFloat(SingleObject.svg.getWidth())),
+					file.getAbsolutePath());
+		}
+	}
+
+	@FXML
+	protected void print(ActionEvent event) {
+		Node node = SingleObject.mainScheme.getContent();
+		System.out.println("============================");
+		Printer.getAllPrinters().forEach(System.out::println);
+		Printer printer = Printer.getDefaultPrinter();
+		System.out.println("***********************");
+		PageLayout pageLayout = printer.createPageLayout(Paper.A4, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
+		double scaleX = pageLayout.getPrintableWidth() / node.getBoundsInLocal().getWidth();
+		double scaleY = pageLayout.getPrintableHeight() / node.getBoundsInLocal().getHeight();
+		System.out.println(node.getBoundsInParent());
+		System.out.println(node.getBoundsInLocal());
+		scaleX = scaleX < scaleY ? scaleX : scaleY;
+//		scaleY = node.getScaleX();
+		node.getTransforms().add(new Scale(scaleX, scaleX));
+		node.getTransforms().add(new Translate(-node.getBoundsInParent().getMinX(), -node.getBoundsInParent().getMinY()));
+		System.out.println(node.getBoundsInParent());
+		System.out.println(node.getBoundsInLocal());
+		PrinterJob job = PrinterJob.createPrinterJob();
+		if (job.showPrintDialog(SingleObject.mainStage)) {
+			boolean success = job.printPage(node);
+			if (success) {
+				job.endJob();
+			}
+		}
+//		node.setScaleX(scaleY);
+//		node.setScaleY(scaleY);
+		node.getTransforms().clear();
+	}
 	
 	@FXML 
-	protected void showNormalMode(ActionEvent event) {
+	protected void showNormalMode() {
 		showNormalMode.set(!showNormalMode.get());
 	}
 	
 	@FXML 
-	protected void showAlarms(ActionEvent event) {
+	protected void showAlarms() {
 		Point p = MouseInfo.getPointerInfo().getLocation();
 		StageLoader stage = new StageLoader("journals/JournalAlarms.xml", 
 				SingleObject.getResourceBundle().getString("keyJalarms"), p, true);
@@ -225,7 +273,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 	}
 	
 	public void fitSchemeVertical() {
-		Group root = (Group) SingleObject.mainScheme.getRoot();
+		Group root = SingleObject.mainScheme.getRoot();
 		double k = MainStage.bpScheme.getHeight() * 0.95 / root.getBoundsInLocal().getHeight();
 		root.setScaleY(k);
 		root.setScaleX(k);
@@ -237,7 +285,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 	}
 	
 	public void fitSchemeHorizontal() {
-		Group root = (Group) SingleObject.mainScheme.getRoot();
+		Group root = SingleObject.mainScheme.getRoot();
 		double k = MainStage.bpScheme.getWidth() * 0.95 / root.getBoundsInLocal().getWidth();
 		root.setScaleY(k);
 		root.setScaleX(k);
@@ -246,7 +294,6 @@ public class ToolBarController implements Initializable, IControllerInit {
 	@FXML 
 	protected void showChart(ActionEvent event) {
 		if (SingleObject.selectedShape == null) {
-			System.out.println("selectedShape is NULL");
 			return;
 		}
 		StageLoader stage = new StageLoader("Data.xml", SingleObject.getResourceBundle().getString("keyDataTitle"), true);

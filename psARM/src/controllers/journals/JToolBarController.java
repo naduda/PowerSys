@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 
 import controllers.Controller;
 import controllers.interfaces.IControllerInit;
-import ui.single.SingleObject;
+import single.SingleObject;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.DatePicker;

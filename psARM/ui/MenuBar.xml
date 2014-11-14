@@ -3,10 +3,11 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
+<?import javafx.scene.input.KeyCodeCombination?>
 
 <MenuBar xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.MenuBarController">
 	<menus>
-		<Menu fx:id="menuFile" text="Файл">
+		<Menu fx:id="menuFile">
 			<items>
 				<MenuItem fx:id="miOpenScheme" text="Відкрити схему" onAction="#openScheme">
 					<graphic>
@@ -17,7 +18,7 @@
 						</ImageView>
 					</graphic>
 				</MenuItem>
-				<MenuItem fx:id="miOpenProject" text="Відкрити проект">
+				<MenuItem fx:id="miOpenProject">
 					<graphic>
 						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 							<image>
@@ -26,7 +27,7 @@
 						</ImageView>
 					</graphic>
 				</MenuItem>
-				<Menu fx:id="menuTrend" text="Тренд">
+				<Menu fx:id="menuTrend">
 					<items>
 						<MenuItem fx:id="miOpenTrend">
 							<graphic>
@@ -65,7 +66,7 @@
 						</ImageView>
 					</graphic>
 				</MenuItem>
-				<MenuItem fx:id="miExit" text="Вихід" onAction="#exit">
+				<MenuItem fx:id="miExit" onAction="#exit">
 					<graphic>
 						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 							<image>
@@ -76,45 +77,41 @@
 				</MenuItem>
 			</items>
 		</Menu>
-		<Menu fx:id="menuJournals" text="Журнали">
+		<Menu fx:id="menuJournals">
 			<items>
-				<MenuItem fx:id="miJAlarms" onAction="#openJalarms" />
+				<MenuItem fx:id="miJAlarms" mnemonicParsing="true" onAction="#openJalarms" >
+					<accelerator>
+						<KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+					</accelerator>
+				</MenuItem>
 				<MenuItem fx:id="miJControl" onAction="#openJControl" />
 				<MenuItem fx:id="miJNormalMode" onAction="#openJNormalMode" />
 				<MenuItem fx:id="miJswitchEq" onAction="#openJswitchEq" />
 				<MenuItem fx:id="miJuserEvents" onAction="#openJuserEvent" />
 			</items>
 		</Menu>
-		<Menu fx:id="menuReports" text="Звіти">
+		<Menu fx:id="menuReports">
 			<items>
 
 			</items>
 		</Menu>
-		<Menu fx:id="menuTools" text="Інструменти">
+		<Menu fx:id="menuTools">
 			<items>
 				<MenuItem fx:id="miSetBaseVal" onAction="#setBaseVal" />
 			</items>
 		</Menu>
-		<Menu fx:id="menuSettings" text="Налаштування">
+		<Menu fx:id="menuSettings">
 			<items>
-				<Menu fx:id="menuLanguage" text="Мова" >
+				<Menu fx:id="menuLanguage">
 					<items>
-						<MenuItem id="en" text="English" onAction="#changeLocale" />
-						<MenuItem id="ru" text="Русский" onAction="#changeLocale" />
-						<MenuItem id="uk" text="Українська" onAction="#changeLocale" />
+						<MenuItem id="en" onAction="#changeLocale" />
+						<MenuItem id="ru" onAction="#changeLocale" />
+						<MenuItem id="uk" onAction="#changeLocale" />
 					</items>
 				</Menu>
 			</items>
 		</Menu>
-		<Menu fx:id="menuExit" text="Вихід">
-			<items>
-
-			</items>
-		</Menu>
-		<Menu fx:id="menuAbout" text="Про програму ...">
-			<items>
-
-			</items>
-		</Menu>
+		<Menu fx:id="menuExit"/>
+		<Menu fx:id="menuAbout"/>
 	</menus>
 </MenuBar>

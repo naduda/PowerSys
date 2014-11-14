@@ -4,7 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import controllers.interfaces.IControllerInit;
-import ui.single.SingleObject;
+import single.SingleObject;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -35,9 +35,7 @@ public class TableController implements Initializable, IControllerInit {
 	
 	@Override
 	public void setElementText(ResourceBundle rb) {
-		tvTable.getColumns().forEach(c -> {
-			c.setText(rb.getString("key_" + c.getId()));
-		});
+		tvTable.getColumns().forEach(c -> c.setText(rb.getString("key_" + c.getId())));
 	}
 	
 	public SimpleStringProperty getCountProperty() {
@@ -46,6 +44,7 @@ public class TableController implements Initializable, IControllerInit {
 	
 	public void clearTable() {
 		data.clear();
+		countProperty.setValue(data.size() + "");
 	}
 	
 	public void addItem(Object e) {

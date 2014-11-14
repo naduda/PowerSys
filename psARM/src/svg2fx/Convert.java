@@ -3,10 +3,13 @@ package svg2fx;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
+import pr.log.LogFiles;
+import single.SingleObject;
 import svg2fx.fxObjects.EShape;
 import svg2fx.svgObjects.G;
 import svg2fx.svgObjects.SVG;
@@ -22,8 +25,7 @@ public class Convert {
 	public static List<LinkedValue> listSignals = new ArrayList<>();
 	public static int idScheme = 0;
 	public static Paint backgroundColor;
-	
-	private static boolean wasInRoot = false;
+
 	private static Node getFXgroup(G g, boolean isInRoot, SVG svg) {
 		Group group = new Group();
 		group.setId(g.getTitle().replace(".", "_"));
@@ -41,8 +43,8 @@ public class Convert {
 			}); 
 			group.setUserData(gData);
 		}
-		
-		boolean isInRootFinal = !isInRoot && !wasInRoot;
+
+		boolean isInRootFinal = !isInRoot;
 		List<G> listG = g.getListG();
 		if (listG != null) {
 			listG.forEach(itGroup -> {	
@@ -75,25 +77,27 @@ public class Convert {
 	public static Node getNodeBySVG(String filePath) {
 		EntityFromXML efx = new EntityFromXML();
 		SVG svg = (SVG)efx.getObject(filePath, SVG.class);
+		SingleObject.svg = svg;
+
 		try {
 			idScheme = Integer.parseInt(svg.getTitle());
 		} catch (Exception e) {
-			System.out.println("idScheme not set");
+			LogFiles.log.log(Level.WARNING, "idScheme not set");
 		}
 		
 		Group ret = new Group();
 		svg.getG().forEach(g -> {
 			Node gFX = getFXgroup(g, false, svg);
-			
-			if (g.getTitle().toLowerCase().indexOf("background") != -1) {
+
+			if (g.getTitle().toLowerCase().contains("background")) {
 				try {
 					Node r = gFX;
 					while (!r.getClass().equals(Rectangle.class)) {
-						r = ((Group)r).getChildren().get(0);
+						r = ((Group) r).getChildren().get(0);
 					}
-					backgroundColor = ((Rectangle)r).getFill();
+					backgroundColor = ((Rectangle) r).getFill();
 				} catch (Exception e) {
-					System.out.println("Can't find background");
+					LogFiles.log.log(Level.WARNING, "Can't find background");
 				}
 			} else {
 				ret.getChildren().add(gFX);

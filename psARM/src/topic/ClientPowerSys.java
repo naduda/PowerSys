@@ -8,7 +8,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
+import pr.log.LogFiles;
 import pr.model.Alarm;
 import pr.model.ConfTree;
 import pr.model.ControlJournalItem;
@@ -32,7 +34,7 @@ import pr.model.UserEventJournalItem;
 import pr.model.VsignalView;
 import pr.powersys.IPowersys;
 import pr.powersys.MySocketFactory;
-import ui.single.SingleObject;
+import single.SingleObject;
 
 public class ClientPowerSys implements IPowersys {	
 	private IPowersys myServer;
@@ -42,7 +44,8 @@ public class ClientPowerSys implements IPowersys {
 			MySocketFactory.setServer(SingleObject.ipAddress);
 			myServer = (IPowersys) Naming.lookup(String.format("rmi://%s:%s/PowerSysService", SingleObject.ipAddress, IPowersys.RMI_PORT));
 		} catch (NotBoundException | RemoteException | MalformedURLException e) {
-			System.err.println("PowerSysService is stoped");
+			LogFiles.log.log(Level.WARNING, "PowerSysService is stoped");
+			LogFiles.log.log(Level.INFO, "Exit ...");
 			System.exit(0);
 		}
 	}
@@ -53,7 +56,7 @@ public class ClientPowerSys implements IPowersys {
 		try {
 			myServer.update(query);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void update(...)", e);
 		}
 	}
 	
@@ -72,7 +75,7 @@ public class ClientPowerSys implements IPowersys {
 		try {
 			return myServer.getTsignalsMap();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "Map<Integer, Tsignal> getTsignalsMap()", e);
 		}
 		return null;
 	}
@@ -82,7 +85,7 @@ public class ClientPowerSys implements IPowersys {
 		try {
 			return myServer.getConfTreeMap();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "Map<Integer, Tsignal> getConfTreeMap()", e);
 		}
 		return null;
 	}
@@ -92,9 +95,9 @@ public class ClientPowerSys implements IPowersys {
 		try {
 			return myServer.getAlarmsCurrentDay();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "List<Alarm> getAlarmsCurrentDay()", e);
 		}
-		return new ArrayList<Alarm>();
+		return new ArrayList<>();
 	}
 
 	@Override
@@ -102,7 +105,7 @@ public class ClientPowerSys implements IPowersys {
 		try {
 			return myServer.getTSysParam(paramname);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "Map<String, TSysParam> getTSysParam(String paramname)", e);
 		}
 		return null;
 	}
@@ -112,7 +115,7 @@ public class ClientPowerSys implements IPowersys {
 		try {
 			return myServer.getTViewParam(objdenom, paramdenom, userref);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "List<TViewParam> getTViewParam(...)", e);
 		}
 		return null;
 	}
@@ -177,6 +180,7 @@ public class ClientPowerSys implements IPowersys {
 		try {
 			return myServer.getTransparants();
 		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "Map<Integer, Transparant> getTransparants()", e);
 			return null;
 		}
 	}
@@ -266,6 +270,7 @@ public class ClientPowerSys implements IPowersys {
 		try {
 			return myServer.getSpTuCommand();
 		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "List<SpTuCommand> getSpTuCommand()", e);
 			return null;
 		}
 	}
@@ -275,6 +280,7 @@ public class ClientPowerSys implements IPowersys {
 		try {
 			return myServer.getTuserMap();
 		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "Map<Integer, Tuser> getTuserMap()", e);
 			return null;
 		}
 	}
@@ -299,7 +305,7 @@ public class ClientPowerSys implements IPowersys {
 		try {
 			return myServer.getVsignalViewMap();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "Map<Integer, VsignalView> getVsignalViewMap()", e);
 		}
 		return null;
 	}
@@ -329,7 +335,8 @@ public class ClientPowerSys implements IPowersys {
 		try {
 			return myServer.getSpTypeSignalMap();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "Map<Integer, SpTypeSignal> getSpTypeSignalMap()", e);
+			LogFiles.log.log(Level.INFO, "Exit ...");
 			System.exit(0);
 		}
 		return null;

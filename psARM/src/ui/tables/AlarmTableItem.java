@@ -3,15 +3,16 @@ package ui.tables;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Map;
+import java.util.logging.Level;
 
-import ui.single.SingleFromDB;
+import pr.log.LogFiles;
+import single.SingleFromDB;
 import pr.model.Alarm;
 import pr.model.TSysParam;
 import javafx.beans.property.SimpleStringProperty;
 
 public class AlarmTableItem {
-	private final SimpleDateFormat dFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss.SSS");
-	
+
 	private Map<String, TSysParam> sysParamsEvent;
 	private Map<String, TSysParam> sysParamsPriority;
 	private Map<String, TSysParam> sysParamsLogState;
@@ -38,7 +39,7 @@ public class AlarmTableItem {
 			sysParamsPriority = SingleFromDB.psClient.getTSysParam("ALARM_PRIORITY");
 			sysParamsLogState = SingleFromDB.psClient.getTSysParam("LOG_STATE");
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
 		
 		a.setpObject(SingleFromDB.signals.get(a.getObjref()).getNamesignal());
@@ -56,6 +57,7 @@ public class AlarmTableItem {
 		pObject = new SimpleStringProperty(a.getpObject() != null ? a.getpObject() : "");
 		pLocation = new SimpleStringProperty(a.getpLocation() != null ? a.getpLocation() : "");
 		pAlarmName = new SimpleStringProperty(a.getAlarmname() != null ? a.getAlarmname() : "");
+		SimpleDateFormat dFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss.SSS");
 		pRecordDT = new SimpleStringProperty(a.getRecorddt() != null ? dFormat.format(a.getRecorddt()) : "");
 		pEventDT = new SimpleStringProperty(a.getEventdt() != null ? dFormat.format(a.getEventdt()) : "");
 		pAlarmMes = new SimpleStringProperty(a.getAlarmmes() != null ? a.getAlarmmes() : "");

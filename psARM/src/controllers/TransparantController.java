@@ -5,11 +5,13 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 import controllers.interfaces.IControllerInit;
+import pr.log.LogFiles;
 import pr.model.Transparant;
-import ui.single.SingleFromDB;
-import ui.single.SingleObject;
+import single.SingleFromDB;
+import single.SingleObject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -46,7 +48,7 @@ public class TransparantController implements Initializable, IControllerInit {
 	
 	@Override
 	public void initialize(URL url, ResourceBundle bundle) {
-		List<Transparant> transpList = new ArrayList<Transparant>(SingleFromDB.transpMap.values());
+		List<Transparant> transpList = new ArrayList<>(SingleFromDB.transpMap.values());
 		ObservableList<Transparant> items = FXCollections.observableArrayList(transpList);
 		
 		lvTransparants.setItems(items);		
@@ -76,12 +78,10 @@ public class TransparantController implements Initializable, IControllerInit {
             super.updateItem(item, empty);
             if (item != null) {
 	            Rectangle rect = new Rectangle(IMAGE_SIZE, IMAGE_SIZE);
-	            if (item != null) {
-	                rect.setFill(new ImagePattern(SingleFromDB.getImageMap().get(item.getIdtr())));
-	                setGraphic(rect);
-	                setText(item.getDescr());
-	            }
-            }
+				rect.setFill(new ImagePattern(SingleFromDB.getImageMap().get(item.getIdtr())));
+				setGraphic(rect);
+				setText(item.getDescr());
+			}
         }
     }
 	
@@ -124,7 +124,7 @@ public class TransparantController implements Initializable, IControllerInit {
 			SingleFromDB.psClient.updateTtransparantLastUpdate(trref);
 			SingleFromDB.psClient.updateTtranspHistory(trref, txtArea.getText());
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void updateTransparant()", e);
 		}
 	}
 	
@@ -143,7 +143,7 @@ public class TransparantController implements Initializable, IControllerInit {
 			SingleFromDB.psClient.deleteTtranspLocate(idtr, SingleObject.mainScheme.getIdScheme());
 			SingleFromDB.psClient.insertTtranspLocate(idtr, SingleObject.mainScheme.getIdScheme(), (int)shBounds.getMaxX(), (int)mp.getY(), 43, 43);
 		} catch (RemoteException | InterruptedException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void addTransparant()", e);
 		}
 	}
 

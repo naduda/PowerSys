@@ -7,11 +7,13 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import pr.common.Utils;
 import controllers.Controller;
 import controllers.ToolBarController;
-import ui.single.SingleObject;
+import pr.log.LogFiles;
+import single.SingleObject;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -32,10 +34,10 @@ public class MainStage extends Stage implements Serializable {
 			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/Main.xml")));
 			Parent root = loader.load();
 			controller = loader.getController();
-
+			
 			Scene scene = new Scene(root);
 			setTitle("PowerSys ARM");
-
+			
 			bpScheme = controller.getBpScheme();
 			
 			try {
@@ -43,14 +45,14 @@ public class MainStage extends Stage implements Serializable {
 				setScheme(schemeName);
 			} catch (Exception e) {
 				setScheme(null);
-				e.printStackTrace();
+				LogFiles.log.log(Level.SEVERE, "setScheme(schemeName);", e);
 			}
 			
 			controller.getSpTreeController().expandSchemes();
 			controller.getSpTreeController().addContMenu();
 			setScene(scene);
 		} catch (IOException e) {
-			System.err.println("MainStage(String pathXML)");
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 			e.printStackTrace();
 		}
 	}
@@ -68,7 +70,7 @@ public class MainStage extends Stage implements Serializable {
 	        MainStage.schemes.put(SingleObject.mainScheme.getIdScheme(), SingleObject.mainScheme);
 		}
 		
-		Group root = (Group) SingleObject.mainScheme.getRoot();
+		Group root = SingleObject.mainScheme.getRoot();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double kx = screenSize.getWidth() * 0.85 / root.getBoundsInLocal().getWidth();
 		double ky = screenSize.getHeight() * 0.8 / root.getBoundsInLocal().getHeight();

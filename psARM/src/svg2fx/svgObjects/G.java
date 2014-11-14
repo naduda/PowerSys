@@ -116,37 +116,27 @@ public class G extends AClassSVG {
 		
 		List<EllipseSVG> ellipses = getlEllipse();
 		if (ellipses != null) {
-			ellipses.forEach(e -> {
-				group.getChildren().add(e.getNode(svg));
-			});
+			ellipses.forEach(e -> group.getChildren().add(e.getNode(svg)));
 		}
 		
 		List<LineSVG> lines = getlLine();
 		if (lines != null) {
-			lines.forEach(e -> {
-				group.getChildren().add(e.getNode(svg));
-			});
+			lines.forEach(e -> group.getChildren().add(e.getNode(svg)));
 		}
 		
 		List<PathSVG> pathes = getlPath();
 		if (pathes != null) {
-			pathes.forEach(e -> {
-				group.getChildren().add(e.getNode(svg));
-			});
+			pathes.forEach(e -> group.getChildren().add(e.getNode(svg)));
 		}
 		
 		List<RectSVG> rects = getlRect();
 		if (rects != null) {
-			rects.forEach(e -> {
-				group.getChildren().add(e.getNode(svg));
-			});
+			rects.forEach(e -> group.getChildren().add(e.getNode(svg)));
 		}
 		
 		List<TextSVG> texts = getlText();
 		if (texts != null) {
-			texts.forEach(e -> {
-				group.getChildren().add(e.getNode(svg));
-			});
+			texts.forEach(e -> group.getChildren().add(e.getNode(svg)));
 			group.setId("text");
 		}
 		

@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -16,10 +17,9 @@ import javax.xml.transform.sax.SAXSource;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
+import pr.log.LogFiles;
 
 public class EntityFromXML {
-	private final String FEATURE_NAMESPACES = "http://xml.org/sax/features/namespaces";
-    private final String FEATURE_LOAD_DTD = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
 
 	public Object getObject(String xmlFilePath, Class<?> xmlClass) {
 		Object result = null;
@@ -27,8 +27,10 @@ public class EntityFromXML {
 			JAXBContext jc = JAXBContext.newInstance(xmlClass);
 			
 			SAXParserFactory spf = SAXParserFactory.newInstance();
-	        spf.setFeature(FEATURE_NAMESPACES, true);
-	        spf.setFeature(FEATURE_LOAD_DTD, false);
+			String FEATURE_NAMESPACES = "http://xml.org/sax/features/namespaces";
+			spf.setFeature(FEATURE_NAMESPACES, true);
+			String FEATURE_LOAD_DTD = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+			spf.setFeature(FEATURE_LOAD_DTD, false);
 	        
 	        XMLReader xmlReader = spf.newSAXParser().getXMLReader();
 	        
@@ -43,7 +45,7 @@ public class EntityFromXML {
 	        
 			result = um.unmarshal(source);
 		} catch (Exception e) {
-			System.err.println("Error in EntityFromXML.getObject(...). JAXBException: " + e);
+			LogFiles.log.log(Level.SEVERE, "Object getObject(...)", e);
 		}
 		return result;
 	}
@@ -54,7 +56,7 @@ public class EntityFromXML {
 			Marshaller m = jc.createMarshaller();
 			m.marshal(object, new File(xmlFilePath));
 		} catch (JAXBException e) {
-			System.err.println("Error in EntityFromXML.setObject(...). JAXBException: " + e);
+			LogFiles.log.log(Level.SEVERE, "void setObject(...)", e);
 		}
 	}
 }

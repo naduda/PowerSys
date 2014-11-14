@@ -3,18 +3,19 @@ package controllers;
 import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
+import pr.log.LogFiles;
+import single.SingleObject;
 import state.ProgramSettings;
 import state.SchemeSettings;
 import state.WindowState;
 import topic.ReceiveTopic;
 import ui.MainStage;
 import ui.UpdateTimeOut;
-import ui.single.SingleObject;
 import controllers.interfaces.IControllerInit;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -45,7 +46,8 @@ public class LoginController implements IControllerInit, Initializable {
 	}
 	
 	@FXML
-	private void btnOK(ActionEvent event) {
+	public void btnOK() {
+		LogFiles.log.log(Level.INFO, "Building stage");
 		((Stage)btnOK.getScene().getWindow()).close();
 		SingleObject.ipAddress = txtAddress.getText();
 		
@@ -60,7 +62,6 @@ public class LoginController implements IControllerInit, Initializable {
 				new UpdateTimeOut(TIMEOUT_TI_SEC, 1);
 				return null;
 			}
-        	
         };
         new Thread(taskTI, "UpdateTimeOut_TI").start();
         
@@ -77,11 +78,12 @@ public class LoginController implements IControllerInit, Initializable {
         stage.setOnCloseRequest(e -> Controller.exitProgram());
         
         setStageParams(stage);
+        LogFiles.log.log(Level.INFO, "Show");
         stage.show();
 	}
 	
 	@FXML
-	private void btnCancel(ActionEvent event) {
+	private void btnCancel() {
 		System.exit(0);
 	}
 	
@@ -94,9 +96,9 @@ public class LoginController implements IControllerInit, Initializable {
 		w.setWidth(ws.getWidth());
 		w.setHeight(ws.getHeight());
 		
-		MainStage.controller.getAlarmSplitPane().getDividers().get(0).positionProperty().addListener((o, ov, nv) -> {
-			Platform.runLater(() -> MainStage.controller.getTreeSplitPane().setDividerPositions(ws.getTreeDividerPositions()));	
-		});
+		MainStage.controller.getAlarmSplitPane().getDividers().get(0).positionProperty().addListener((o, ov, nv) ->
+			Platform.runLater(() -> MainStage.controller.getTreeSplitPane().setDividerPositions(ws.getTreeDividerPositions()))
+		);
 		
 		Platform.runLater(() -> MainStage.controller.getAlarmSplitPane().setDividerPositions(ws.getAlarmDividerPositions()));
 		

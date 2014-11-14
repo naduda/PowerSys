@@ -6,8 +6,7 @@ import pr.model.ControlJournalItem;
 import javafx.beans.property.SimpleStringProperty;
 
 public class ControlTableItem {
-	private final SimpleDateFormat dFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss.SSS");
-	
+
 	private final SimpleStringProperty pDate;
 	private final SimpleStringProperty pScheme;
 	private final SimpleStringProperty pSignal;
@@ -17,6 +16,7 @@ public class ControlTableItem {
 	private final SimpleStringProperty pUser;
 	
 	public ControlTableItem(ControlJournalItem cji) {
+		SimpleDateFormat dFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss.SSS");
 		pDate = new SimpleStringProperty(cji.getDt() != null ? dFormat.format(cji.getDt()) : "");
 		pScheme = new SimpleStringProperty(cji.getSchemename() != null ? cji.getSchemename() : "");
 		pSignal = new SimpleStringProperty(cji.getNamesignal() != null ? cji.getNamesignal() : "");

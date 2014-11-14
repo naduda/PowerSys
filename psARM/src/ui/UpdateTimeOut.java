@@ -1,8 +1,10 @@
 package ui;
 
 import java.util.List;
+import java.util.logging.Level;
 
-import ui.single.SingleObject;
+import pr.log.LogFiles;
+import single.SingleObject;
 import controllers.Controller;
 import javafx.application.Platform;
 
@@ -31,7 +33,7 @@ public class UpdateTimeOut implements Runnable {
 				Thread.sleep(sec * 1000 / 2);
 			}
 		} catch (Exception e) {
-			System.err.println("UpdateTimeOut ...");
+			LogFiles.log.log(Level.SEVERE, "void run()", e);
 		}
 	}
 

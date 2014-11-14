@@ -3,6 +3,7 @@ package topic;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import actualdata.LastData;
@@ -10,6 +11,7 @@ import actualdata.LastData;
 import com.sun.messaging.ConnectionFactory;
 
 import jdbc.PostgresDB;
+import pr.log.LogFiles;
 import pr.model.Alarm;
 import pr.topic.ASender;
 import pr.topic.JMSConnection;
@@ -42,7 +44,7 @@ public class AlarmsTopic extends ASender {
 						producer.send(topic, msgObject);
 						LastData.addAlarm(a);
 					} catch (Exception e) {
-						e.printStackTrace();
+						LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 					}
 				});
 			}
@@ -60,17 +62,16 @@ public class AlarmsTopic extends ASender {
 						LastData.getAlarms().remove(oldAlarm);
 						LastData.addAlarm(a);
 					} catch (Exception e) {
-						e.printStackTrace();
+						LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 					}
 				});
 			}
 		} catch (Exception e) {
-			System.err.println("SendAlarms");
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 			try {
 				if (ls == null) Thread.sleep(60000); //Connection broken
 			} catch (InterruptedException e1) {
-	
+				LogFiles.log.log(Level.SEVERE, e1.getMessage(), e1);
 			}
 		}
 		return dt;

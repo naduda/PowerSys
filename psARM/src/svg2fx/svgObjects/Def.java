@@ -30,10 +30,10 @@ public class Def {
 	}
 	
 	public Marker getMarkerById(String id) {
-		return markers.stream().filter(f -> {return f.getId().equals(id);}).findFirst().get();
+		return markers.stream().filter(f -> f.getId().equals(id)).findFirst().get();
 	}
 	
 	public G getGById(String id) {
-		return lg.stream().filter(f -> {return f.getId().equals(id);}).findFirst().get();
+		return lg.stream().filter(f -> f.getId().equals(id)).findFirst().get();
 	}
 }

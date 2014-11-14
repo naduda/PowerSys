@@ -7,7 +7,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.RMISocketFactory;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.logging.Level;
 
+import pr.log.LogFiles;
 import pr.powersys.IPowersys;
 import pr.powersys.MySocketFactory;
 import jdbc.PostgresDB;
@@ -25,10 +27,9 @@ public class StartServer {
 			LocateRegistry.createRegistry(IPowersys.RMI_PORT);
 			Naming.rebind(rmiString, stub);
 			
-			System.out.println("<PowerSysService> is ready. " + rmiString);
-			
+			LogFiles.log.log(Level.INFO, "<PowerSysService> is ready. " + rmiString);
 		} catch (RemoteException | MalformedURLException e) {
-			System.out.println(e.getMessage());
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 }

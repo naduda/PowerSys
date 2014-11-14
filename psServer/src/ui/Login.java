@@ -2,8 +2,10 @@ package ui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
 
 import pr.common.Utils;
+import pr.log.LogFiles;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -20,10 +22,9 @@ public class Login extends Stage {
 			setTitle("Login");
 			setScene(scene);
 		} catch (IOException e) {
-			System.err.println("Login() ...");
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
 		
-		setOnCloseRequest(event -> { System.exit(0); });
+		setOnCloseRequest(event -> System.exit(0));
 	}
 }

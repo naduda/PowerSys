@@ -10,9 +10,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
+import pr.log.LogFiles;
 import pr.model.LinkedValue;
-import ui.single.SingleFromDB;
+import single.SingleFromDB;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableCell;
@@ -30,7 +32,6 @@ public class DataWrapper {
 	private final ObservableList<Map> allData = FXCollections.observableArrayList();
 	private final List<TableColumn<Map, String>> tableColumns = new ArrayList<>();
 	private final SimpleDateFormat dFormat = new SimpleDateFormat();
-	private final DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
 	private final DecimalFormat decimalFormat = new DecimalFormat();
 	private String formatDate;
 	
@@ -38,6 +39,7 @@ public class DataWrapper {
 		this.formatDate = formatDate;
 		
 		dFormat.applyPattern(formatDate);
+		DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
 		decimalFormatSymbols.setDecimalSeparator('.');
 		decimalFormatSymbols.setGroupingSeparator(' ');
 		decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
@@ -133,7 +135,7 @@ public class DataWrapper {
 				
 				return d1.compareTo(d2);
 			} catch (ParseException e) {
-				e.printStackTrace();
+				LogFiles.log.log(Level.SEVERE, "int compare(...)", e);
 			}
 			return 0;
 		}		

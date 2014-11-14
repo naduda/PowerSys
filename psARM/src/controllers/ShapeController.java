@@ -6,14 +6,16 @@ import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 import controllers.interfaces.IControllerInit;
 import pr.common.Utils;
+import pr.log.LogFiles;
 import pr.model.TtranspHistory;
 import pr.model.Ttransparant;
+import single.SingleFromDB;
+import single.SingleObject;
 import svg2fx.fxObjects.EShape;
-import ui.single.SingleFromDB;
-import ui.single.SingleObject;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -52,7 +54,7 @@ public class ShapeController implements IControllerInit {
 				transparantStage.initModality(Modality.WINDOW_MODAL);
 				transparantStage.initOwner(SingleObject.mainStage);
 			} catch (IOException e) {
-				e.printStackTrace();
+				LogFiles.log.log(Level.SEVERE, "void getTransparantStage(...)", e);
 			}
 		}
 		ResourceBundle rb = Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName()));
@@ -72,7 +74,7 @@ public class ShapeController implements IControllerInit {
 			
 			SingleObject.mainScheme.getRoot().getChildren().remove(transp);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void deleteTransparant(...)", e);
 		}
 	}
 	
@@ -105,7 +107,7 @@ public class ShapeController implements IControllerInit {
 			controller.disableListView();
 			stage.show();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void editTransparant(...)", e);
 		}
 	}
 	
@@ -135,7 +137,7 @@ public class ShapeController implements IControllerInit {
 				SingleFromDB.psClient.insertDeventLog(5, sh.gettSignalIDTS().getIdsignal(), 
 						new Timestamp(System.currentTimeMillis()), newStatus, sh.getStatus(), -1);		
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				LogFiles.log.log(Level.SEVERE, "void changeMode(...)", e);
 			}
 		}
 		sh.getTsignalProp().set(true);

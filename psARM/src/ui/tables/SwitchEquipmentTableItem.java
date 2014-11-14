@@ -3,7 +3,7 @@ package ui.tables;
 import java.text.SimpleDateFormat;
 
 import pr.model.SwitchEquipmentJournalItem;
-import ui.single.Constants;
+import single.Constants;
 import javafx.beans.property.SimpleStringProperty;
 
 public class SwitchEquipmentTableItem {

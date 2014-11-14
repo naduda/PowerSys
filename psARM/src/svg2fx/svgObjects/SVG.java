@@ -29,6 +29,10 @@ public class SVG {
 	private List<G> g;
 
 	public String getWidth() {
+		if (width.toLowerCase().endsWith("in")) {
+			width = width.replace("in", "").trim();
+			width = Double.parseDouble(width) * 72 + "";
+		}
 		return width;
 	}
 	
@@ -37,6 +41,10 @@ public class SVG {
 	}
 	
 	public String getHeight() {
+		if (height.toLowerCase().endsWith("in")) {
+			height = height.replace("in", "").trim();
+			height = Double.parseDouble(height) * 72 + "";
+		}
 		return height;
 	}
 	
@@ -69,11 +77,11 @@ public class SVG {
 	}
 	
 	public String getStyleByName(String name) {
-		HashMap<String, String> styles = new HashMap<String, String>();
+		HashMap<String, String> styles = new HashMap<>();
 		StringTokenizer st = new StringTokenizer(style, "}");
 		while (st.hasMoreElements()) {
 			String elem = st.nextElement().toString().trim();
-			if (elem.indexOf("{") != -1) {
+			if (elem.contains("{")) {
 				String[] elems = elem.split("\\{");
 				styles.put(elems[0].substring(1).trim(), elems[1]);
 			}

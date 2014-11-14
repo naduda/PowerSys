@@ -5,10 +5,12 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
+import pr.log.LogFiles;
 import pr.model.SwitchEquipmentJournalItem;
-import ui.single.SingleFromDB;
-import ui.single.SingleObject;
+import single.SingleFromDB;
+import single.SingleObject;
 import ui.tables.SwitchEquipmentTableItem;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -22,11 +24,9 @@ public class JSwitchEquipmentController extends TableController {
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);
 		
-		List<String> signalsArr = new ArrayList<String>(1);
+		List<String> signalsArr = new ArrayList<>(1);
 		signalsArr.add("");
-		SingleObject.mainScheme.getSignalsTS().forEach(s -> {
-			signalsArr.set(0, signalsArr.get(0) + s + ",");
-		});
+		SingleObject.mainScheme.getSignalsTS().forEach(s -> signalsArr.set(0, signalsArr.get(0) + s + ","));
 		String signals = signalsArr.get(0).substring(0, signalsArr.get(0).length() - 1);
 		
 		try {
@@ -39,7 +39,7 @@ public class JSwitchEquipmentController extends TableController {
 			items.forEach(it -> addItem(new SwitchEquipmentTableItem(it)));
 			tCount.setText(items.size() + "");
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void initialize(...)", e);
 		}
 	}
 	

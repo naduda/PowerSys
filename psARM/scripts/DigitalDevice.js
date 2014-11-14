@@ -1,7 +1,7 @@
 function onDoubleClick(sh)
 {
 	//sh.setTS([idTS] == 0 ? 1 : 0);
-	//sh.getAllNodes(sh, '');
+	sh.getAllNodes(sh, '');
 	//print('dDevice');
 }
 

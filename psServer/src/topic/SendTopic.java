@@ -3,11 +3,11 @@ package topic;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import javax.jms.JMSContext;
@@ -24,6 +24,7 @@ import pr.model.TViewParam;
 import pr.model.Transparant;
 import pr.model.Tsignal;
 import pr.topic.JMSConnection;
+import pr.log.LogFiles;
 import actualdata.LastData;
 
 import com.sun.messaging.ConnectionConfiguration;
@@ -56,7 +57,7 @@ public class SendTopic implements Runnable {
 			factory = new com.sun.messaging.ConnectionFactory();
 			factory.setProperty(ConnectionConfiguration.imqAddressList, jConn.getConnConfiguration());
 		} catch (JMSException e) {
-			System.err.println("SendTopic()");
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
 		
 	}
@@ -65,7 +66,6 @@ public class SendTopic implements Runnable {
 	@Override
 	public void run() {
 		double start = System.currentTimeMillis();
-		System.out.println("START at " + LocalDateTime.now());
 		
 		Map<Integer, Tsignal> signals2 = null;
 		while (!isDataFromDB) {
@@ -73,7 +73,7 @@ public class SendTopic implements Runnable {
 			isDataFromDB = signals2 == null ? false : true;
 		}
 		isDataFromDB = false;
-		System.out.println("t_signal - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		LogFiles.log.log(Level.INFO, "t_signal - " + (System.currentTimeMillis() - start) / 1000 + " s");
 		final Map<Integer, Tsignal> signals = signals2;
 		start = System.currentTimeMillis();
 		
@@ -83,7 +83,7 @@ public class SendTopic implements Runnable {
 			try {
 				dt = new Timestamp(formatter.parse(formatter.format(new Date())).getTime()); // 00 min, 00 sec
 			} catch (ParseException e) {
-				e.printStackTrace();
+				LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 			}
 
 			List<Alarm> alsm = pdb.getAlarms(dt);
@@ -91,7 +91,7 @@ public class SendTopic implements Runnable {
 			isDataFromDB = alsm == null ? false : true;
 		}
 		isDataFromDB = false;
-		System.out.println("Alarms - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		LogFiles.log.log(Level.INFO, "Alarms - " + (System.currentTimeMillis() - start) / 1000 + " s");
 		start = System.currentTimeMillis();
 		
 		while (!isDataFromDB) {
@@ -100,7 +100,7 @@ public class SendTopic implements Runnable {
 			isDataFromDB = spm == null ? false : true;
 		}
 		isDataFromDB = false;
-		System.out.println("SysParam - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		LogFiles.log.log(Level.INFO, "SysParam - " + (System.currentTimeMillis() - start) / 1000 + " s");
 		start = System.currentTimeMillis();
 		
 		while (!isDataFromDB) {
@@ -109,7 +109,7 @@ public class SendTopic implements Runnable {
 			isDataFromDB = tvpm == null ? false : true;
 		}
 		isDataFromDB = false;
-		System.out.println("ViewParam - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		LogFiles.log.log(Level.INFO, "ViewParam - " + (System.currentTimeMillis() - start) / 1000 + " s");
 		start = System.currentTimeMillis();
 		
 		while (!isDataFromDB) {
@@ -119,7 +119,7 @@ public class SendTopic implements Runnable {
 			isDataFromDB = oldTIs == null ? false : true;
 		}
 		isDataFromDB = false;
-		System.out.println("oldTI - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		LogFiles.log.log(Level.INFO, "oldTI - " + (System.currentTimeMillis() - start) / 1000 + " s");
 		start = System.currentTimeMillis();
 				
 		while (!isDataFromDB) {
@@ -127,7 +127,7 @@ public class SendTopic implements Runnable {
 			LastData.setTransparants(transparants);
 			isDataFromDB = transparants == null ? false : true;
 		}
-		System.out.println("transparants - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		LogFiles.log.log(Level.INFO, "transparants - " + (System.currentTimeMillis() - start) / 1000 + " s");
 		start = System.currentTimeMillis();
 		
 		new Thread(new DValTITopic(factory, jConn, "DvalTI", signals, getPdb()), "SendDValTI_Thread").start();
@@ -135,7 +135,7 @@ public class SendTopic implements Runnable {
 		new Thread(new AlarmsTopic(factory, jConn, "Alarms", getPdb()), "SendAlarms_Thread").start();
 		new Thread(new TransparantsTopic(factory, jConn, "Transparants", getPdb()), "Transparants_Thread").start();
 		
-		System.out.println("Send... " + LocalDateTime.now());
+		LogFiles.log.log(Level.INFO, "Send... ");
 	}
 	
 	public PostgresDB getPdb() {

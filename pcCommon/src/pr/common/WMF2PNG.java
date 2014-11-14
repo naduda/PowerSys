@@ -102,6 +102,22 @@ public class WMF2PNG {
 		return null;
 	}
 	
+	public static void svg2png(ByteArrayInputStream svg, float width, String outFile) {
+		try {
+        	ImageTranscoder it = new PNGTranscoder();
+        	it.addTranscodingHint(JPEGTranscoder.KEY_WIDTH, width);
+        	ByteArrayOutputStream png = new ByteArrayOutputStream();
+        	it.transcode(new TranscoderInput(svg), new TranscoderOutput(png));
+        	
+        	FileOutputStream outFileOS = new FileOutputStream(outFile);
+        	outFileOS.write(png.toByteArray());
+        	outFileOS.close();
+        	outFileOS.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private static ByteArrayOutputStream getSVG_OutputStream(TranscoderInput input) throws TranscoderException {
     	ByteArrayOutputStream svg = new ByteArrayOutputStream();
     	TranscoderOutput output = null;

@@ -3,8 +3,10 @@ package controllers.journals;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
-import ui.single.SingleObject;
+import pr.log.LogFiles;
+import single.SingleObject;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -25,7 +27,7 @@ public abstract class AJournal implements Initializable, IControllerInit {
 		try {
 			tCount.textProperty().bind(bpTableController.getCountProperty());
 		} catch (Exception e) {
-			System.out.println(e.getMessage() + " // JournalAlarm");
+			LogFiles.log.log(Level.INFO, "AlarmJournal structure");
 		}
 		
 		tbJournalController.dpBegin.setOnHidden(new DateHandler());

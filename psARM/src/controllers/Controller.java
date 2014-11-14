@@ -12,11 +12,15 @@ import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.ResourceBundle.Control;
+import java.util.logging.Level;
 
 import javax.xml.bind.JAXBException;
 
 import controllers.interfaces.IControllerInit;
 import controllers.journals.AlarmTableController;
+import pr.log.LogFiles;
+import single.SingleFromDB;
+import single.SingleObject;
 import state.ProgramSettings;
 import state.SchemeSettings;
 import state.WindowState;
@@ -24,8 +28,6 @@ import svg2fx.Convert;
 import svg2fx.fxObjects.EShape;
 import ui.MainStage;
 import ui.Scheme;
-import ui.single.SingleFromDB;
-import ui.single.SingleObject;
 import pr.model.DvalTI;
 import pr.model.LinkedValue;
 import javafx.event.ActionEvent;
@@ -91,9 +93,9 @@ public class Controller implements IControllerInit, Initializable {
 		ss.setSchemeScale(SingleObject.mainScheme.getRoot().getScaleX());
 		
 		final LinkedValue lv = new LinkedValue("", "");
-		MainStage.controller.getAlarmsController().getTvTable().getColumns().forEach(c -> {
-			lv.setVal(lv.getVal().toString() + (c.isVisible() ? 1 : 0) + ":");
-		});
+		MainStage.controller.getAlarmsController().getTvTable().getColumns().forEach(c ->
+			lv.setVal(lv.getVal().toString() + (c.isVisible() ? 1 : 0) + ":")
+		);
 		ps.setShowAlarmColumns(lv.getVal().toString());
 		
 		ps.setIconWidth(ps.getIconWidth() == 0 ? 16 : ps.getIconWidth());
@@ -101,7 +103,7 @@ public class Controller implements IControllerInit, Initializable {
 		try {
 			ps.saveToFile(SingleObject.FILE_SETTINGS);
 		} catch (JAXBException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void exitProgram()", e);
 		}
 		System.exit(0);
 	}
@@ -162,7 +164,7 @@ public class Controller implements IControllerInit, Initializable {
 				
 				toolBarController.updateLabel(df.format(ti.getServdt()));
 			} catch (Exception e) {
-				e.printStackTrace();
+				LogFiles.log.log(Level.SEVERE, "void updateTI(...)", e);
 			}
 		});	
 	}

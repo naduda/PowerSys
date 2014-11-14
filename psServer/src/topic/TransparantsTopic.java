@@ -3,11 +3,15 @@ package topic;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+
 import com.sun.messaging.ConnectionFactory;
+
 import jdbc.PostgresDB;
 import pr.model.Ttransparant;
 import pr.topic.ASender;
 import pr.topic.JMSConnection;
+import pr.log.LogFiles;
 
 public class TransparantsTopic extends ASender {
 
@@ -40,7 +44,7 @@ public class TransparantsTopic extends ASender {
 						msgObject.setObject(a);
 						producer.send(topic, msgObject);
 					} catch (Exception e) {
-						e.printStackTrace();
+						LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 					}
 				});
 			}
@@ -52,7 +56,7 @@ public class TransparantsTopic extends ASender {
 						msgObject.setObject(a);
 						producer.send(topic, msgObject);
 					} catch (Exception e) {
-						e.printStackTrace();
+						LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 					}
 				});
 			}
@@ -64,17 +68,19 @@ public class TransparantsTopic extends ASender {
 						msgObject.setObject(a);
 						producer.send(topic, msgObject);
 					} catch (Exception e) {
-						e.printStackTrace();
+						LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 					}
 				});
 			}
 		} catch (Exception e) {
-			System.err.println("TransparantsTopic");
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 			try {
-				if (ls == null) Thread.sleep(60000); //Connection broken
+				if (ls == null) {
+					LogFiles.log.log(Level.WARNING, "Connection broken -> sleep 1 min");
+					Thread.sleep(60000); //Connection broken
+				}
 			} catch (InterruptedException e1) {
-	
+				LogFiles.log.log(Level.SEVERE, e1.getMessage(), e1);
 			}
 		}
 		return dt;

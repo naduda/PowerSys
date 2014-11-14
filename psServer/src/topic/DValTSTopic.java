@@ -2,6 +2,7 @@ package topic;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.logging.Level;
 
 import com.sun.messaging.ConnectionFactory;
 
@@ -9,6 +10,7 @@ import jdbc.PostgresDB;
 import pr.model.DvalTS;
 import pr.topic.ASender;
 import pr.topic.JMSConnection;
+import pr.log.LogFiles;
 
 public class DValTSTopic extends ASender {
 
@@ -34,12 +36,14 @@ public class DValTSTopic extends ASender {
 				}
 			}
 		} catch (Exception e) {
-			System.err.println("SendDValTS");
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 			try {
-				if (ls == null) Thread.sleep(60000); //Connection broken
+				if (ls == null) {
+					LogFiles.log.log(Level.WARNING, "Connection broken -> sleep 1 min");
+					Thread.sleep(60000); //Connection broken
+				}
 			} catch (InterruptedException e1) {
-	
+				LogFiles.log.log(Level.SEVERE, e1.getMessage(), e1);
 			}
 		}
 		return dt;

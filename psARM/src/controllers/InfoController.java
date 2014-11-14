@@ -7,12 +7,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
+import pr.log.LogFiles;
 import pr.model.Tsignal;
-import ui.single.Constants;
-import ui.single.ProgramProperty;
-import ui.single.SingleFromDB;
-import ui.single.SingleObject;
+import single.Constants;
+import single.ProgramProperty;
+import single.SingleFromDB;
+import single.SingleObject;
 import controllers.interfaces.IControllerInit;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -82,7 +84,7 @@ public class InfoController implements Initializable, IControllerInit {
 			try {
 				tMode.setText(SingleFromDB.psClient.getTSysParam("SIGNAL_STATUS").get(tID.getStatus() + "").getParamdescr());
 			} catch (RemoteException e) {
-				System.out.println(e.getMessage());
+				LogFiles.log.log(Level.INFO, "void updateStage()", e);
 			}
 			tValue.setText(SingleObject.selectedShape.getValue().getIdValue() + 
 					(SingleObject.selectedShape.getIdTS() == -1 || SingleObject.selectedShape.getIdTS() == 0 ? "" : 
@@ -97,7 +99,7 @@ public class InfoController implements Initializable, IControllerInit {
 	}
 	
 	private void resize() {
-		Platform.runLater(() -> ((Stage)infoStage.getScene().getWindow()).setWidth(getLabelMax() + getTextMax() + 5 * infoStage.getInsets().getLeft()));
+		Platform.runLater(() -> infoStage.getScene().getWindow().setWidth(getLabelMax() + getTextMax() + 5 * infoStage.getInsets().getLeft()));
 	}
 	
 	private double getLabelMax() {
@@ -109,7 +111,7 @@ public class InfoController implements Initializable, IControllerInit {
 	private double getTextMax() {
 		List<Double> arr = new ArrayList<>();
 		infoStage.getChildren().filtered(f -> f.getClass().equals(Text.class))
-			.forEach(i -> arr.add(((Text)i).getBoundsInLocal().getWidth()));
+			.forEach(i -> arr.add(i.getBoundsInLocal().getWidth()));
 		return arr.stream().max(Double::compare).get();
 	}
 }

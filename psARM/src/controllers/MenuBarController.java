@@ -16,9 +16,9 @@ import controllers.interfaces.StageLoader;
 import controllers.journals.JAlarmsController;
 import pr.common.Utils;
 import pr.model.DvalTS;
+import single.SingleFromDB;
+import single.SingleObject;
 import ui.MainStage;
-import ui.single.SingleFromDB;
-import ui.single.SingleObject;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -66,14 +66,14 @@ public class MenuBarController implements Initializable, IControllerInit {
 		
 		menuExit.setText("");
 		menuExit.setGraphic(lMenuExit);
-		lMenuExit.setOnMouseReleased(e -> {Controller.exitProgram();});
+		lMenuExit.setOnMouseReleased(e -> Controller.exitProgram());
 	}
 	
 	@FXML
 	private void openScheme(ActionEvent event) {
 		FileChooser.ExtensionFilter extentionFilter = new FileChooser.ExtensionFilter("SVG files (*.svg)", "*.svg");
 		fileChooser.getExtensionFilters().add(extentionFilter);
-
+		
 		File userDirectory = new File(Utils.getFullPath("./schemes"));
 		fileChooser.setInitialDirectory(userDirectory);
 		

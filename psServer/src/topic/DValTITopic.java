@@ -2,20 +2,21 @@ package topic;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import actualdata.LastData;
 
 import com.sun.messaging.ConnectionFactory;
 
 import jdbc.PostgresDB;
-import pr.common.Utils;
 import pr.model.DvalTI;
 import pr.model.Tsignal;
 import pr.topic.ASender;
 import pr.topic.JMSConnection;
+import pr.log.LogFiles;
 
 public class DValTITopic extends ASender {
 
@@ -40,7 +41,7 @@ public class DValTITopic extends ASender {
 					if (i == 0) dt = ti.getServdt();
 					
 					ti.setVal(ti.getVal() * signals.get(ti.getSignalref()).getKoef());
-					long diff = Math.abs(Utils.dateDiff(ti.getDt(), ti.getServdt(), 2)); //2 = minutes
+					long diff = Duration.between(ti.getDt().toInstant(), ti.getServdt().toInstant()).toMinutes();
 					if (diff > 3) {
 						ti.setActualData(false);
 						System.err.println("No actual data - " + ti.getSignalref() + 
@@ -60,14 +61,15 @@ public class DValTITopic extends ASender {
 		} catch (Exception e) {
 			try {
 				if (ls == null) {
+					LogFiles.log.log(Level.WARNING, "Connection broken -> sleep 1 min");
 					Thread.sleep(60000); //Connection broken
-					System.out.println(new Date());
 				} else {
-					e.printStackTrace();
+					LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
+					LogFiles.log.log(Level.INFO, "Exit ...");
 					System.exit(0);
 				}
 			} catch (InterruptedException e1) {
-	
+				LogFiles.log.log(Level.SEVERE, e1.getMessage(), e1);
 			}
 		}
 		return dt;

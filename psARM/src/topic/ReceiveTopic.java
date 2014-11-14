@@ -4,6 +4,7 @@ import javax.jms.Topic;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 
+import pr.log.LogFiles;
 import topic.messagelisteners.AlarmMessageListener;
 import topic.messagelisteners.TIMessageListener;
 import topic.messagelisteners.TSMessageListener;
@@ -13,6 +14,8 @@ import com.sun.messaging.ConnectionConfiguration;
 import com.sun.messaging.ConnectionFactory;
 import com.sun.messaging.jms.Session;
 import com.sun.messaging.jms.TopicConnection;
+
+import java.util.logging.Level;
 
 public class ReceiveTopic extends javafx.concurrent.Task<Void> {
 
@@ -63,14 +66,13 @@ public class ReceiveTopic extends javafx.concurrent.Task<Void> {
 				System.out.println((++k) + " min");
 			}
 		} catch (Exception e) {
-			System.err.println("ReceiveTopic ");
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		} finally {
 			try {
 				session.close();
 		        connection.close();
 		    } catch (Exception e) {
-		    	System.out.println("Can't close JMS connection/session " + e.getMessage());
+				LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		    }
 		}
 		return null;

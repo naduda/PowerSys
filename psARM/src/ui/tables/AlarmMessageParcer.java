@@ -1,9 +1,11 @@
 package ui.tables;
 
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import pr.log.LogFiles;
 import pr.model.Alarm;
-import ui.single.SingleFromDB;
+import single.SingleFromDB;
 
 public class AlarmMessageParcer {
 
@@ -49,7 +51,6 @@ public class AlarmMessageParcer {
 			a.setAlarmmes(sAlarmMes.replaceAll(toReplace, mes));
 		} catch (Exception e) {
 			a.setAlarmmes(sAlarmMes);
-			System.err.println(sAlarmMes + " / " + a.getObjval());
 		}
 	}
 	
@@ -69,7 +70,7 @@ public class AlarmMessageParcer {
 			
 			a.setAlarmmes(sAlarmMes.replaceAll(toReplace, mes));
 		} catch (Exception e) {
-			System.out.println("error = " + e.getMessage() + "   : " + sAlarmMes);
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 }

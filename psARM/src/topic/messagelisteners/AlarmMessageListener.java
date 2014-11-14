@@ -1,7 +1,7 @@
 package topic.messagelisteners;
 
 import pr.model.Alarm;
-import ui.single.ProgramProperty;
+import single.ProgramProperty;
 
 public class AlarmMessageListener extends AbstarctMessageListener {
 

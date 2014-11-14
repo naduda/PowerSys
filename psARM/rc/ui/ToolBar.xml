@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<ToolBar fx:id="tbMain" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ToolBarController">
+	<Label fx:id="lDataOn" text="Дані на: "/>
+	<Label fx:id="lLastDate" prefWidth="150"/>
+	<Separator/>
+	<Button fx:id="previous" styleClass="toolBarButton" />
+	<Button fx:id="next" styleClass="toolBarButton" />
+	<Separator/>
+	<Button fx:id="zoomMinus" onAction="#zoomMinus" styleClass="toolBarButton" />
+	<Slider fx:id="zoomSlider" />
+	<Button fx:id="zoomPlus" onAction="#zoomPlus" styleClass="toolBarButton" />
+	<Button fx:id="fitVertical" onAction="#fitVertical" styleClass="toolBarButton" />
+	<Button fx:id="fitHorizontal" onAction="#fitHorizontal" styleClass="toolBarButton" />
+	<Separator/>
+	<Button fx:id="fit" styleClass="toolBarButton" />
+	<Button fx:id="info" onAction="#info" styleClass="toolBarButton" />
+	<Button fx:id="findAlarms" onAction="#showAlarms" styleClass="toolBarButton" />
+	<Button fx:id="showChart" onAction="#showChart" styleClass="toolBarButton" />
+	<Separator/>
+	<Button fx:id="navigator" styleClass="toolBarButton" />
+	<Button fx:id="retro" styleClass="toolBarButton" />
+	<Button fx:id="normalMode" onAction="#showNormalMode" styleClass="toolBarButton" />
+	<Separator/>
+	<Button fx:id="save" onAction="#save" styleClass="toolBarButton" />
+	<Button fx:id="print" onAction="#print" styleClass="toolBarButton" />
+</ToolBar>

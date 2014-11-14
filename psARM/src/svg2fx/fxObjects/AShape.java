@@ -3,8 +3,8 @@ package svg2fx.fxObjects;
 import java.util.Date;
 import java.util.StringTokenizer;
 
-import ui.single.ProgramProperty;
-import ui.single.SingleObject;
+import single.ProgramProperty;
+import single.SingleObject;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;

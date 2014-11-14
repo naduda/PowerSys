@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import pr.model.LinkedValue;
 import pr.model.VsignalView;
-import ui.single.SingleFromDB;
+import single.SingleFromDB;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -70,17 +70,18 @@ public class LineChartContainer extends StackPane {
 	
 	public void setData(List<LinkedValue> dataList) {
 		dataListAll = dataList;		
-		setData1000(dataList);
+		setData1000(dataList, true);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void setData1000(List<LinkedValue> dataList) {		
+	private void setData1000(List<LinkedValue> dataList, boolean isChangeBounds) {
 		lineChart.getData().clear();
 		xLowerBound = -1;
 		xUpperBound = -1;
 	    yLowerBound = -1;
 	    yUpperBound = -1;
 	    
+	    List<LinkedValue> dataSeries = new ArrayList<>();
 		idSignals.forEach(idSignal -> {
 			series = new XYChart.Series<>();
 			
@@ -89,9 +90,9 @@ public class LineChartContainer extends StackPane {
 			yAxis.setLabel("Value, " + signal.getNameunit());
 			List<LinkedValue> dataSignal = dataList.stream().filter(f -> f.getId() == idSignal).collect(Collectors.toList());
 			
-			int koef = dataSignal.size() > MAX_COUNT_POINTS ? (int) dataList.size() / MAX_COUNT_POINTS : 1;
+			int koef = dataSignal.size() > MAX_COUNT_POINTS ? dataList.size() / MAX_COUNT_POINTS : 1;
 			
-			List<LinkedValue> dataList1000 = new ArrayList<LinkedValue>();
+			List<LinkedValue> dataList1000 = new ArrayList<>();
 			dataList1000.add(dataSignal.get(0));
 			
 			while (dataList1000.size() * koef < dataSignal.size()) {
@@ -113,11 +114,12 @@ public class LineChartContainer extends StackPane {
 	        	series.getData().add(new XYChart.Data(ts.getTime(), d.getVal()));
 	        });
 			
-			setChartBounds(dataList1000);
-			setToolTips();
-			
 			lineChart.getData().add(series);
+			dataSeries.addAll(dataList1000);
 		});
+		
+		setToolTips();
+		if (isChangeBounds) setChartBounds(dataSeries);
 	}
 	
 	private double xLowerBound = -1;
@@ -127,6 +129,7 @@ public class LineChartContainer extends StackPane {
 	private void setChartBounds(List<LinkedValue> dataList) {
 		double xLowerBoundNew = dataList.stream().mapToDouble(e -> ((Timestamp)e.getDt()).getTime()).min().getAsDouble();
 		double xUpperBoundNew = dataList.stream().mapToDouble(e -> ((Timestamp)e.getDt()).getTime()).max().getAsDouble();
+		
         double delta = xUpperBoundNew - xLowerBoundNew;
         xLowerBoundNew = xLowerBoundNew - delta * VIDSTUP;
         xUpperBoundNew = xUpperBoundNew + delta * VIDSTUP;
@@ -134,6 +137,7 @@ public class LineChartContainer extends StackPane {
         xUpperBound = xUpperBound == -1 ? xUpperBoundNew : xUpperBound > xUpperBoundNew ? xUpperBound : xUpperBoundNew;
         double yLowerBoundNew = dataList.stream().mapToDouble(e -> (Double)e.getVal()).min().getAsDouble();
         double yUpperBoundNew = dataList.stream().mapToDouble(e -> (Double)e.getVal()).max().getAsDouble();
+        
         delta = yUpperBoundNew - yLowerBoundNew;
         yLowerBoundNew = delta == 0 ? yLowerBoundNew * 0.995 : yLowerBoundNew - delta * VIDSTUP;
         yUpperBoundNew = delta == 0 ? yUpperBoundNew * 1.005 : yUpperBoundNew + delta * VIDSTUP;
@@ -147,7 +151,6 @@ public class LineChartContainer extends StackPane {
         yAxis.setLowerBound(yLowerBound);
         yAxis.setUpperBound(yUpperBound);
         yAxis.setTickUnit((yUpperBound - yLowerBound) / 10);
-        
         
         xAxis.setTickLabelFormatter(new StringConverter<Number>() {			
 			@Override
@@ -164,14 +167,14 @@ public class LineChartContainer extends StackPane {
 	}
 	
 	private void setToolTips() {
-		lineChart.getData().forEach(s -> {
+		lineChart.getData().forEach(s ->
 			s.getData().forEach(d -> {
 				String textDate = new SimpleDateFormat("HH:mm:ss").format(d.getXValue());
         		String textValue = decimalFormat.format(d.getYValue());
 
         		Tooltip.install(d.getNode(), new Tooltip(textDate + " - " + textValue));
-			});
-		});
+			})
+		);
 	}
 	
 	private void setUpZooming(final Rectangle rect, final Node zoomingNode) {
@@ -193,23 +196,24 @@ public class LineChartContainer extends StackPane {
             rect.setHeight(Math.abs(y - mouseAnchor.get().getY()));
         });
         
-        zoomingNode.setOnMouseReleased(event -> {
-        	doZoom(rect, zoomingNode);
-        });
+        zoomingNode.setOnMouseReleased(event -> doZoom(rect, zoomingNode));
         
         zoomingNode.setOnMouseClicked(event -> {
         	if (event.getClickCount() == 2) {
-        		setData1000(dataListAll);
+        		setData1000(dataListAll, true);
             }
         });
     }
 	
 	private void doZoom(Rectangle zoomRect, Node chartNode) {
-        Point2D xAxisInScene = xAxis.localToScene(0, 0);
+		final BooleanBinding disableControls = zoomRect.widthProperty().lessThan(5).or(zoomRect.heightProperty().lessThan(5));
+		final Point2D xAxisInScene = xAxis.localToScene(0, 0);
+		final Bounds rectInScene = zoomRect.localToScene(zoomRect.getBoundsInLocal());
         
-        Bounds rectInScene = zoomRect.localToScene(zoomRect.getBoundsInLocal());
         double xOffset = rectInScene.getMinX() - xAxisInScene.getX();
+        double yOffset = rectInScene.getMaxY() - xAxisInScene.getY();
         double xAxisScale = xAxis.getScale();
+        double yAxisScale = yAxis.getScale();
         
         double beg = xAxis.getLowerBound() + xOffset / xAxisScale;
         double end = xOffset / xAxisScale + xAxis.getLowerBound() + zoomRect.getWidth() / xAxisScale;
@@ -217,13 +221,20 @@ public class LineChartContainer extends StackPane {
         List<LinkedValue> visibleData = dataListAll.stream().
         		filter(f -> ((Timestamp)f.getDt()).getTime() > beg && ((Timestamp)f.getDt()).getTime() < end).
         		collect(Collectors.toList());
-        
-        final BooleanBinding disableControls = zoomRect.widthProperty().lessThan(5).or(zoomRect.heightProperty().lessThan(5));
+               
         if (!disableControls.get()) {
-        	setData1000(visibleData);
+        	setData1000(visibleData, false);
+        	
+        	xAxis.setLowerBound(xAxis.getLowerBound() + xOffset / xAxisScale);
+	        xAxis.setUpperBound(xAxis.getLowerBound() + zoomRect.getWidth() / xAxisScale);
+        	yAxis.setLowerBound(yAxis.getLowerBound() + yOffset / yAxisScale);
+	        yAxis.setUpperBound(yAxis.getLowerBound() - zoomRect.getHeight() / yAxisScale);
+	        
+	        xAxis.setTickUnit((xAxis.getUpperBound() - xAxis.getLowerBound()) / 10);
+	        yAxis.setTickUnit((yAxis.getUpperBound() - yAxis.getLowerBound()) / 10);
         }
         
         zoomRect.setWidth(0);
-        zoomRect.setHeight(0);        
+        zoomRect.setHeight(0);
     }
 }

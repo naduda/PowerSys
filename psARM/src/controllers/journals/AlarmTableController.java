@@ -12,19 +12,21 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import controllers.Controller;
 import controllers.TrCommentController;
 import pr.common.Utils;
+import pr.log.LogFiles;
 import pr.model.Alarm;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
+import single.ProgramProperty;
+import single.SingleFromDB;
+import single.SingleObject;
 import svg2fx.Convert;
 import ui.Scheme;
-import ui.single.ProgramProperty;
-import ui.single.SingleFromDB;
-import ui.single.SingleObject;
 import ui.tables.AlarmTableItem;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.IntegerProperty;
@@ -115,36 +117,33 @@ public class AlarmTableController extends TableController {
 			stage.initModality(Modality.NONE);
 			stage.initOwner(((Control)event.getSource()).getScene().getWindow());
 		} catch (IOException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void kvitOne(...)", e);
 		}
 		
 	    stage.show();
 	}
 	
 	@FXML
-	private void kvitPS(ActionEvent event) {
-		
-		data.filtered(f -> ((AlarmTableItem)f).getAlarm().getLogstate() == 1).forEach(it -> {
-			Convert.listSignals.forEach(lv -> {
-				if (lv.getKey() == ((AlarmTableItem)it).getAlarm().getObjref()) {
-					confirmAlarm((AlarmTableItem)it, "");
+	private void kvitPS() {
+		data.filtered(f -> ((AlarmTableItem)f).getAlarm().getLogstate() == 1)
+			.forEach(it -> Convert.listSignals.forEach(lv -> {
+				if (lv.getKey() == ((AlarmTableItem) it).getAlarm().getObjref()) {
+					confirmAlarm((AlarmTableItem) it, "");
 				}
-			});
-		});
+			}));
 	}
 	
 	@FXML
-	private void kvitAll(ActionEvent event) {
+	private void kvitAll() {
 		try {
 			SingleFromDB.psClient.confirmAlarmAll("", -1);
 		} catch (RemoteException e) {
-			System.err.println("error in confirmAlarmAll");
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void kvitAll(...)", e);
 		}
 	}
 	
 	@FXML
-	private void filterColumnClick(ActionEvent event) {
+	private void filterColumnClick() {
 		tvTable.getSortOrder().clear();
 		ObservableList<Object> copyData = FXCollections.observableArrayList();
 		copyData.addAll(data);
@@ -174,7 +173,7 @@ public class AlarmTableController extends TableController {
 			sysParamsEvent = SingleFromDB.psClient.getTSysParam("ALARM_EVENT");
 			viewParams = SingleFromDB.psClient.getTViewParam("LOG_STATE", "COLOR", -1);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "setChoiceBoxes()", e);
 		}
 		
 		cbPriority = setChoiceBoxItems(sysParamsPriority, cbPriority);
@@ -218,7 +217,7 @@ public class AlarmTableController extends TableController {
 		try {
 			SingleFromDB.psClient.getAlarmsCurrentDay().forEach(it -> addItem(new AlarmTableItem(it)));
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void setCurrentDayItems()", e);
 		}
 	}
 	
@@ -235,13 +234,11 @@ public class AlarmTableController extends TableController {
 	
 	private void setCbColumns() {
 		cbColumns.getItems().clear();
-		List<CheckMenuItem> checkItems = new ArrayList<CheckMenuItem>();
+		List<CheckMenuItem> checkItems = new ArrayList<>();
 		
 		tvTable.getColumns().forEach(c -> {
 			CheckMenuItem it = new CheckMenuItem(c.getText());
-			it.selectedProperty().addListener((observ, val, oldval) -> {
-				c.setVisible(oldval);
-			});
+			it.selectedProperty().addListener((observ, val, oldval) -> c.setVisible(oldval));
 			it.setSelected(c.isVisible());
 			it.setUserData(c);
 			checkItems.add(it);
@@ -331,8 +328,7 @@ public class AlarmTableController extends TableController {
 						ati.getAlarm().getObjref(), new Timestamp(System.currentTimeMillis()), comment,
 						ati.getAlarm().getUserref() == 0 ? -1 : ati.getAlarm().getUserref());
 			} catch (RemoteException e) {
-				System.err.println("error in confirmAlarm");
-				e.printStackTrace();
+				LogFiles.log.log(Level.SEVERE, "void confirmAlarm(...)", e);
 			}
 		}
 	}
@@ -370,14 +366,14 @@ public class AlarmTableController extends TableController {
 		}		
 	}
 	
-	public void updateAlarm(Alarm a) {
+	private void updateAlarm(Alarm a) {
 		try {
 			AlarmTableItem it = (AlarmTableItem) data.
 					filtered(item -> ((AlarmTableItem)item).getAlarm().getEventdt().equals(a.getEventdt())).get(0);			
 			data.remove(it);
 			addItem(new AlarmTableItem(a));
 		} catch (Exception e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void updateAlarm(...)", e);
 		}
 	}
 	
@@ -387,7 +383,6 @@ public class AlarmTableController extends TableController {
 	
 //	===========================================================================
 	private class AlarmChangeListener implements ChangeListener<Alarm> {
-
 		@Override
 		public void changed(ObservableValue<? extends Alarm> observable, Alarm oldValue, Alarm newValue) {
 			if (newValue.getConfirmdt() == null) {

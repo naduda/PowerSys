@@ -1,6 +1,7 @@
 package svg2fx.svgObjects;
 
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -12,6 +13,7 @@ import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
+import pr.log.LogFiles;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -158,7 +160,7 @@ public abstract class AClassSVG {
 				sh.setStrokeLineJoin(StrokeLineJoin.valueOf(command[1].toUpperCase()));
 				break;
 			case "stroke-dasharray":
-				double d = 0;
+				double d;
 				StringTokenizer da = new StringTokenizer(command[1], ",");
 				while (da.hasMoreElements()) {
 					d = Double.parseDouble(da.nextElement().toString());
@@ -210,7 +212,7 @@ public abstract class AClassSVG {
 				}
 				break;
 			default:
-				System.out.println(operation);
+				LogFiles.log.log(Level.INFO, operation.substring(0, operation.indexOf("(")).toLowerCase());
 				break;
 			}
 		}

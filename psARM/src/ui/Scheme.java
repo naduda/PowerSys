@@ -1,23 +1,25 @@
 package ui;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 import controllers.Controller;
 import controllers.ShapeController;
 import controllers.ToolBarController;
 import pr.common.Utils;
+import pr.log.LogFiles;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
+import single.SingleFromDB;
+import single.SingleObject;
 import svg2fx.Convert;
 import svg2fx.fxObjects.EShape;
-import ui.single.SingleFromDB;
-import ui.single.SingleObject;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -44,6 +46,7 @@ public class Scheme extends ScrollPane {
 	private String schemeName;
 	
 	public Scheme() {
+		LogFiles.log.log(Level.INFO, "Building scheme");
 		setContent(rootScheme);
 		
 		Events events = new Events();
@@ -52,6 +55,7 @@ public class Scheme extends ScrollPane {
 	
 	public Scheme(String fileName) {
 		this();
+		double start = System.currentTimeMillis();
 		
 		setOnMouseReleased(e -> {
 			if (SingleObject.selectedShape != null) {
@@ -62,7 +66,21 @@ public class Scheme extends ScrollPane {
 		
 		setSchemeName(fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf(".")));
 		
+		File f = new File(fileName);
+		
+		byte[] buf = null;
+		try (InputStream in = new FileInputStream(f)) {
+			buf = new byte[in.available()];
+			while (in.read(buf) != -1) {}
+		} catch (Exception e) {
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
+		}		
+
+		SingleObject.schemeInputStream = new ByteArrayInputStream(buf != null ? buf : new byte[0]);
+		
+		LogFiles.log.log(Level.INFO, "SVG to FX converting start");
 		root = (Group) Convert.getNodeBySVG(fileName);
+		LogFiles.log.log(Level.INFO, "SVG to FX converting finish");
 		setIdScheme(Convert.idScheme);
 		rootScheme.getChildren().add(root);
 		
@@ -85,18 +103,27 @@ public class Scheme extends ScrollPane {
 						break;
 					}
 				} catch (Exception e1) {
-					e1.printStackTrace();
+					LogFiles.log.log(Level.SEVERE, e1.getMessage(), e1);
 				}
 			}
 		});
 		
 		try {
+			start = System.currentTimeMillis();
 			SingleFromDB.psClient.getOldTI().values().forEach(s -> MainStage.controller.updateTI(this, s));
+			if ((System.currentTimeMillis() - start) > 1000) 
+				LogFiles.log.log(Level.WARNING, String.format("getOldTI execute time: %s ms", (System.currentTimeMillis() - start)));
+			start = System.currentTimeMillis();
 			SingleFromDB.psClient.getOldTS().values().forEach(s -> MainStage.controller.updateTI(this, s));
+			if ((System.currentTimeMillis() - start) > 1000) 
+				LogFiles.log.log(Level.WARNING, String.format("getOldTS execute time: %s ms", (System.currentTimeMillis() - start)));
 			
+			start = System.currentTimeMillis();
 			setTransparants();
+			if ((System.currentTimeMillis() - start) > 1000) 
+				LogFiles.log.log(Level.WARNING, String.format("setTransparants execute time: %s ms", (System.currentTimeMillis() - start)));
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
 		
 		if (Convert.backgroundColor != null) {
@@ -138,7 +165,7 @@ public class Scheme extends ScrollPane {
 		try {
 			tt = (EShape) root.lookup("#" + id);
 		} catch (Exception e) {
-			System.err.println("getDeviceById ...");
+			LogFiles.log.log(Level.SEVERE, "EShape getDeviceById(...)", e);
 		}
 		return tt;
 	}
@@ -152,7 +179,7 @@ public class Scheme extends ScrollPane {
 					addTransparant(t.getTp(), transpLocate.getX(), transpLocate.getY(), transpLocate.getH(), 
 							t.getIdtr());
 				} catch (Exception e) {
-					e.printStackTrace();
+					LogFiles.log.log(Level.SEVERE, "void setTransparants()", e);
 				}
 			});
 		}
@@ -163,7 +190,7 @@ public class Scheme extends ScrollPane {
 			Shape transparant = createCircle(idTransparant, xT, yT, sizeT, ident);
 			root.getChildren().add(transparant);
 		} catch (Exception e) {
-			System.out.println(idTransparant + " not found");
+			LogFiles.log.log(Level.SEVERE, "void addTransparant(...)", e);
 		}
 	}
 	
@@ -198,7 +225,7 @@ public class Scheme extends ScrollPane {
 		        }
 		    });
 		} catch (IOException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void addContextMenu(...)", e);
 		}
 	}
 

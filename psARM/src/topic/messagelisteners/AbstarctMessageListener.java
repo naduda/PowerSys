@@ -6,7 +6,10 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
-import ui.single.SingleObject;
+import pr.log.LogFiles;
+import single.SingleObject;
+
+import java.util.logging.Level;
 
 public abstract class AbstarctMessageListener implements MessageListener {
 
@@ -20,8 +23,7 @@ public abstract class AbstarctMessageListener implements MessageListener {
 		    	}
 			}
 		} catch (Exception e) {
-		      System.out.println("Error while consuming a message: " + e.getMessage());
-		      e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void onMessage(...)", e);
 		}
 	}
 

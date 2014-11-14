@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import javax.script.Invocable;
@@ -20,13 +21,14 @@ import javax.script.ScriptException;
 import controllers.Controller;
 import controllers.ShapeController;
 import pr.common.Utils;
+import pr.log.LogFiles;
 import pr.model.TSysParam;
 import pr.model.Tsignal;
+import single.SingleFromDB;
+import single.SingleObject;
 import svg2fx.Convert;
 import svg2fx.SignalState;
-import ui.single.SingleFromDB;
-import ui.single.SingleObject;
-import javafx.event.EventHandler;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -34,7 +36,6 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
@@ -44,7 +45,7 @@ public class EShape extends AShape {
 	private static final String TEXT_CONST = "text";
 	
 	private SignalState value = new SignalState();
-	
+
 	private Map<String, Integer> signals = new HashMap<>();
 	private int id = -1;
 	private int idTS = -1;
@@ -88,14 +89,11 @@ public class EShape extends AShape {
 			}
 		}
 	    
-	    rect.setOnMouseClicked(new EventHandler<MouseEvent>() {
-	        @Override
-	        public void handle(MouseEvent t) {
-	            if(t.getButton().toString().equals("SECONDARY")) {
-	            	setContextMenu();
-	            	contextMenu.show(rect, t.getScreenX(), t.getSceneY());
-	            }
-	        }
+	    rect.setOnMouseClicked(t -> {
+			if(t.getButton().toString().equals("SECONDARY")) {
+				setContextMenu();
+				contextMenu.show(rect, t.getScreenX(), t.getSceneY());
+			}
 	    });
 	    
 	    setOnDragDetected(e -> {
@@ -127,25 +125,29 @@ public class EShape extends AShape {
 	}
 	
 	private void runScriptByName(String scriptName) {
-		if (TEXT_CONST.equals(getId())) return;
-		double start = System.currentTimeMillis();
-		
-		String script = "";
 		try {
-			script = getScripts().getScriptByName(scriptName);
-			
+			if (TEXT_CONST.equals(getId())) return;
+			String script = getScripts().getScriptByName(scriptName).replace(scriptName, scriptName + "_" + getId());
+				
 			if (script != null) {
-				Convert.engine.eval(script);
-				Invocable inv = (Invocable) Convert.engine;
-	            inv.invokeFunction(scriptName, this);
+				Platform.runLater(() -> {
+					try {
+						double start = System.currentTimeMillis();
+						Convert.engine.eval(script);
+						Invocable inv = (Invocable) Convert.engine;
+			            inv.invokeFunction(scriptName + "_" + getId(), this);
+			            
+			            double execTime = System.currentTimeMillis() - start; 
+			            if (execTime > 25) LogFiles.log.log(Level.WARNING, String.format("script execute time: %s ms", execTime));
+					} catch (ScriptException | NoSuchMethodException e) {
+						LogFiles.log.log(Level.SEVERE, "void runScriptByName(...)", e);
+						LogFiles.log.log(Level.INFO, scriptName);
+					}
+				});
 			}
-		} catch (ScriptException | NoSuchMethodException e) {
-			System.out.println("Script not found - " + script);
-			e.printStackTrace();
+		} catch (Exception e) {
+			LogFiles.log.log(Level.SEVERE, "void runScriptByName(...)", e);
 		}
-		
-		if ((System.currentTimeMillis() - start) > 10)
-        	System.out.println((System.currentTimeMillis() - start) + " mc, :" + scriptName + " -> " + getId());
 	}
 	
 	private void setContextMenu() {
@@ -172,7 +174,7 @@ public class EShape extends AShape {
 				shapeController.setElementText(rb);
 			});
 		} catch (IOException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void setContextMenu()", e);
 		}
 	}
 	
@@ -180,7 +182,7 @@ public class EShape extends AShape {
 		try {
 			SingleFromDB.psClient.setTS(idSignal, val, SingleObject.mainScheme.getIdScheme());
 		} catch (RemoteException | NumberFormatException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void setTS(...)", e);
 		}
 	}
 
@@ -208,26 +210,41 @@ public class EShape extends AShape {
 	private void setTextValue(Node n, double val, final String format) {
 		if (n instanceof Group) {
 			Group gr = (Group)n;
-			(gr).getChildren().forEach(ch -> { setTextValue(ch, val, format); });
+			gr.getChildren().forEach(ch -> setTextValue(ch, val, format) );
 		} else {
 			if (n instanceof Text) {
 				Text t = (Text) n;
+				
 				try {
-					Double textVal = Double.parseDouble(t.getText());
-					textVal = t.getBoundsInLocal().getWidth();
-					
+					if (t.getText().length() < 5) {
+						t.setText("");
+						return;
+					}
+									
 					DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
-					decimalFormatSymbols.setDecimalSeparator('.');
+					decimalFormatSymbols.setDecimalSeparator(',');
 					decimalFormatSymbols.setGroupingSeparator(' ');
 					
 					DecimalFormat decimalFormat = new DecimalFormat(format, decimalFormatSymbols);
-					String textValue = decimalFormat.format(val) + "  ";
+					String textValue = decimalFormat.format(val) + "  " + SingleFromDB.signals.get(id).getNameunit().trim();
 					
 					t.setText(textValue);
-					t.setWrappingWidth(textVal);
+					
+					if (t.getParent().getParent().getParent().getParent().getId().toLowerCase().startsWith("digitaldevice") && 
+							((Group)t.getParent()).getChildren().size() > 1) {
+						Group p = (Group)t.getParent();
+
+						Platform.runLater(() -> p.getChildren().remove(p.getChildren().get(1)));
+						
+						Node nn = ((Group)((Group)t.getParent().getParent().getParent().getParent()).getChildren().get(0)).getChildren().get(1);
+						Double textVal = nn.getBoundsInLocal().getWidth();
+						t.setWrappingWidth(textVal);
+						t.setTranslateX(-nn.getBoundsInLocal().getHeight());
+					}
+					
 					t.setTextAlignment(TextAlignment.RIGHT);
 				} catch (Exception e) {
-					//System.err.println(e.getMessage());
+					//LogFiles.log.log(Level.WARNING, "void setTextValue(...)", e);
 				}
 			}
 		}
@@ -280,7 +297,7 @@ public class EShape extends AShape {
 			scriptPath = Utils.getFullPath("./scripts/" + scriptName + ".js");
 		} else if (custProps != null) {
 			String sName = getId().replace("_", ".");
-			sName = sName.indexOf(".") > -1 ? sName.substring(0, sName.indexOf(".")) : sName;
+			sName = sName.contains(".") ? sName.substring(0, sName.indexOf(".")) : sName;
 			if (TEXT_CONST.equals(sName)) {
 				return null;
 			}
@@ -300,7 +317,7 @@ public class EShape extends AShape {
 				.filter(f -> f.getObjref() == tSignal.getStateref() && f.getDenom().equals(denom.toUpperCase()))
 				.collect(Collectors.toList()).get(0).getVal();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "int getStateVal(...)", e);
 		}
 		return 0;
 	}

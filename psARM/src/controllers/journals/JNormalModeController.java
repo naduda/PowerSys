@@ -4,10 +4,12 @@ import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
+import pr.log.LogFiles;
 import pr.model.NormalModeJournalItem;
-import ui.single.SingleFromDB;
-import ui.single.SingleObject;
+import single.SingleFromDB;
+import single.SingleObject;
 import ui.tables.NormalModeTableItem;
 
 public class JNormalModeController extends AJournal {
@@ -15,11 +17,9 @@ public class JNormalModeController extends AJournal {
 	@Override
 	public void setItems(Timestamp dtBeg, Timestamp dtEnd) {
 		bpTableController.clearTable();
-		List<String> signalsArr = new ArrayList<String>(1);
+		List<String> signalsArr = new ArrayList<>(1);
 		signalsArr.add("");
-		SingleObject.mainScheme.getSignalsTS().forEach(s -> {
-			signalsArr.set(0, signalsArr.get(0) + s + ",");
-		});
+		SingleObject.mainScheme.getSignalsTS().forEach(s -> signalsArr.set(0, signalsArr.get(0) + s + ","));
 		String signals = signalsArr.get(0).substring(0, signalsArr.get(0).length() - 1);
 		
 		try {
@@ -36,7 +36,7 @@ public class JNormalModeController extends AJournal {
 			List<NormalModeJournalItem> items = SingleFromDB.psClient.getListNormalModeItems(query);
 			items.forEach(it -> bpTableController.addItem(new NormalModeTableItem(it)));
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void setItems(...)", e);
 		}
 	}
 

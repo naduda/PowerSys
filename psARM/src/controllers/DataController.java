@@ -9,13 +9,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 import controllers.interfaces.IControllerInit;
+import pr.log.LogFiles;
+import single.SingleFromDB;
+import single.SingleObject;
 import ui.data.DataFX;
 import ui.data.DataWrapper;
 import ui.data.LineChartContainer;
-import ui.single.SingleFromDB;
-import ui.single.SingleObject;
 import pr.model.LinkedValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -54,9 +56,9 @@ public class DataController implements Initializable, IControllerInit {
 	public void initialize(URL url, ResourceBundle boundle) {
 		cbIntegration.getSelectionModel().selectFirst();
 		
-		cbIntegration.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			changeTableData(getDataFromDB());
-		});
+		cbIntegration.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+			changeTableData(getDataFromDB())
+		);
 		
 		setDateHours();
 		
@@ -115,7 +117,7 @@ public class DataController implements Initializable, IControllerInit {
 			data.addAll(SingleFromDB.psClient.getDataIntegrArc(idSignal, Timestamp.valueOf(dpBegin.getValue().atTime(cbHourBegin.getValue(), 0)), 
 					Timestamp.valueOf(dpEnd.getValue().atTime(cbHourEnd.getValue(), 0)), period));
 		} catch (Exception e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void getDataFromDB(...)", e);
 		}
 		return data;
 	}
@@ -130,9 +132,7 @@ public class DataController implements Initializable, IControllerInit {
 	}
 	
 	private void changeTableData(List<LinkedValue> newData) {
-		newData.forEach(v -> {
-			v.setVal((double)v.getVal() * SingleFromDB.signals.get(v.getId()).getKoef());
-		});		
+		newData.forEach(v -> v.setVal((double)v.getVal() * SingleFromDB.signals.get(v.getId()).getKoef()));
 		dataFX.setData(newData);
 		
 		updateContent();
@@ -167,8 +167,7 @@ public class DataController implements Initializable, IControllerInit {
 				setDataTable();
 			}
 		} catch (Exception e) {
-			System.out.println("CATCH");
-			e.printStackTrace();
+			LogFiles.log.log(Level.WARNING, "void updateContent()", e);
 		}
 	}
 }

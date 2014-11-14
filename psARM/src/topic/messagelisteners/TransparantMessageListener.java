@@ -1,13 +1,15 @@
 package topic.messagelisteners;
 
 import java.rmi.RemoteException;
+import java.util.logging.Level;
 
 import javafx.scene.Group;
 import javafx.scene.shape.Shape;
+import pr.log.LogFiles;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
-import ui.single.SingleFromDB;
-import ui.single.SingleObject;
+import single.SingleFromDB;
+import single.SingleObject;
 
 public class TransparantMessageListener extends AbstarctMessageListener {
 
@@ -41,7 +43,7 @@ public class TransparantMessageListener extends AbstarctMessageListener {
 				root.getChildren().remove(root.lookup("#transparant_" + t.getIdtr()));
 			}
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "void runLogic(...)", e);
 		}
 	}
 	

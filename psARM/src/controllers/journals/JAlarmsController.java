@@ -4,11 +4,13 @@ import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
+import pr.log.LogFiles;
 import pr.model.Alarm;
-import ui.single.ProgramProperty;
-import ui.single.SingleFromDB;
-import ui.single.SingleObject;
+import single.ProgramProperty;
+import single.SingleFromDB;
+import single.SingleObject;
 import ui.tables.AlarmTableItem;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -48,18 +50,19 @@ public class JAlarmsController extends AJournal {
 	@Override
 	public void setItems(Timestamp dtBeg, Timestamp dtEnd) {
 		try {
-			List<Alarm> alarms = null;
+			List<Alarm> alarms;
 			if (isAlarmById) {
-				alarms = SingleFromDB.psClient.getAlarmsPeriodById(dtBeg, dtEnd, 
-						SingleObject.selectedShape.getIdTS() > 0 ? SingleObject.selectedShape.getIdTS() : SingleObject.selectedShape.getIdSignal());
+				alarms = SingleFromDB.psClient.getAlarmsPeriodById(dtBeg, dtEnd,
+						SingleObject.selectedShape.getIdTS() > 0 ?
+								SingleObject.selectedShape.getIdTS() : SingleObject.selectedShape.getIdSignal());
 			} else {
 				alarms = SingleFromDB.psClient.getAlarmsPeriod(dtBeg, dtEnd);
 			}
 			
 			bpTableController.clearTable();
 			if (alarms != null) alarms.forEach(it -> bpTableController.addItem(new AlarmTableItem(it)));
-		} catch (RemoteException e1) {
-			e1.printStackTrace();
+		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "void setItems(...)", e);
 		}
 	}
 	
