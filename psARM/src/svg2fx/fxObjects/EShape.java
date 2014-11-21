@@ -15,7 +15,6 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import javax.script.Invocable;
 import javax.script.ScriptException;
 
 import controllers.Controller;
@@ -26,7 +25,6 @@ import pr.model.TSysParam;
 import pr.model.Tsignal;
 import single.SingleFromDB;
 import single.SingleObject;
-import svg2fx.Convert;
 import svg2fx.SignalState;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -126,24 +124,19 @@ public class EShape extends AShape {
 	
 	private void runScriptByName(String scriptName) {
 		try {
-			if (TEXT_CONST.equals(getId())) return;
-			String script = getScripts().getScriptByName(scriptName).replace(scriptName, scriptName + "_" + getId());
+			String script = getScripts().getScriptByName(scriptName);
 				
 			if (script != null) {
-				Platform.runLater(() -> {
-					try {
-						double start = System.currentTimeMillis();
-						Convert.engine.eval(script);
-						Invocable inv = (Invocable) Convert.engine;
-			            inv.invokeFunction(scriptName + "_" + getId(), this);
-			            
-			            double execTime = System.currentTimeMillis() - start; 
-			            if (execTime > 25) LogFiles.log.log(Level.WARNING, String.format("script execute time: %s ms", execTime));
-					} catch (ScriptException | NoSuchMethodException e) {
-						LogFiles.log.log(Level.SEVERE, "void runScriptByName(...)", e);
-						LogFiles.log.log(Level.INFO, scriptName);
-					}
-				});
+				try {
+					double start = System.currentTimeMillis();
+					SingleObject.engine.eval(script);
+					SingleObject.invokeEngine.invokeFunction(scriptName, this);
+		            double execTime = System.currentTimeMillis() - start; 
+		            if (execTime > 25) LogFiles.log.log(Level.WARNING, String.format(getId() + ": script execute time: %s ms", execTime));
+				} catch (ScriptException | NoSuchMethodException e) {
+					LogFiles.log.log(Level.SEVERE, "void runScriptByName(...) " + scriptName + " - " + getId(), e);
+					LogFiles.log.log(Level.INFO, scriptName);
+				}
 			}
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, "void runScriptByName(...)", e);
@@ -204,6 +197,7 @@ public class EShape extends AShape {
 		}
 		
 		setLastDataDate(new Date(System.currentTimeMillis()));
+		if (updateInterval > 0) updateSignal(updateInterval);
 		getValueProp().set(val); //Listener
 	}
 
@@ -226,7 +220,7 @@ public class EShape extends AShape {
 					decimalFormatSymbols.setGroupingSeparator(' ');
 					
 					DecimalFormat decimalFormat = new DecimalFormat(format, decimalFormatSymbols);
-					String textValue = decimalFormat.format(val) + "  " + SingleFromDB.signals.get(id).getNameunit().trim();
+					String textValue = decimalFormat.format(val) + "  " + SingleFromDB.getSignals().get(id).getNameunit().trim();
 					
 					t.setText(textValue);
 					
@@ -298,21 +292,15 @@ public class EShape extends AShape {
 		} else if (custProps != null) {
 			String sName = getId().replace("_", ".");
 			sName = sName.contains(".") ? sName.substring(0, sName.indexOf(".")) : sName;
-			if (TEXT_CONST.equals(sName)) {
-				return null;
-			}
+			if (TEXT_CONST.equals(sName)) return null;
 			scriptPath = Utils.getFullPath("./scripts/" + sName + ".js");
 		}
 		return scriptPath;
 	}
-
-	public void setScriptPath(String scriptPath) {
-		this.scriptPath = scriptPath;
-	}
 	
 	private int getStateVal(int idSignal, String denom) {
 		try {
-			Tsignal tSignal = SingleFromDB.tsignals.get(idSignal);
+			Tsignal tSignal = SingleFromDB.getTsignals().get(idSignal);
 			return SingleFromDB.psClient.getSpTuCommand().stream()
 				.filter(f -> f.getObjref() == tSignal.getStateref() && f.getDenom().equals(denom.toUpperCase()))
 				.collect(Collectors.toList()).get(0).getVal();
@@ -331,7 +319,7 @@ public class EShape extends AShape {
 	}
 
 	public int getStatus() {
-		Tsignal tSignal = SingleFromDB.tsignals.get(idTS);
+		Tsignal tSignal = SingleFromDB.getTsignals().get(idTS);
 		return tSignal != null ? tSignal.getStatus() : status;
 	}
 	
@@ -344,12 +332,12 @@ public class EShape extends AShape {
 	}
 
 	public Tsignal gettSignalID() {
-		tSignalID = SingleFromDB.tsignals.get(id);
+		tSignalID = SingleFromDB.getTsignals().get(id);
 		return tSignalID;
 	}
 	
 	public Tsignal gettSignalIDTS() {
-		tSignalIDTS = SingleFromDB.tsignals.get(idTS);
+		tSignalIDTS = SingleFromDB.getTsignals().get(idTS);
 		return tSignalIDTS;
 	}
 }

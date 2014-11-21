@@ -1,11 +1,17 @@
 package ui;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
@@ -14,8 +20,11 @@ import controllers.ShapeController;
 import controllers.ToolBarController;
 import pr.common.Utils;
 import pr.log.LogFiles;
+import pr.model.DvalTI;
+import pr.model.DvalTS;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
+import pr.model.VsignalView;
 import single.SingleFromDB;
 import single.SingleObject;
 import svg2fx.Convert;
@@ -44,18 +53,25 @@ public class Scheme extends ScrollPane {
 	
 	private int idScheme = 0;
 	private String schemeName;
+	private Collection<DvalTS> oldTS;
+	private Collection<DvalTI> oldTI;
+	private Map<Integer, VsignalView> signals;
 	
 	public Scheme() {
-		LogFiles.log.log(Level.INFO, "Building scheme");
+		LogFiles.log.log(Level.INFO, "Start building scheme");
+		
+//		new Thread(() -> signals = SingleFromDB.getSignals()).start();
+//		new Thread(() -> oldTS = SingleFromDB.psClient.getOldTS().values()).start();
+//		new Thread(() -> oldTI = SingleFromDB.psClient.getOldTI().values()).start();
+		
+		signals = SingleFromDB.getSignals();
+		oldTS = SingleFromDB.psClient.getOldTS().values();
+		oldTI = SingleFromDB.psClient.getOldTI().values();
+
 		setContent(rootScheme);
 		
 		Events events = new Events();
 		addEventFilter(ScrollEvent.ANY, events::setOnScroll);
-	}
-	
-	public Scheme(String fileName) {
-		this();
-		double start = System.currentTimeMillis();
 		
 		setOnMouseReleased(e -> {
 			if (SingleObject.selectedShape != null) {
@@ -63,31 +79,40 @@ public class Scheme extends ScrollPane {
 				SingleObject.selectedShape = null;
 			}
 		});
+	}
+	
+	public Scheme(String fileName) {
+		this();
 		
 		setSchemeName(fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf(".")));
 		
 		File f = new File(fileName);
-		
 		byte[] buf = null;
 		try (InputStream in = new FileInputStream(f)) {
 			buf = new byte[in.available()];
 			while (in.read(buf) != -1) {}
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
-		}		
-
+		}
 		SingleObject.schemeInputStream = new ByteArrayInputStream(buf != null ? buf : new byte[0]);
 		
-		LogFiles.log.log(Level.INFO, "SVG to FX converting start");
+		LogFiles.log.log(Level.INFO, "Start convert scheme");
 		root = (Group) Convert.getNodeBySVG(fileName);
-		LogFiles.log.log(Level.INFO, "SVG to FX converting finish");
+		LogFiles.log.log(Level.INFO, "Finish convert scheme");
 		setIdScheme(Convert.idScheme);
 		rootScheme.getChildren().add(root);
 		
+		while (signals == null) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		Convert.listSignals.forEach(e -> {
 			if (e.getKey() != 0) {
 				try {
-					int typeSignal = SingleFromDB.signals.get(e.getKey()).getTypesignalref();
+					int typeSignal = signals.get(e.getKey()).getTypesignalref();
 					
 					switch (typeSignal) {
 					case 1:
@@ -103,25 +128,26 @@ public class Scheme extends ScrollPane {
 						break;
 					}
 				} catch (Exception e1) {
-					LogFiles.log.log(Level.SEVERE, e1.getMessage(), e1);
+					LogFiles.log.log(Level.SEVERE, "signalsTI", e1);
 				}
 			}
 		});
 		
-		try {
-			start = System.currentTimeMillis();
-			SingleFromDB.psClient.getOldTI().values().forEach(s -> MainStage.controller.updateTI(this, s));
-			if ((System.currentTimeMillis() - start) > 1000) 
-				LogFiles.log.log(Level.WARNING, String.format("getOldTI execute time: %s ms", (System.currentTimeMillis() - start)));
-			start = System.currentTimeMillis();
-			SingleFromDB.psClient.getOldTS().values().forEach(s -> MainStage.controller.updateTI(this, s));
-			if ((System.currentTimeMillis() - start) > 1000) 
-				LogFiles.log.log(Level.WARNING, String.format("getOldTS execute time: %s ms", (System.currentTimeMillis() - start)));
-			
-			start = System.currentTimeMillis();
+		LogFiles.log.log(Level.INFO, "wait old values ...");
+		while (oldTI == null || oldTS == null) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		oldTI.forEach(ti -> ti.setVal(ti.getVal() * SingleFromDB.getSignals().get(ti.getSignalref()).getKoef()));
+		oldTI.forEach(s -> MainStage.controller.updateTI(this, s));
+		oldTS.forEach(s -> MainStage.controller.updateTI(this, s));
+		
+		try {	
 			setTransparants();
-			if ((System.currentTimeMillis() - start) > 1000) 
-				LogFiles.log.log(Level.WARNING, String.format("setTransparants execute time: %s ms", (System.currentTimeMillis() - start)));
 		} catch (RemoteException e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}

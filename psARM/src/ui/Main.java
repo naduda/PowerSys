@@ -21,7 +21,7 @@ public class Main extends Application {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
-		stage = new StageLoader("Login.xml", SingleObject.getResourceBundle().getString("keyLogin"), false);
+		stage = new StageLoader("Login.xml", SingleObject.getResourceBundle().getString("key_miLogin"), false);
 		LoginController controller = (LoginController) ((StageLoader)stage).getController();
 		stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, t -> {
 			if (t.getCode()==KeyCode.ESCAPE) {

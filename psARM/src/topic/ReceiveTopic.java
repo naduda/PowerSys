@@ -62,8 +62,8 @@ public class ReceiveTopic extends javafx.concurrent.Task<Void> {
 			
 			int k = 0;
 			while (isRun) {
-				Thread.sleep(60000);
-				System.out.println((++k) + " min");
+				Thread.sleep(600000);
+				System.out.println((++k) * 10 + " min");
 			}
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);

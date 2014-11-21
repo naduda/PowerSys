@@ -6,11 +6,13 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import actualdata.LastData;
 import jdbc.PostgresDB;
 import pr.powersys.IPowersys;
+import pr.log.LogFiles;
 import pr.model.Alarm;
 import pr.model.ConfTree;
 import pr.model.ControlJournalItem;
@@ -58,7 +60,6 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 		return pdb.getSwitchJournalItems(query);
 	}
 //	==============================================================================
-
 	@Override
 	public Map<Integer, Tsignal> getTsignalsMap() throws RemoteException {
 		return pdb.getTsignalsMap();
@@ -94,7 +95,13 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 
 	@Override
 	public Map<Integer, DvalTI> getOldTI() throws RemoteException {
-		return LastData.getOldTI();
+		Map<Integer, DvalTI> rez = null;
+		try {
+			rez = pdb.getOldTI().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTI::getSignalref, obj -> obj));
+		} catch (Exception e) {
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
+		}
+		return rez;
 	}
 
 	@Override

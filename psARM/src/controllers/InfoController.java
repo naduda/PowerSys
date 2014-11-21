@@ -80,7 +80,7 @@ public class InfoController implements Initializable, IControllerInit {
 		} else {
 			tName.setText(tID.getNamesignal());
 			tCode.setText(tID.getIdsignal() + "");
-			tType.setText(SingleFromDB.spTypeSignals.get(tID.getTypesignalref()).getNametypesignal());
+			tType.setText(SingleFromDB.getSptypesignals().get(tID.getTypesignalref()).getNametypesignal());
 			try {
 				tMode.setText(SingleFromDB.psClient.getTSysParam("SIGNAL_STATUS").get(tID.getStatus() + "").getParamdescr());
 			} catch (RemoteException e) {
@@ -89,7 +89,7 @@ public class InfoController implements Initializable, IControllerInit {
 			tValue.setText(SingleObject.selectedShape.getValue().getIdValue() + 
 					(SingleObject.selectedShape.getIdTS() == -1 || SingleObject.selectedShape.getIdTS() == 0 ? "" : 
 					String.format(" (TS = %s)", SingleObject.selectedShape.getValue().getIdTSValue())));
-			tUnit.setText(SingleFromDB.signals.get(tID.getIdsignal()).getNameunit());
+			tUnit.setText(SingleFromDB.getSignals().get(tID.getIdsignal()).getNameunit());
 			tQuality.setText(Constants.getQuality(SingleObject.selectedShape.getRcode()));
 			Timestamp dt = SingleObject.selectedShape.getDt();
 			tDate.setText(dt == null ? "" : dFormat.format(SingleObject.selectedShape.getDt()));

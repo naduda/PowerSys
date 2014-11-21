@@ -132,7 +132,7 @@ public class ShapeController implements IControllerInit {
 		if (newStatus != sh.getStatus()) {
 			try {
 				SingleFromDB.psClient.updateTsignalStatus(sh.gettSignalIDTS().getIdsignal(), newStatus);
-				SingleFromDB.tsignals.get(sh.gettSignalIDTS().getIdsignal()).setStatus(newStatus);
+				SingleFromDB.getTsignals().get(sh.gettSignalIDTS().getIdsignal()).setStatus(newStatus);
 				
 				SingleFromDB.psClient.insertDeventLog(5, sh.gettSignalIDTS().getIdsignal(), 
 						new Timestamp(System.currentTimeMillis()), newStatus, sh.getStatus(), -1);		

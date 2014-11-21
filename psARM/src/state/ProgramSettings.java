@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -15,6 +16,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "settings")
@@ -27,6 +29,9 @@ public class ProgramSettings {
 	private String localeName;
 	private String showAlarmColumns;
 	private int iconWidth;
+	@XmlElementWrapper(name = "HotKeys")
+	@XmlElement(name = "hotkey")
+	private List<HotKeyClass> hotkeys;
 	
 	public ProgramSettings() {
 		
@@ -76,6 +81,14 @@ public class ProgramSettings {
 		this.iconWidth = iconWidth;
 	}
 
+	public List<HotKeyClass> getHotkeys() {
+		return hotkeys;
+	}
+
+	public void setHotkeys(List<HotKeyClass> hotkeys) {
+		this.hotkeys = hotkeys;
+	}
+	
 	public void saveToFile(String fileName) throws JAXBException {
 		JAXBContext context = JAXBContext.newInstance(ProgramSettings.class);
 		Marshaller m = context.createMarshaller();

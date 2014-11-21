@@ -37,7 +37,6 @@ public interface IPowersys extends Remote {
 	List<NormalModeJournalItem> getListNormalModeItems(String query) throws RemoteException;
 	List<SwitchEquipmentJournalItem> getSwitchJournalItems(String query) throws RemoteException;
 //	==============================================================================
-	
 	public Map<Integer, Tsignal> getTsignalsMap() throws RemoteException;
 	public Map<Integer, VsignalView> getVsignalViewMap() throws RemoteException;
 	public Map<Integer, ConfTree> getConfTreeMap() throws RemoteException;

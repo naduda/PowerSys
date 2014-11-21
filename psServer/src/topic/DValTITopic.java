@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import actualdata.LastData;
-
 import com.sun.messaging.ConnectionFactory;
 
 import jdbc.PostgresDB;
@@ -50,12 +48,6 @@ public class DValTITopic extends ASender {
 					}
 					msgObject.setObject(ti);
 					producer.send(topic, msgObject);
-					DvalTI oldTI = LastData.getOldTI().get(ti.getSignalref());
-					if (oldTI != null) {
-						oldTI.setVal(ti.getVal());
-					} else {
-						LastData.getOldTI().put(ti.getSignalref(), ti);
-					}
 				}
 			}
 		} catch (Exception e) {
@@ -65,8 +57,6 @@ public class DValTITopic extends ASender {
 					Thread.sleep(60000); //Connection broken
 				} else {
 					LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
-					LogFiles.log.log(Level.INFO, "Exit ...");
-					System.exit(0);
 				}
 			} catch (InterruptedException e1) {
 				LogFiles.log.log(Level.SEVERE, e1.getMessage(), e1);

@@ -1,5 +1,6 @@
 package controllers.journals;
 
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.List;
@@ -15,10 +16,10 @@ import ui.tables.AlarmTableItem;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
+import javafx.stage.Stage;
 
 public class JAlarmsController extends AJournal {
-	private final BooleanProperty selectedShapeChangeProperty = new SimpleBooleanProperty();	
-	
+	private final BooleanProperty selectedShapeChangeProperty = new SimpleBooleanProperty();
 	private boolean isAlarmById = false;
 	
 	@FXML private AlarmTableController bpTableController;
@@ -26,7 +27,12 @@ public class JAlarmsController extends AJournal {
 	public AlarmTableController getAlarmsController() {
 		return bpTableController;
 	}
-
+	
+	@Override
+	public void initialize(URL url, ResourceBundle bundle) {
+		super.initialize(url, bundle);
+	}
+	
 	public void setAlarmById(boolean isAlarmById) {
 		this.isAlarmById = isAlarmById;
 		
@@ -68,7 +74,8 @@ public class JAlarmsController extends AJournal {
 	
 	@Override //We need kill super method. Don't remove it )))
 	public void setElementText(ResourceBundle rb) {
-		
+		if (getTbJournal().getScene() != null) 
+			((Stage)getTbJournal().getScene().getWindow()).setTitle(rb.getString("key_miJAlarms"));
 	}
 	
 }

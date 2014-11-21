@@ -10,9 +10,12 @@ import java.util.logging.Level;
 import controllers.interfaces.IControllerInit;
 import pr.common.Utils;
 import pr.log.LogFiles;
+import single.ProgramProperty;
 import single.SingleObject;
 import ui.MainStage;
 import ui.Scheme;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
@@ -26,7 +29,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class TreeController implements Initializable, IControllerInit {
-
 	@FXML private Accordion accordTree;
 	@FXML private TreeView<Scheme> tvSchemes;
 	@FXML private TitledPane tpSchemes;
@@ -42,7 +44,7 @@ public class TreeController implements Initializable, IControllerInit {
 	@Override
 	public void setElementText(ResourceBundle rb) {
 		tpSchemes.setText(rb.getString("keySchemes"));
-		tpTrends.setText(rb.getString("keyTrend"));
+		tpTrends.setText(rb.getString("key_menuTrend"));
 		tpReports.setText(rb.getString("keyReports"));
 	}
 	
@@ -64,12 +66,21 @@ public class TreeController implements Initializable, IControllerInit {
 		private static final double IMAGE_SIZE = 16;
 		private Scheme scheme;
         private ContextMenu addMenu = new ContextMenu();
- 
+        private final StringProperty localeName = new SimpleStringProperty();
+        private MenuItem miClose = new MenuItem();
+        		
         public SchemeTreeCellImpl() {
+        	localeName.bind(ProgramProperty.localeName);
+        	localeName.addListener((observ, old, value) -> {
+        		ResourceBundle rb = Controller.getResourceBundle(new Locale(value));
+        		miClose.setText(rb.getString("keyClose"));
+        	});
+        	
         	try {
 				File fImage = new File(Utils.getFullPath("./Icon/close.png"));
 				Image image = new Image(fImage.toURI().toURL().toExternalForm(), IMAGE_SIZE, IMAGE_SIZE, true, false);
-				MenuItem miClose = new MenuItem("Закрити", new ImageView(image));
+				miClose.setText(SingleObject.getResourceBundle().getString("keyClose"));
+				miClose.setGraphic(new ImageView(image));
 				miClose.setOnAction(e -> {
 					MainStage.schemes.remove(getItem().getIdScheme());
 					SingleObject.mainScheme.getSignalsTI().clear();
@@ -78,7 +89,7 @@ public class TreeController implements Initializable, IControllerInit {
 					trSchemes.getChildren().remove(selectedItem);
 					if (trSchemes.getChildren().size() == 0) {
 						SingleObject.mainScheme = null;
-						MainStage.bpScheme.setCenter(new Scheme());
+						MainStage.controller.getBpScheme().setCenter(new Scheme());
 					}
 				});
 				
@@ -121,7 +132,7 @@ public class TreeController implements Initializable, IControllerInit {
 			super.updateSelected(selected);
 			if (selected) {
 				SingleObject.mainScheme = MainStage.schemes.get(getItem().getIdScheme());
-				MainStage.bpScheme.setCenter(SingleObject.mainScheme);
+				MainStage.controller.getBpScheme().setCenter(SingleObject.mainScheme);
 			}
 		}
 

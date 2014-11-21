@@ -50,10 +50,9 @@ import pr.model.Tuser;
 import pr.model.UserEventJournalItem;
 import pr.model.VsignalView;
 
-public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, IMapperV {
+public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV {
 
 	private DataSource dataSource;
-	private SqlSession session;
 	private SqlSessionFactory sqlSessionFactory;
 	
 	public PostgresDB() {
@@ -140,8 +139,8 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
         List<SwitchEquipmentJournalItem> getSwitchJournalItems(@Param("query") String query);
     }
 //    -----------------------------------------------------------------------------------------
-    @Override
 	public void update(String query) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(BaseMapper.class).update(query);			
@@ -153,8 +152,8 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		}
 	}
     
-    @Override
 	public List<NormalModeJournalItem> getListNormalModeItems(String query) {
+		SqlSession session = null;
     	try {
 			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(BaseMapper.class).getListNormalModeItems(query);			
@@ -167,8 +166,8 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		}
 	}
     
-    @Override
     public List<SwitchEquipmentJournalItem> getSwitchJournalItems(String query) {
+    	SqlSession session = null;
     	try {
 			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(BaseMapper.class).getSwitchJournalItems(query);			
@@ -181,9 +180,8 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		}
     }
 //	==============================================================================================
-	
-	@Override
 	public List<DvalTI> getLastTI(Timestamp servdt) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getLastTI(servdt);
@@ -194,8 +192,8 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		}
 	}
 	
-	@Override
 	public List<DvalTI> getOldTI() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getOldTI();
@@ -203,12 +201,12 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 			return null;
 		} finally {
-			session.close();
+			if (session != null) session.close();
 		}
 	}
 	
-	@Override
 	public List<DvalTS> getLastTS(Timestamp servdt) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getLastTS(servdt);
@@ -220,8 +218,8 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		}
 	}
 	
-	@Override
 	public List<DvalTS> getOldTS() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getOldTS();
@@ -232,9 +230,9 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 			session.close();
 		}
 	}
-
-	@Override
+	
 	public Integer setTS(int idsignal, double val, int schemeref) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).setTS(idsignal, val, schemeref);
@@ -246,8 +244,8 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		}
 	}
 	
-	@Override
 	public List<Alarm> getAlarms(Timestamp eventdt) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getAlarms(eventdt);
@@ -259,8 +257,8 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		}
 	}
 	
-	@Override
 	public List<Alarm> getAlarmsConfirm(Timestamp confirmdt) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getAlarmsConfirm(confirmdt);
@@ -272,8 +270,8 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		}
 	}
 	
-	@Override
 	public List<LinkedValue> getData(int signalref) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getData(signalref);
@@ -284,9 +282,9 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 			session.close();
 		}
 	}
-
-	@Override
+	
 	public List<LinkedValue> getDataIntegr(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getDataIntegr(idSignal, dtBeg, dtEnd, period);
@@ -298,8 +296,8 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		}
 	}
 	
-	@Override
 	public List<LinkedValue> getDataIntegrArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getDataIntegrArc(idSignal, dtBeg, dtEnd, period);
@@ -310,9 +308,9 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 			session.close();
 		}
 	}
-
-	@Override
+	
 	public List<LinkedValue> getDataArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getDataArc(idSignal, dtBeg, dtEnd);
@@ -323,9 +321,9 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 			session.close();
 		}
 	}
-
-	@Override
+	
 	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getAlarmsPeriod(dtBeg, dtEnd);
@@ -337,8 +335,8 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		}
 	}
 	
-	@Override
 	public List<Alarm> getAlarmsPeriodById(Timestamp dtBeg, Timestamp dtEnd, int idSignal) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getAlarmsPeriodById(dtBeg, dtEnd, idSignal);
@@ -349,9 +347,9 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 			session.close();
 		}
 	}
-
-	@Override
+	
 	public List<ControlJournalItem> getJContrlItems(Timestamp dtBeg, Timestamp dtEnd) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getJContrlItems(dtBeg, dtEnd);
@@ -363,8 +361,8 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 		}
 	}
 	
-	@Override
 	public List<UserEventJournalItem> getUserEventJournalItems(Timestamp dtBeg, Timestamp dtEnd) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapper.class).getUserEventJournalItems(dtBeg, dtEnd);
@@ -378,6 +376,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 //	----- SP -----
 	@Override
 	public Map<Integer, SPunit> getSPunitMap() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperSP.class).getSPunitMap();
@@ -391,6 +390,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 	
 	@Override
 	public List<SpTuCommand> getSpTuCommand() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperSP.class).getSpTuCommand();
@@ -404,6 +404,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 	
 	@Override
 	public Map<Integer, SpTypeSignal> getSpTypeSignalMap() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperSP.class).getSpTypeSignalMap();
@@ -417,13 +418,12 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 //	----- T -----
 	@Override
 	public Map<Integer, Tsignal> getTsignalsMap() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getTsignalsMap();
 		} catch (Exception e) {
-			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
-			LogFiles.log.log(Level.INFO, "Exit ...");
-			System.exit(0);
+			LogFiles.log.log(Level.SEVERE, "getTsignalsMap()", e);
 			return null;
 		} finally {
 			session.close();
@@ -432,6 +432,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 	
 	@Override
 	public Map<Integer, Tuser> getTuserMap() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getTuserMap();
@@ -445,6 +446,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 	
 	@Override
 	public Map<Integer, ConfTree> getConfTreeMap() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getConfTreeMap();
@@ -458,6 +460,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public List<TSysParam> getTSysParam() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getTSysParam();
@@ -471,6 +474,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public List<TViewParam> getTViewParam() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getTViewParam();
@@ -484,6 +488,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 	
 	@Override
 	public Object getTransparantById(int idTransparant) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getTransparantById(idTransparant);
@@ -497,6 +502,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public Map<Integer, Transparant> getTransparants() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getTransparants();
@@ -510,6 +516,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public List<Ttransparant> getTtransparantsActive(int idScheme) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getTtransparantsActive(idScheme);
@@ -523,6 +530,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 	
 	@Override
 	public List<Ttransparant> getTtransparantsNew(Timestamp settime) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getTtransparantsNew(settime);
@@ -536,6 +544,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public TtranspLocate getTransparantLocate(int trref) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getTransparantLocate(trref);
@@ -549,6 +558,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public List<Ttransparant> getTtransparantsClosed(Timestamp closetime) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getTtransparantsClosed(closetime);
@@ -562,6 +572,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public List<Ttransparant> getTtransparantsUpdated(Timestamp lastupdate) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getTtransparantsUpdated(lastupdate);
@@ -575,6 +586,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 	
 	@Override
 	public int getMaxTranspID() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getMaxTranspID();
@@ -588,6 +600,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public void updateTtransparantCloseTime(int idtr) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperT.class).updateTtransparantCloseTime(idtr);
@@ -600,6 +613,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public TtranspHistory getTtranspHistory(int trref) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getTtranspHistory(trref);
@@ -613,6 +627,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public Ttransparant getTtransparantById(int idtr) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperT.class).getTtransparantById(idtr);
@@ -627,6 +642,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 //	----- Action -----
 	@Override
 	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperAction.class).confirmAlarm(recorddt, eventdt, objref, confirmdt, lognote, userref);
@@ -641,6 +657,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public void deleteLastUserAck() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperAction.class).deleteLastUserAck();
@@ -653,6 +670,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public void insertLastUserAck() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperAction.class).insertLastUserAck();
@@ -665,6 +683,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 	
 	@Override
 	public void confirmAlarmAll(String lognote, int userref) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperAction.class).confirmAlarmAll(lognote, userref);
@@ -679,6 +698,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 	
 	@Override
 	public void insertTtransparant(int idtr, int signref, String objname, int tp, int schemeref) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperAction.class).insertTtransparant(idtr, signref, objname, tp, schemeref);
@@ -691,6 +711,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public void insertTtranspHistory(int trref, int userref, String txt, int trtype) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperAction.class).insertTtranspHistory(trref, userref, txt, trtype);
@@ -703,6 +724,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public void deleteTtranspLocate(int trref, int scref) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperAction.class).deleteTtranspLocate(trref, scref);
@@ -715,6 +737,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public void insertTtranspLocate(int trref, int scref, int x, int y, int h, int w) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperAction.class).insertTtranspLocate(trref, scref, x, y, h, w);
@@ -727,6 +750,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 	
 	@Override
 	public void updateTtranspLocate(int trref, int scref, int x, int y, int h, int w) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperAction.class).updateTtranspLocate(trref, scref, x, y, h, w);
@@ -739,6 +763,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 
 	@Override
 	public void updateTtransparantLastUpdate(int idtr) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperAction.class).updateTtransparantLastUpdate(idtr);
@@ -751,6 +776,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 	
 	@Override
 	public void updateTtranspHistory(int trref, String txt) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperAction.class).updateTtranspHistory(trref, txt);
@@ -763,6 +789,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 	
 	@Override
 	public void setBaseVal(int idSignal, double val) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperAction.class).setBaseVal(idSignal, val);
@@ -775,6 +802,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 	
 	@Override
 	public void updateTsignalStatus(int idSignal, int status) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperAction.class).updateTsignalStatus(idSignal, status);
@@ -787,6 +815,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 	
 	@Override
 	public void insertDeventLog(int eventtype, int objref, Timestamp eventdt, double objval, int objstatus, int authorref) {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession(true);
 			session.getMapper(IMapperAction.class).insertDeventLog(eventtype, objref, eventdt, objval, objstatus, authorref);
@@ -799,6 +828,7 @@ public class PostgresDB implements IMapper, IMapperSP, IMapperT, IMapperAction, 
 //	----- V -----
 	@Override
 	public Map<Integer, VsignalView> getVsignalViewMap() {
+		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
 			return session.getMapper(IMapperV.class).getVsignalViewMap();

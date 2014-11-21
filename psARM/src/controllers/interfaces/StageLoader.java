@@ -8,6 +8,8 @@ import java.util.logging.Level;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import pr.common.Utils;
@@ -31,7 +33,15 @@ public class StageLoader extends Stage {
 				initModality(Modality.NONE);
 				initOwner(SingleObject.mainStage.getScene().getWindow());
 			}
+			
+			getScene().addEventHandler(KeyEvent.KEY_PRESSED, t -> {
+				if (t.getCode()==KeyCode.ESCAPE) {
+					LogFiles.log.log(Level.INFO, "Exit " + getTitle());
+					((Stage)((Scene)t.getSource()).getWindow()).hide();
+				}
+			});
 		} catch (IOException e) {
+			e.printStackTrace();
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}

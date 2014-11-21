@@ -4,117 +4,51 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 
-<MenuBar xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.MenuBarController">
+<MenuBar fx:id="menuBar" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.MenuBarController">
 	<menus>
-		<Menu fx:id="menuFile" text="Файл">
+		<Menu fx:id="menuFile">
 			<items>
-				<MenuItem fx:id="miOpenScheme" text="Відкрити схему" onAction="#openScheme">
-					<graphic>
-						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-							<image>
-								<Image url="@../Icon/OpenFolder.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</MenuItem>
-				<MenuItem fx:id="miOpenProject" text="Відкрити проект">
-					<graphic>
-						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-							<image>
-								<Image url="@../Icon/OpenProject.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</MenuItem>
-				<Menu fx:id="menuTrend" text="Тренд">
+				<MenuItem fx:id="miOpenScheme" text="Відкрити схему" onAction="#openScheme" />
+				<MenuItem fx:id="miOpenProject" />
+				<Menu fx:id="menuTrend">
 					<items>
-						<MenuItem fx:id="miOpenTrend">
-							<graphic>
-								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-									<image>
-										<Image url="@../Icon/OpenProject.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</MenuItem>
-						<MenuItem fx:id="miCreateTrend">
-							<graphic>
-								<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-									<image>
-										<Image url="@../Icon/Create.png" />
-									</image>
-								</ImageView>
-							</graphic>
-						</MenuItem>
+						<MenuItem fx:id="miOpenTrend" />
+						<MenuItem fx:id="miCreateTrend" />
 					</items>
-					<graphic>
-						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-							<image>
-								<Image url="@../Icon/Trend.png" />
-							</image>
-						</ImageView>
-					</graphic>
 				</Menu>
 				<SeparatorMenuItem />
-				<MenuItem fx:id="miLogin">
-					<graphic>
-						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-							<image>
-								<Image url="@../Icon/Block.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</MenuItem>
-				<MenuItem fx:id="miExit" text="Вихід" onAction="#exit">
-					<graphic>
-						<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-							<image>
-								<Image url="@../Icon/Exit.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</MenuItem>
+				<MenuItem fx:id="miLogin" />
+				<MenuItem fx:id="miExit" onAction="#exit" />
 			</items>
 		</Menu>
-		<Menu fx:id="menuJournals" text="Журнали">
+		<Menu fx:id="menuJournals">
 			<items>
-				<MenuItem fx:id="miJAlarms" onAction="#openJalarms" />
+				<MenuItem fx:id="miJAlarms" mnemonicParsing="true" onAction="#openJalarms" />
 				<MenuItem fx:id="miJControl" onAction="#openJControl" />
 				<MenuItem fx:id="miJNormalMode" onAction="#openJNormalMode" />
 				<MenuItem fx:id="miJswitchEq" onAction="#openJswitchEq" />
 				<MenuItem fx:id="miJuserEvents" onAction="#openJuserEvent" />
 			</items>
 		</Menu>
-		<Menu fx:id="menuReports" text="Звіти">
-			<items>
-
-			</items>
-		</Menu>
-		<Menu fx:id="menuTools" text="Інструменти">
+		<Menu fx:id="menuReports" />
+		<Menu fx:id="menuTools">
 			<items>
 				<MenuItem fx:id="miSetBaseVal" onAction="#setBaseVal" />
 			</items>
 		</Menu>
-		<Menu fx:id="menuSettings" text="Налаштування">
+		<Menu fx:id="menuSettings">
 			<items>
-				<Menu fx:id="menuLanguage" text="Мова" >
+				<Menu fx:id="menuLanguage">
 					<items>
-						<MenuItem id="en" text="English" onAction="#changeLocale" />
-						<MenuItem id="ru" text="Русский" onAction="#changeLocale" />
-						<MenuItem id="uk" text="Українська" onAction="#changeLocale" />
+						<MenuItem fx:id="en" text="English" onAction="#changeLocale" />
+						<MenuItem fx:id="ru" text="Русский" onAction="#changeLocale" />
+						<MenuItem fx:id="uk" text="Українська" onAction="#changeLocale" />
 					</items>
 				</Menu>
+				<MenuItem fx:id="hotkeys" text="HotKeys" onAction="#hotKeys" />
 			</items>
 		</Menu>
-		<Menu fx:id="menuExit" text="Вихід">
-			<items>
-
-			</items>
-		</Menu>
-		<Menu fx:id="menuAbout" text="Про програму ...">
-			<items>
-
-			</items>
-		</Menu>
+		<Menu fx:id="menuExit"/>
+		<Menu fx:id="menuAbout"/>
 	</menus>
 </MenuBar>

@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-
 import pr.log.LogFiles;
 import single.SingleObject;
 import svg2fx.fxObjects.EShape;
@@ -19,9 +16,6 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
 public class Convert {
-	
-	public static ScriptEngineManager manager = new ScriptEngineManager();
-	public static ScriptEngine engine = manager.getEngineByName("JavaScript");
 	public static List<LinkedValue> listSignals = new ArrayList<>();
 	public static int idScheme = 0;
 	public static Paint backgroundColor;

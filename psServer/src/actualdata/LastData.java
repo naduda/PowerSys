@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import pr.model.Alarm;
-import pr.model.DvalTI;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import pr.model.Transparant;
@@ -18,7 +17,6 @@ public class LastData {
 	private static List<Alarm> alarms = new ArrayList<>();
 	private static List<TSysParam> tsysparmams = new ArrayList<>();
 	private static List<TViewParam> tviewparams = new ArrayList<>();
-	private static Map<Integer, DvalTI> oldTI = new HashMap<>();
 	private static Map<Integer, Transparant> transparants = new HashMap<>();
 	
 	public static List<Alarm> getAlarms() {
@@ -47,14 +45,6 @@ public class LastData {
 
 	public static void setTviewparams(List<TViewParam> tviewparams) {
 		LastData.tviewparams = tviewparams;
-	}
-
-	public static Map<Integer, DvalTI> getOldTI() {
-		return oldTI;
-	}
-
-	public static void setOldTI(Map<Integer, DvalTI> oldTI) {
-		LastData.oldTI = oldTI;
 	}
 
 	public static Map<Integer, Transparant> getTransparants() {

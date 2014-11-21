@@ -7,7 +7,5 @@ function onDoubleClick(sh)
 function onValueChange(sh) 
 {
 	var n = sh.getNodeById('3/0');
-
-	//sh.rotate(n, sh.getValue().getIdValue() == 1 ? -30 : 0); 
 	sh.rotate(n, [id] == 1 ? -30 : 0); 
 }

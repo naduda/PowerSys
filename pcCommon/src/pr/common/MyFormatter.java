@@ -31,6 +31,7 @@ public class MyFormatter extends Formatter {
 		} else if (record.getLevel().equals(Level.SEVERE)) {
 			int tabLength = builder.length();
 			builder.append("[" + record.getSourceClassName() + "]").append("\n");
+			builder.append(fixedLenthString("", tabLength));
 			builder.append(fixedLenthString(info, INFO_LENGTH)).append("\n");
 			
 			for(Object o : record.getParameters()) {
@@ -46,6 +47,7 @@ public class MyFormatter extends Formatter {
 	 * В кінці доставляє пробєли, або обрізає
 	 */
     private String fixedLenthString(String string, int length) {
+    	if (string == null) string = "null";
 		if (length <= string.length()) {
 			return string.substring(0, length);
 		} else {

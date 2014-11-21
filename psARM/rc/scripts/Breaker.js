@@ -1,20 +1,13 @@
 function onDoubleClick(sh)
 {
 	//sh.setTS([idTS] == 0 ? 1 : 0);
-	//sh.getAllNodes(sh, '');
+	sh.getAllNodes(sh, '');
+	print('Id = ' + sh.getId());
 }
 
 function onValueChange(sh) 
 {
 	var n = sh.getNodeById('0/0'); 
-	// if (sh.getStatus() == 1) 
-	// {
-	// 	n.setFill(sh.getColorByName([idTS] == [ON] ? 'red' : 'Lime'));
-	// }
-	// else
-	// {
-	// 	n.setFill(sh.getColorByName('yellow', [idTS] == [ON] ? 'red' : 'Lime'));	
-	// }
 	sh.setShapeFill(n, 'red', 'Lime');
 }
 

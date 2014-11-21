@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import controllers.Controller;
 import controllers.TrCommentController;
+import javafx.beans.property.*;
 import pr.common.Utils;
 import pr.log.LogFiles;
 import pr.model.Alarm;
@@ -29,10 +30,6 @@ import svg2fx.Convert;
 import ui.Scheme;
 import ui.tables.AlarmTableItem;
 import javafx.animation.PauseTransition;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -60,8 +57,8 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 
 public class AlarmTableController extends TableController {
-	
 	private static final double MOUSE_DURATION_MILLS = 250;
+	private final StringProperty localeName = new SimpleStringProperty();
 	private List<TViewParam> viewParams;
 	private Map<String, TSysParam> sysParamsPriority;
 	private Map<String, TSysParam> sysParamsEvent;
@@ -87,7 +84,12 @@ public class AlarmTableController extends TableController {
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);
 		tCount.textProperty().bind(getCountProperty());
-		
+		localeName.bind(ProgramProperty.localeName);
+		localeName.addListener((observ, old, value) -> {
+			ResourceBundle rb = Controller.getResourceBundle(new Locale(value));
+			setElementText(rb);
+		});
+
 		alarmProperty.bind(ProgramProperty.alarmProperty);
 		alarmProperty.addListener(new AlarmChangeListener());
 		
@@ -303,6 +305,7 @@ public class AlarmTableController extends TableController {
 		cb.getItems().addAll(obList);
 		cb.setValue(cb.getItems().get(0));
 		cb.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue == null) return;
             filteredData.setPredicate(a -> {
             	String lowerCaseFilterPriority = cbPriority.getSelectionModel().getSelectedItem().toLowerCase();
             	String lowerCaseFilterEvent = cbEvent.getSelectionModel().getSelectedItem().toLowerCase();

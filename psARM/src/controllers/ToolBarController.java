@@ -84,7 +84,6 @@ public class ToolBarController implements Initializable, IControllerInit {
 		zoomSlider.valueProperty().addListener((observ, oldValue, newValue) ->
 				zoomSlider.setTooltip(new Tooltip(newValue + ""))
 		);
-		
 		zoomProperty.addListener((observ, oldValue, newValue) -> changeZoom((double)newValue));
 		
 		showInfoProperty.addListener((observable, oldValue, newValue) -> {
@@ -156,12 +155,12 @@ public class ToolBarController implements Initializable, IControllerInit {
 	}
 	
 	@FXML 
-	protected void zoomMinus(ActionEvent event) {
+	protected void zoomMinus() {
 		changeZoom(false);
 	}
 	
 	@FXML 
-	protected void zoomPlus(ActionEvent event) {
+	protected void zoomPlus() {
 		changeZoom(true);
 	}
 	
@@ -184,12 +183,12 @@ public class ToolBarController implements Initializable, IControllerInit {
 	}
 	
 	@FXML 
-	protected void exitButtonAction(ActionEvent event) {
+	protected void exitButtonAction() {
 		Controller.exitProgram();
 	}
 	
 	@FXML 
-	protected void info(ActionEvent event) {
+	protected void info() {
 		if (infoStage == null) {
 			infoStage = new StageLoader("Info.xml", SingleObject.getResourceBundle().getString("keyTooltip_info"), true);
 			infoStage.setOnCloseRequest(e -> {
@@ -255,7 +254,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 	protected void showAlarms() {
 		Point p = MouseInfo.getPointerInfo().getLocation();
 		StageLoader stage = new StageLoader("journals/JournalAlarms.xml", 
-				SingleObject.getResourceBundle().getString("keyJalarms"), p, true);
+				SingleObject.getResourceBundle().getString("key_miJAlarms"), p, true);
 		
 		JAlarmsController controller = (JAlarmsController) stage.getController();
 		controller.setAlarmById(true);
@@ -274,7 +273,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 	
 	public void fitSchemeVertical() {
 		Group root = SingleObject.mainScheme.getRoot();
-		double k = MainStage.bpScheme.getHeight() * 0.95 / root.getBoundsInLocal().getHeight();
+		double k = MainStage.controller.getBpScheme().getHeight() * 0.95 / root.getBoundsInLocal().getHeight();
 		root.setScaleY(k);
 		root.setScaleX(k);
 	}
@@ -286,7 +285,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 	
 	public void fitSchemeHorizontal() {
 		Group root = SingleObject.mainScheme.getRoot();
-		double k = MainStage.bpScheme.getWidth() * 0.95 / root.getBoundsInLocal().getWidth();
+		double k = MainStage.controller.getBpScheme().getWidth() * 0.95 / root.getBoundsInLocal().getWidth();
 		root.setScaleY(k);
 		root.setScaleX(k);
 	}
@@ -343,4 +342,10 @@ public class ToolBarController implements Initializable, IControllerInit {
 			}
 		});
 	}
+
+	public ToolBar getTbMain() {
+		return tbMain;
+	}
+	
+	
 }

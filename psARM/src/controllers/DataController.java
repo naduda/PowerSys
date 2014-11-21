@@ -13,12 +13,15 @@ import java.util.logging.Level;
 
 import controllers.interfaces.IControllerInit;
 import pr.log.LogFiles;
+import single.ProgramProperty;
 import single.SingleFromDB;
 import single.SingleObject;
 import ui.data.DataFX;
 import ui.data.DataWrapper;
 import ui.data.LineChartContainer;
 import pr.model.LinkedValue;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -30,10 +33,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.Stage;
 
 @SuppressWarnings("rawtypes")
 public class DataController implements Initializable, IControllerInit {
-	
+	private final StringProperty localeName = new SimpleStringProperty();
 	private static final String DATE_FORMAT = "dd.MM.yyyy HH:mm:ss";
 	private static final String NUMBER_FORMAT = "0.000";
 	
@@ -54,20 +58,25 @@ public class DataController implements Initializable, IControllerInit {
 	
 	@Override
 	public void initialize(URL url, ResourceBundle boundle) {
-		cbIntegration.getSelectionModel().selectFirst();
-		
-		cbIntegration.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-			changeTableData(getDataFromDB())
-		);
-		
-		setDateHours();
-		
 		ResourceBundle rb = Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName()));
 		setElementText(rb);
+		
+		localeName.bind(ProgramProperty.localeName);
+		localeName.addListener((observ, old, value) -> setElementText(Controller.getResourceBundle(new Locale(value))));
+		
+		cbIntegration.getSelectionModel().selectFirst();
+		
+		cbIntegration.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null) changeTableData(getDataFromDB());
+		});
+		
+		setDateHours();
 	}
 	
 	@Override
 	public void setElementText(ResourceBundle rb) {
+		if (lTo.getScene() != null) ((Stage)lTo.getScene().getWindow()).setTitle(rb.getString("keyDataTitle"));
+		
 		cbIntegration.getItems().forEach(lv -> {
 			if (lv.getDt().toString().equals("0")) {
 				lv.setVal(rb.getString("keyInstantaneous"));
@@ -75,6 +84,7 @@ public class DataController implements Initializable, IControllerInit {
 				lv.setVal(lv.getDt() + " " + rb.getString("keyMinute"));
 			}
 		});
+		
 		lPeriodFrom.setText(rb.getString("keyPeriodFrom"));
 		lTo.setText(rb.getString("keyTo"));
 		tTable.setText(rb.getString("keyTable"));
@@ -117,7 +127,8 @@ public class DataController implements Initializable, IControllerInit {
 			data.addAll(SingleFromDB.psClient.getDataIntegrArc(idSignal, Timestamp.valueOf(dpBegin.getValue().atTime(cbHourBegin.getValue(), 0)), 
 					Timestamp.valueOf(dpEnd.getValue().atTime(cbHourEnd.getValue(), 0)), period));
 		} catch (Exception e) {
-			LogFiles.log.log(Level.SEVERE, "void getDataFromDB(...)", e);
+			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "List<LinkedValue> getDataFromDB(...)", e);
 		}
 		return data;
 	}
@@ -125,14 +136,14 @@ public class DataController implements Initializable, IControllerInit {
 	public void addData(int idSignal) {
 		List<LinkedValue> newData = getDataFromDB(idSignal);
 		
-		dataFX.getData().forEach(d -> d.setVal((double)d.getVal() / SingleFromDB.signals.get(d.getId()).getKoef()));
+		dataFX.getData().forEach(d -> d.setVal((double)d.getVal() / SingleFromDB.getSignals().get(d.getId()).getKoef()));
 		dataFX.getData().addAll(newData);
 		
 		changeTableData(dataFX.getData());
 	}
 	
 	private void changeTableData(List<LinkedValue> newData) {
-		newData.forEach(v -> v.setVal((double)v.getVal() * SingleFromDB.signals.get(v.getId()).getKoef()));
+		newData.forEach(v -> v.setVal((double)v.getVal() * SingleFromDB.getSignals().get(v.getId()).getKoef()));
 		dataFX.setData(newData);
 		
 		updateContent();
@@ -146,7 +157,7 @@ public class DataController implements Initializable, IControllerInit {
 	public void setIdSignals(List<Integer> idSignals) {
 		dataFX = new DataFX(idSignals);
 		List<LinkedValue> data = getDataFromDB();
-		data.forEach(d -> d.setVal((double)d.getVal() * SingleFromDB.signals.get(d.getId()).getKoef()));
+		data.forEach(d -> d.setVal((double)d.getVal() * SingleFromDB.getSignals().get(d.getId()).getKoef()));
 		dataFX.setData(data);
 		updateContent();
 	}

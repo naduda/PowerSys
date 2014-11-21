@@ -6,19 +6,29 @@ import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.xml.bind.JAXBException;
 
 import controllers.Controller;
 import pr.common.Utils;
 import pr.log.LogFiles;
+import state.HotKeyClass;
 import state.ProgramSettings;
 import svg2fx.fxObjects.EShape;
 import svg2fx.svgObjects.SVG;
+import ui.MainStage;
 import ui.Scheme;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 
 public class SingleObject {
@@ -28,7 +38,13 @@ public class SingleObject {
 	public static EShape selectedShape;
 	public static ByteArrayInputStream schemeInputStream;
 	public static SVG svg;
-
+	public static Map<String, HotKeyClass> hotkeys = new HashMap<>();
+	
+	public static final ScriptEngineManager manager = new ScriptEngineManager();
+	public static final ScriptEngine engine = manager.getEngineByName("nashorn");
+	public static final Invocable invokeEngine = (Invocable) SingleObject.engine;
+	public static final Map<String, Map<String, String>> readedScripts = new HashMap<>();
+	
 	private static ClassLoader classLoader;
 	public static ClassLoader getClassLoader() {
 		if (classLoader == null) {
@@ -60,4 +76,22 @@ public class SingleObject {
 		return Controller.getResourceBundle(new Locale(getProgramSettings().getLocaleName()));
 	}
 	
+	public static MenuItem getMenuItemById(Object obj, String id) {
+		if (obj == null) {
+			obj = MainStage.controller.getMenuBarController().getMenuBar();
+			for(Menu m : ((MenuBar)obj).getMenus()) {
+				MenuItem mi = getMenuItemById(m, id);
+				if (mi != null) return mi;
+			}
+		} else if (obj instanceof Menu) {
+			for (MenuItem it : ((Menu)obj).getItems()) {
+				if (it instanceof Menu) {
+					MenuItem mi = getMenuItemById(it, id);
+					if (mi != null) return mi;
+				}
+				if (id.equals(it.getId())) return it;
+			}
+		}
+		return null;
+	}
 }

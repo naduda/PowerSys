@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import javax.jms.JMSContext;
 import javax.jms.JMSException;
@@ -18,7 +17,6 @@ import javax.jms.TopicPublisher;
 
 import jdbc.PostgresDB;
 import pr.model.Alarm;
-import pr.model.DvalTI;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import pr.model.Transparant;
@@ -110,16 +108,6 @@ public class SendTopic implements Runnable {
 		}
 		isDataFromDB = false;
 		LogFiles.log.log(Level.INFO, "ViewParam - " + (System.currentTimeMillis() - start) / 1000 + " s");
-		start = System.currentTimeMillis();
-		
-		while (!isDataFromDB) {
-			Map<Integer, DvalTI> oldTIs = pdb.getOldTI().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTI::getSignalref, obj -> obj));
-			oldTIs.values().forEach(ti -> { ti.setVal(ti.getVal() * signals.get(ti.getSignalref()).getKoef()); });
-			LastData.setOldTI(oldTIs);
-			isDataFromDB = oldTIs == null ? false : true;
-		}
-		isDataFromDB = false;
-		LogFiles.log.log(Level.INFO, "oldTI - " + (System.currentTimeMillis() - start) / 1000 + " s");
 		start = System.currentTimeMillis();
 				
 		while (!isDataFromDB) {

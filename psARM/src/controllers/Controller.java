@@ -13,6 +13,7 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.ResourceBundle.Control;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 
@@ -35,9 +36,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
-import javafx.scene.input.InputEvent;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Window;
@@ -71,7 +69,6 @@ public class Controller implements IControllerInit, Initializable {
 		menuBarController.setElementText(rb);
 		toolBarController.setElementText(rb);
 		spTreeController.setElementText(rb);
-		bpAlarmsController.setElementText(rb);
 		
 		showAlarm.setText(isHide ? rb.getString("keyShowAlarms") : rb.getString("keyHideAlarms"));
 	}
@@ -99,6 +96,7 @@ public class Controller implements IControllerInit, Initializable {
 		ps.setShowAlarmColumns(lv.getVal().toString());
 		
 		ps.setIconWidth(ps.getIconWidth() == 0 ? 16 : ps.getIconWidth());
+		ps.setHotkeys(SingleObject.hotkeys.values().stream().collect(Collectors.toList()));
 		
 		try {
 			ps.saveToFile(SingleObject.FILE_SETTINGS);
@@ -106,17 +104,6 @@ public class Controller implements IControllerInit, Initializable {
 			LogFiles.log.log(Level.SEVERE, "void exitProgram()", e);
 		}
 		System.exit(0);
-	}
-	
-	@FXML
-	private void handleKeyInput(final InputEvent event) {
-		System.out.println(event);
-		if (event instanceof KeyEvent) {
-			final KeyEvent keyEvent = (KeyEvent) event;
-			if (keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.A) {
-				System.out.println("ctrl+A");
-			}
-		}
 	}
 	
 	private double oldAlarmsHeight;
@@ -173,7 +160,7 @@ public class Controller implements IControllerInit, Initializable {
 		Convert.listSignals.stream().filter(f -> f.getKey().equals(idSigal)).forEach(s -> {
 			EShape tt = SingleObject.mainScheme.getDeviceById(s.getValue());
 			if (tt == null) return;
-			int status = SingleFromDB.signals.get(idSigal).getStatus();
+			int status = SingleFromDB.getSignals().get(idSigal).getStatus();
 			if (status == WORK_STATUS) {
 				tt.updateSignal(sec);
 			}

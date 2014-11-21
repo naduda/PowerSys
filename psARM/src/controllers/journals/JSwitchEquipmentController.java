@@ -15,6 +15,7 @@ import ui.tables.SwitchEquipmentTableItem;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public class JSwitchEquipmentController extends TableController {
 	@FXML private Label lCount;
@@ -47,5 +48,7 @@ public class JSwitchEquipmentController extends TableController {
 	public void setElementText(ResourceBundle rb) {
 		super.setElementText(rb);
 		lCount.setText(rb.getString("keyCount"));
+		if (tCount.getScene() != null) 
+			((Stage)tCount.getScene().getWindow()).setTitle(rb.getString("key_miJNormalMode"));
 	}
 }

@@ -42,8 +42,8 @@ public class AlarmTableItem {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
 		
-		a.setpObject(SingleFromDB.signals.get(a.getObjref()).getNamesignal());
-		a.setpLocation(SingleFromDB.signals.get(a.getObjref()).getSignalpath());
+		a.setpObject(SingleFromDB.getSignals().get(a.getObjref()).getNamesignal());
+		a.setpLocation(SingleFromDB.getSignals().get(a.getObjref()).getSignalpath());
 		
     	AlarmMessageParcer.setAlarmMessage(a);
 
@@ -64,7 +64,7 @@ public class AlarmTableItem {
 		pLogState = new SimpleStringProperty(a.getpLogState() != null ? a.getpLogState() : "");
 		pConfirmDT = new SimpleStringProperty(a.getConfirmdt() != null ? dFormat.format(a.getConfirmdt()) : "");
 		pUserRef = new SimpleStringProperty(a.getUserref() == 0 ? "" : 
-			a.getUserref() == -1 ? "Administrator" : SingleFromDB.users.get(a.getUserref()).getFio());
+			a.getUserref() == -1 ? "Administrator" : SingleFromDB.getUsers().get(a.getUserref()).getFio());
 		pLogNote = new SimpleStringProperty(a.getLognote() != null ? a.getLognote() : "");
 		pAlarmPriority = new SimpleStringProperty(a.getpAlarmPriority() != null ? a.getpAlarmPriority() : "");
 		pEventType = new SimpleStringProperty(a.getpEventType() != null ? a.getpEventType() : "");

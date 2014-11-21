@@ -9,6 +9,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -35,7 +36,7 @@ public abstract class AShape extends Group {
 	public final Rectangle rect = new Rectangle();
 	private boolean isUpdateSignal = true;
 	private Paint oldRectColor; 
-	private int updateInterval;
+	public int updateInterval;
 	private DoubleProperty valueProp = new SimpleDoubleProperty();
 	private BooleanProperty tsignalProp = new SimpleBooleanProperty();
 	private Date lastDataDate;
@@ -59,7 +60,7 @@ public abstract class AShape extends Group {
         clickTimer.setOnFinished(event -> {
             int count = sequentialClickCount.get();
             if (count == 2) {
-            	onDoubleClick();
+            	Platform.runLater(() -> onDoubleClick());
             }
 
             sequentialClickCount.set(0);
@@ -71,16 +72,15 @@ public abstract class AShape extends Group {
             clickTimer.playFromStart();
 		});
 	    
-	    valueProp.set(-88888.888888);
 	    valueProp.addListener((observable, oldValue, newValue) -> {
 	    	double deadZoneCur = (Double)oldValue == 0 ? 0 : 
 	    		Math.abs(((Double)oldValue - (Double)newValue) * 100 / (Double)oldValue);
 	    	
-	    	if (deadZoneCur >= deadZone) onValueChange((Double) newValue);
+	    	if (deadZoneCur >= deadZone) Platform.runLater(() -> onValueChange((Double) newValue));
 	    });
 	    
 	    tsignalProp.addListener((observable, oldValue, newValue) -> {
-	    	if (newValue) onSignalUpdate();
+	    	if (newValue) Platform.runLater(() -> onSignalUpdate());
 	    });
 	}
 	

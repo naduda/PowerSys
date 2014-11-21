@@ -6,6 +6,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -70,7 +71,6 @@ public class ClientPowerSys implements IPowersys {
 		return myServer.getSwitchJournalItems(query);
 	}
 //	==============================================================================
-
 	public Map<Integer, Tsignal> getTsignalsMap() {
 		try {
 			return myServer.getTsignalsMap();
@@ -126,13 +126,31 @@ public class ClientPowerSys implements IPowersys {
 	}
 
 	@Override
-	public Map<Integer, DvalTI> getOldTI() throws RemoteException {
-		return myServer.getOldTI();
+	public Map<Integer, DvalTI> getOldTI() {
+		long st = System.currentTimeMillis();
+		try {
+			Map<Integer, DvalTI> rez = myServer.getOldTI();
+			LogFiles.log.log(Level.INFO, "Get oldTI values ==> " + (System.currentTimeMillis() - st) / 1000);
+			return rez;
+		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "Map<Integer, DvalTI> getOldTI()", e);
+		}
+		LogFiles.log.log(Level.INFO, "Get oldTI values ==> " + (System.currentTimeMillis() - st) / 1000);
+		System.out.println((System.currentTimeMillis() - st) / 1000);
+		return new HashMap<>();
 	}
 
 	@Override
-	public Map<Integer, DvalTS> getOldTS() throws RemoteException {
-		return myServer.getOldTS();
+	public Map<Integer, DvalTS> getOldTS() {
+		long st = System.currentTimeMillis();
+		try {
+			Map<Integer, DvalTS> rez = myServer.getOldTS();
+			LogFiles.log.log(Level.INFO, "Get oldTS values ==> " + (System.currentTimeMillis() - st) / 1000);
+			return rez;
+		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "Map<Integer, DvalTS> getOldTS()", e);
+		}
+		return new HashMap<>();
 	}
 
 	@Override
