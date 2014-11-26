@@ -27,7 +27,6 @@ import controllers.interfaces.StageLoader;
 import controllers.journals.JAlarmsController;
 import single.SingleFromDB;
 import single.SingleObject;
-import svg2fx.Convert;
 import svg2fx.fxObjects.EShape;
 import ui.MainStage;
 import javafx.application.Platform;
@@ -125,7 +124,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 					List<NormalModeJournalItem> items = SingleFromDB.psClient.getListNormalModeItems(query);
 					items.forEach(it -> {
 						if (it.getDt_new() == null) {
-							Convert.listSignals.stream().filter(f -> f.getKey().equals(it.getIdsignal())).forEach(s -> {
+							SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getKey().equals(it.getIdsignal())).forEach(s -> {
 								try {
 									EShape tt = SingleObject.mainScheme.getDeviceById(s.getValue());
 									tt.setNormalMode();
@@ -197,7 +196,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 			});
 			infoController = (InfoController) infoStage.getController();
 		}
-		infoController.updateStage();
+		//infoController.updateStage();
 		showInfoProperty.set(!showInfoProperty.get());
 	}
 
@@ -263,31 +262,25 @@ public class ToolBarController implements Initializable, IControllerInit {
 	}
 
 	public void updateLabel(String text) {
-		lLastDate.setText(text);
+		Platform.runLater(() -> lLastDate.setText(text));
 	}
 	
 	@FXML 
 	protected void fitVertical(ActionEvent event) {
-		fitSchemeVertical();
-	}
-	
-	public void fitSchemeVertical() {
 		Group root = SingleObject.mainScheme.getRoot();
-		double k = MainStage.controller.getBpScheme().getHeight() * 0.95 / root.getBoundsInLocal().getHeight();
+		double k = MainStage.controller.getBpScheme().getHeight() * 0.99 / root.getBoundsInLocal().getHeight();
 		root.setScaleY(k);
 		root.setScaleX(k);
+		zoomProperty.set(k);
 	}
 	
 	@FXML 
 	protected void fitHorizontal(ActionEvent event) {
-		fitSchemeHorizontal();
-	}
-	
-	public void fitSchemeHorizontal() {
 		Group root = SingleObject.mainScheme.getRoot();
-		double k = MainStage.controller.getBpScheme().getWidth() * 0.95 / root.getBoundsInLocal().getWidth();
+		double k = MainStage.controller.getBpScheme().getWidth() * 0.99 / root.getBoundsInLocal().getWidth();
 		root.setScaleY(k);
 		root.setScaleX(k);
+		zoomProperty.set(k);
 	}
 	
 	@FXML 

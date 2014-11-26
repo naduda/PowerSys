@@ -27,7 +27,7 @@ public interface IMapper {
 	@Select("select * from d_valti where servdt > #{servdt} order by servdt desc")
 	List<DvalTI> getLastTI(Timestamp servdt);
 	
-	@Select("select (getlast_ti(idsignal, null, 0)).* from t_signal where typesignalref = 1")
+	@Select("select (getlast_ti(idsignal, null, 0)).* from t_signal where typesignalref = 1 and idsignal = ANY(#{idsignals}::int[])")
 	@Results(value = {
 			@Result(property="signalref", column="id"),
 			@Result(property="val", column="val"),
@@ -35,12 +35,12 @@ public interface IMapper {
 			@Result(property="rcode", column="rcode"),
 			@Result(property="servdt", column="servdt")
 	})
-	List<DvalTI> getOldTI();
+	List<DvalTI> getOldTI(@Param("idsignals") String idSignals);
 
 	@Select("select * from d_valts where servdt > #{servdt} order by servdt desc")
 	List<DvalTS> getLastTS(Timestamp servdt);
 	
-	@Select("select (getlast_ts(idsignal, null, 0)).* from t_signal where typesignalref = 2")
+	@Select("select (getlast_ts(idsignal, null, 0)).* from t_signal where typesignalref = 2 and idsignal = ANY(#{idsignals}::int[])")
 	@Results(value = {
 			@Result(property="signalref", column="id"),
 			@Result(property="val", column="val"),
@@ -48,7 +48,7 @@ public interface IMapper {
 			@Result(property="rcode", column="rcode"),
 			@Result(property="servdt", column="servdt")
 	})
-	List<DvalTS> getOldTS();
+	List<DvalTS> getOldTS(@Param("idsignals") String idSignals);
 	
 	@Select("select set_ts(#{idsignal}, #{val}, now()::timestamp without time zone, 107, -1, #{schemeref})")
 	Integer setTS(@Param("idsignal") int idsignal, @Param("val") double val, @Param("schemeref") int schemeref);

@@ -16,7 +16,6 @@ import pr.model.Alarm;
 import pr.model.ConfTree;
 import pr.model.ControlJournalItem;
 import pr.model.DvalTI;
-import pr.model.DvalTS;
 import pr.model.LinkedValue;
 import pr.model.NormalModeJournalItem;
 import pr.model.SPunit;
@@ -126,26 +125,25 @@ public class ClientPowerSys implements IPowersys {
 	}
 
 	@Override
-	public Map<Integer, DvalTI> getOldTI() {
+	public Map<Integer, DvalTI> getOldTI(String idSignals) {
 		long st = System.currentTimeMillis();
 		try {
-			Map<Integer, DvalTI> rez = myServer.getOldTI();
-			LogFiles.log.log(Level.INFO, "Get oldTI values ==> " + (System.currentTimeMillis() - st) / 1000);
+			Map<Integer, DvalTI> rez = myServer.getOldTI(idSignals);
+			LogFiles.log.log(Level.INFO, "Get oldTI values ==> " + (System.currentTimeMillis() - st) / 1000 + " s");
 			return rez;
 		} catch (RemoteException e) {
 			LogFiles.log.log(Level.SEVERE, "Map<Integer, DvalTI> getOldTI()", e);
 		}
 		LogFiles.log.log(Level.INFO, "Get oldTI values ==> " + (System.currentTimeMillis() - st) / 1000);
-		System.out.println((System.currentTimeMillis() - st) / 1000);
 		return new HashMap<>();
 	}
 
 	@Override
-	public Map<Integer, DvalTS> getOldTS() {
+	public Map<Integer, DvalTI> getOldTS(String idSignals) {
 		long st = System.currentTimeMillis();
 		try {
-			Map<Integer, DvalTS> rez = myServer.getOldTS();
-			LogFiles.log.log(Level.INFO, "Get oldTS values ==> " + (System.currentTimeMillis() - st) / 1000);
+			Map<Integer, DvalTI> rez = myServer.getOldTS(idSignals);
+			LogFiles.log.log(Level.INFO, "Get oldTS values ==> " + (System.currentTimeMillis() - st) / 1000 + " s");
 			return rez;
 		} catch (RemoteException e) {
 			LogFiles.log.log(Level.SEVERE, "Map<Integer, DvalTS> getOldTS()", e);

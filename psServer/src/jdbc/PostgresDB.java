@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
@@ -51,7 +52,7 @@ import pr.model.UserEventJournalItem;
 import pr.model.VsignalView;
 
 public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV {
-
+	private static final int MAX_POOL_COUNT = 10;
 	private DataSource dataSource;
 	private SqlSessionFactory sqlSessionFactory;
 	
@@ -90,7 +91,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 
 	        SharedPoolDataSource tds = new SharedPoolDataSource();
 	        tds.setConnectionPoolDataSource(cpds);
-	        tds.setMaxTotal(3);
+	        tds.setMaxTotal(MAX_POOL_COUNT);
 	        tds.setDefaultMaxWaitMillis(50);
 	        tds.setValidationQuery("select 1");
 	        tds.setDefaultTestOnBorrow(true); 
@@ -192,11 +193,11 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 		}
 	}
 	
-	public List<DvalTI> getOldTI() {
+	public List<DvalTI> getOldTI(String idSignals) {
 		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
-			return session.getMapper(IMapper.class).getOldTI();
+			return session.getMapper(IMapper.class).getOldTI(idSignals).stream().filter(f -> f != null).collect(Collectors.toList());
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 			return null;
@@ -218,11 +219,11 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 		}
 	}
 	
-	public List<DvalTS> getOldTS() {
+	public List<DvalTS> getOldTS(String idSignals) {
 		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
-			return session.getMapper(IMapper.class).getOldTS();
+			return session.getMapper(IMapper.class).getOldTS(idSignals).stream().filter(f -> f != null).collect(Collectors.toList());
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 			return null;

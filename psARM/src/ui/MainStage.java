@@ -1,20 +1,25 @@
 package ui;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 
 import pr.common.Utils;
 import controllers.Controller;
 import controllers.ToolBarController;
 import pr.log.LogFiles;
+import pr.model.DvalTI;
+import pr.model.Tsignal;
+import single.SingleFromDB;
 import single.SingleObject;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -58,6 +63,9 @@ public class MainStage extends Stage implements Serializable {
 	}
 	
 	public static void setScheme(String schemeName) {
+		final ExecutorService service = Executors.newFixedThreadPool(2);
+		List<Future<Map<Integer, DvalTI>>> futures = new ArrayList<>();
+		
 		if (schemeName == null) {
 			SingleObject.mainScheme = new Scheme();
 		} else {
@@ -68,23 +76,43 @@ public class MainStage extends Stage implements Serializable {
 	        MainStage.schemes.put(SingleObject.mainScheme.getIdScheme(), SingleObject.mainScheme);
 		}
 		
-		while (controller == null) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		final StringBuilder idBuilder = new StringBuilder();
+		idBuilder.append("{");
+		SingleObject.mainScheme.getIdSignals().forEach(s -> idBuilder.append(s + ","));
+		idBuilder.delete(idBuilder.length() - 1, idBuilder.length());
+		idBuilder.append("}");
 		
-		Group root = SingleObject.mainScheme.getRoot();
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		double kx = screenSize.getWidth() * 0.85 / root.getBoundsInLocal().getWidth();
-		double ky = screenSize.getHeight() * 0.8 / root.getBoundsInLocal().getHeight();
-		root.setScaleX(kx < ky ? kx : ky);
-		root.setScaleY(kx < ky ? kx : ky);
+		futures.add(service.submit(() -> (Map<Integer, DvalTI>) SingleFromDB.psClient.getOldTI(idBuilder.toString())));
+		futures.add(service.submit(() -> (Map<Integer, DvalTI>) SingleFromDB.psClient.getOldTS(idBuilder.toString())));
 		
 		controller.getToolBarController().updateLabel("");
 		controller.getBpScheme().setCenter(SingleObject.mainScheme);
-		Platform.runLater(() -> ToolBarController.zoomProperty.set(root.getScaleX()));
+		
+		Group root = SingleObject.mainScheme.getRoot();
+		
+		if (MainStage.controller.getBpScheme().getWidth() > 0) {
+			double kx = MainStage.controller.getBpScheme().getWidth() * 0.99 / root.getBoundsInLocal().getWidth();
+			double ky = MainStage.controller.getBpScheme().getHeight() * 0.99 / root.getBoundsInLocal().getHeight();
+			
+			root.setScaleX(kx < ky ? kx : ky);
+			root.setScaleY(kx < ky ? kx : ky);
+			
+			ToolBarController.zoomProperty.set(root.getScaleX());
+		}
+		
+		LogFiles.log.log(Level.INFO, "Start update values");
+		futures.forEach(f -> {
+			try {
+				f.get().values().stream().filter(p -> SingleObject.mainScheme.getIdSignals().contains(p.getSignalref()))
+					.forEach(s -> {
+						Tsignal tSignal = SingleFromDB.tsignals.get(s.getSignalref());
+						if (tSignal.getTypesignalref() == 1) s.setVal(s.getVal() * tSignal.getKoef());
+						MainStage.controller.updateTI(SingleObject.mainScheme, s);
+				});
+			} catch (Exception e) {
+				LogFiles.log.log(Level.SEVERE, "Error update old values in MainStage", e);
+			}
+		});
+		LogFiles.log.log(Level.INFO, "Finish update values");
 	}
 }

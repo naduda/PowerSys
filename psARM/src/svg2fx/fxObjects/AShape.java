@@ -72,6 +72,7 @@ public abstract class AShape extends Group {
             clickTimer.playFromStart();
 		});
 	    
+	    valueProp.set(-888888.888888);
 	    valueProp.addListener((observable, oldValue, newValue) -> {
 	    	double deadZoneCur = (Double)oldValue == 0 ? 0 : 
 	    		Math.abs(((Double)oldValue - (Double)newValue) * 100 / (Double)oldValue);

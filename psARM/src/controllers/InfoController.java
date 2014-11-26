@@ -18,7 +18,9 @@ import single.SingleObject;
 import controllers.interfaces.IControllerInit;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -28,6 +30,8 @@ import javafx.stage.Stage;
 
 public class InfoController implements Initializable, IControllerInit {
 	private final BooleanProperty selectedShapeChangeProperty = new SimpleBooleanProperty();
+	private final DoubleProperty valueProperty = new SimpleDoubleProperty();
+	
 	private final SimpleDateFormat dFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss.SSS");
 	
 	@FXML private GridPane infoStage;
@@ -51,10 +55,18 @@ public class InfoController implements Initializable, IControllerInit {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		selectedShapeChangeProperty.bind(ProgramProperty.selectedShapeChangeProperty);
+		valueProperty.bind(SingleObject.selectedShape.getValueProp());
+		
 		selectedShapeChangeProperty.addListener((observable, oldValue, newValue) -> {
 			if (newValue) updateStage();
 		});
+		
+		valueProperty.addListener((observable, oldValue, newValue) -> {
+			if (newValue != null) updateDateValue();
+		});
+		
 		setElementText(SingleObject.getResourceBundle());
+		updateStage();
 	}
 	
 	@Override
@@ -72,30 +84,42 @@ public class InfoController implements Initializable, IControllerInit {
 		lDate.setText(rb.getString("keyDate"));
 	}
 	
-	public void updateStage() {
+	private void updateStage() {
 		if (SingleObject.selectedShape == null) return;
 		Tsignal tID = SingleObject.selectedShape.gettSignalID();
+		Tsignal tIdTS = SingleObject.selectedShape.gettSignalIDTS();
+		
 		if (tID == null) {
 			infoStage.getChildren().filtered(f -> f.getClass().equals(Text.class)).forEach(i -> ((Text)i).setText(""));
 		} else {
 			tName.setText(tID.getNamesignal());
 			tCode.setText(tID.getIdsignal() + "");
-			tType.setText(SingleFromDB.getSptypesignals().get(tID.getTypesignalref()).getNametypesignal());
+			
 			try {
-				tMode.setText(SingleFromDB.psClient.getTSysParam("SIGNAL_STATUS").get(tID.getStatus() + "").getParamdescr());
+				tType.setText(SingleFromDB.spTypeSignals.get(tID.getTypesignalref()).getNametypesignal());
+				if (tIdTS != null) {
+					tMode.setText(SingleFromDB.psClient.getTSysParam("SIGNAL_STATUS").get(tIdTS.getStatus() + "").getParamdescr());
+				} else {
+					tMode.setText(SingleFromDB.psClient.getTSysParam("SIGNAL_STATUS").get(tID.getStatus() + "").getParamdescr());
+				}
 			} catch (RemoteException e) {
 				LogFiles.log.log(Level.INFO, "void updateStage()", e);
 			}
-			tValue.setText(SingleObject.selectedShape.getValue().getIdValue() + 
-					(SingleObject.selectedShape.getIdTS() == -1 || SingleObject.selectedShape.getIdTS() == 0 ? "" : 
-					String.format(" (TS = %s)", SingleObject.selectedShape.getValue().getIdTSValue())));
-			tUnit.setText(SingleFromDB.getSignals().get(tID.getIdsignal()).getNameunit());
+			tUnit.setText(SingleFromDB.signals.get(tID.getIdsignal()).getNameunit());
 			tQuality.setText(Constants.getQuality(SingleObject.selectedShape.getRcode()));
-			Timestamp dt = SingleObject.selectedShape.getDt();
-			tDate.setText(dt == null ? "" : dFormat.format(SingleObject.selectedShape.getDt()));
+			
+			updateDateValue();
 		}
 		
 		resize();
+	}
+	
+	private void updateDateValue() {
+		tValue.setText(SingleObject.selectedShape.getValue().getIdValue() + 
+				(SingleObject.selectedShape.getIdTS() == -1 || SingleObject.selectedShape.getIdTS() == 0 ? "" : 
+				String.format(" (TS = %s)", SingleObject.selectedShape.getValue().getIdTSValue())));
+		Timestamp dt = SingleObject.selectedShape.getDt();
+		tDate.setText(dt == null ? "" : dFormat.format(SingleObject.selectedShape.getDt()));
 	}
 	
 	private void resize() {

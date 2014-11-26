@@ -136,14 +136,14 @@ public class DataController implements Initializable, IControllerInit {
 	public void addData(int idSignal) {
 		List<LinkedValue> newData = getDataFromDB(idSignal);
 		
-		dataFX.getData().forEach(d -> d.setVal((double)d.getVal() / SingleFromDB.getSignals().get(d.getId()).getKoef()));
+		dataFX.getData().forEach(d -> d.setVal((double)d.getVal() / SingleFromDB.signals.get(d.getId()).getKoef()));
 		dataFX.getData().addAll(newData);
 		
 		changeTableData(dataFX.getData());
 	}
 	
 	private void changeTableData(List<LinkedValue> newData) {
-		newData.forEach(v -> v.setVal((double)v.getVal() * SingleFromDB.getSignals().get(v.getId()).getKoef()));
+		newData.forEach(v -> v.setVal((double)v.getVal() * SingleFromDB.signals.get(v.getId()).getKoef()));
 		dataFX.setData(newData);
 		
 		updateContent();
@@ -157,7 +157,7 @@ public class DataController implements Initializable, IControllerInit {
 	public void setIdSignals(List<Integer> idSignals) {
 		dataFX = new DataFX(idSignals);
 		List<LinkedValue> data = getDataFromDB();
-		data.forEach(d -> d.setVal((double)d.getVal() * SingleFromDB.getSignals().get(d.getId()).getKoef()));
+		data.forEach(d -> d.setVal((double)d.getVal() * SingleFromDB.signals.get(d.getId()).getKoef()));
 		dataFX.setData(data);
 		updateContent();
 	}

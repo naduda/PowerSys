@@ -48,7 +48,7 @@ public class TransparantController implements Initializable, IControllerInit {
 	
 	@Override
 	public void initialize(URL url, ResourceBundle bundle) {
-		List<Transparant> transpList = new ArrayList<>(SingleFromDB.getTranspmap().values());
+		List<Transparant> transpList = new ArrayList<>(SingleFromDB.transpMap.values());
 		ObservableList<Transparant> items = FXCollections.observableArrayList(transpList);
 		
 		lvTransparants.setItems(items);		

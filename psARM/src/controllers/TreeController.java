@@ -50,6 +50,7 @@ public class TreeController implements Initializable, IControllerInit {
 	
 	public void addScheme(TreeItem<Scheme> ti) {
 		trSchemes.getChildren().add(ti);
+		tvSchemes.getSelectionModel().select(ti);
 	}
 	
 	public void expandSchemes() {
@@ -90,6 +91,8 @@ public class TreeController implements Initializable, IControllerInit {
 					if (trSchemes.getChildren().size() == 0) {
 						SingleObject.mainScheme = null;
 						MainStage.controller.getBpScheme().setCenter(new Scheme());
+					} else {
+						tvSchemes.getSelectionModel().selectFirst();
 					}
 				});
 				
@@ -127,12 +130,14 @@ public class TreeController implements Initializable, IControllerInit {
             }
         }
 
-        @Override
+        @SuppressWarnings("static-access")
+		@Override
 		public void updateSelected(boolean selected) {
 			super.updateSelected(selected);
 			if (selected) {
 				SingleObject.mainScheme = MainStage.schemes.get(getItem().getIdScheme());
 				MainStage.controller.getBpScheme().setCenter(SingleObject.mainScheme);
+				MainStage.controller.getToolBarController().zoomProperty.set(SingleObject.mainScheme.getRoot().getScaleX());
 			}
 		}
 

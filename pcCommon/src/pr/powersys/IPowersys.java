@@ -10,7 +10,6 @@ import pr.model.Alarm;
 import pr.model.ConfTree;
 import pr.model.ControlJournalItem;
 import pr.model.DvalTI;
-import pr.model.DvalTS;
 import pr.model.LinkedValue;
 import pr.model.NormalModeJournalItem;
 import pr.model.SPunit;
@@ -46,8 +45,8 @@ public interface IPowersys extends Remote {
 	public Map<String, TSysParam> getTSysParam(String paramname) throws RemoteException;
 	public List<TViewParam> getTViewParam(String objdenom, String paramdenom, int userref) throws RemoteException;
 	public void setTS(int idsignal, double val, int schemeref) throws RemoteException;
-	public Map<Integer, DvalTI> getOldTI() throws RemoteException;
-	public Map<Integer, DvalTS> getOldTS() throws RemoteException;
+	public Map<Integer, DvalTI> getOldTI(String idSignals) throws RemoteException;
+	public Map<Integer, DvalTI> getOldTS(String idSignals) throws RemoteException;
 	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) throws RemoteException;
 	public void confirmAlarmAll(String lognote, int userref) throws RemoteException;
 	public Map<Integer, SPunit> getSPunitMap() throws RemoteException;

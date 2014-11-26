@@ -6,6 +6,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 
 import javafx.scene.image.Image;
@@ -24,32 +28,52 @@ import topic.ClientPowerSys;
 public class SingleFromDB {
 	public static ClientPowerSys psClient;
 	
-	private static Map<Integer, VsignalView> signals;
-	private static Map<Integer, Tsignal> tsignals;
-	private static Map<Integer, Tuser> users;
-	private static Map<Integer, Transparant> transpMap;
-	private static List<SpTuCommand> spTuCommands;
-	private static Map<Integer, SpTypeSignal> spTypeSignals;
-	private Collection<DvalTS> oldTS;
-	private Collection<DvalTI> oldTI;
+	public static Map<Integer, VsignalView> signals;
+	public static Map<Integer, Tsignal> tsignals;
+	public static Map<Integer, Tuser> users;
+	public static Map<Integer, Transparant> transpMap;
+	public static List<SpTuCommand> spTuCommands;
+	public static Map<Integer, SpTypeSignal> spTypeSignals;
+	public Collection<DvalTS> oldTS;
+	public Collection<DvalTI> oldTI;
 	
-	@SuppressWarnings("static-access")
+	@SuppressWarnings({ "static-access", "unchecked" })
 	public SingleFromDB(ClientPowerSys psClient) {
 		this.psClient = psClient;
 		
-		new Thread(() -> SingleFromDB.getSignals()).start();
-		new Thread(() -> oldTS = SingleFromDB.psClient.getOldTS().values()).start();
-		new Thread(() -> oldTI = SingleFromDB.psClient.getOldTI().values()).start();
+		long start = System.currentTimeMillis();
+		LogFiles.log.log(Level.INFO, "Start reading DB");
+		Map<String, Future<Object>> futures = new HashMap<>();
+		Map<String, Object> results = new HashMap<>();
 		
-		LogFiles.log.log(Level.INFO, "Start =================");
-		while (signals == null || oldTS == null || oldTI == null) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+		final ExecutorService service = Executors.newFixedThreadPool(6);
+		
+		try {
+			futures.put("signals", service.submit(() -> psClient.getVsignalViewMap()));
+			futures.put("tsignals", service.submit(() -> psClient.getTsignalsMap()));
+			futures.put("users", service.submit(() -> psClient.getTuserMap()));
+			futures.put("transpMap", service.submit(() -> psClient.getTransparants()));
+			futures.put("spTuCommands", service.submit(() -> psClient.getSpTuCommand()));
+			futures.put("spTypeSignals", service.submit(() -> psClient.getSpTypeSignalMap()));
+			
+			for (String k : futures.keySet()) {
+				Future<Object> f = futures.get(k);
+				results.put(k, f.get());
 			}
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		} finally {
+			service.shutdown();
 		}
-		LogFiles.log.log(Level.INFO, "End =================");
+		
+		signals = (Map<Integer, VsignalView>) results.get("signals");
+		tsignals = (Map<Integer, Tsignal>) results.get("tsignals");
+		users = (Map<Integer, Tuser>) results.get("users");
+		transpMap = (Map<Integer, Transparant>) results.get("transpMap");
+		spTuCommands = (List<SpTuCommand>) results.get("spTuCommands");
+		spTypeSignals = (Map<Integer, SpTypeSignal>) results.get("spTypeSignals");
+		
+		LogFiles.log.log(Level.INFO, "Finish reading DB - " + (System.currentTimeMillis() - start) / 1000 + " s");
 	}
 	
 	private static final Map<Integer, Image> imageMap = new HashMap<>();
@@ -62,35 +86,5 @@ public class SingleFromDB {
 			});
 		}
 		return imageMap;
-	}
-	
-	public static Map<Integer, VsignalView> getSignals() {
-		if (signals == null) signals = psClient.getVsignalViewMap();
-		return signals;
-	}
-	
-	public static Map<Integer, Tsignal> getTsignals() {
-		if (tsignals == null) tsignals = psClient.getTsignalsMap();
-		return tsignals;
-	}
-	
-	public static Map<Integer, Tuser> getUsers() {
-		if (users == null) users = psClient.getTuserMap();
-		return users;
-	}
-	
-	public static Map<Integer, Transparant> getTranspmap() {
-		if (transpMap == null) transpMap = psClient.getTransparants();
-		return transpMap;
-	}
-	
-	public static List<SpTuCommand> getSptucommands() {
-		if (spTuCommands == null) spTuCommands = psClient.getSpTuCommand();
-		return spTuCommands;
-	}
-	
-	public static Map<Integer, SpTypeSignal> getSptypesignals() {
-		if (spTypeSignals == null) spTypeSignals = psClient.getSpTypeSignalMap();
-		return spTypeSignals;
 	}
 }

@@ -73,7 +73,7 @@ public class DataWrapper {
     	tableColumns.add(columnDate);
     	
 		idSignals.forEach(idSignal -> {
-			String signalName = SingleFromDB.getSignals().get(idSignal).getNamesignal();
+			String signalName = SingleFromDB.signals.get(idSignal).getNamesignal();
 			if (signalName.length() > MAX_ROW_LENGTH) {
 				String[] sss = signalName.split(" ");
 				signalName = "";

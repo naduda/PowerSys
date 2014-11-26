@@ -16,7 +16,7 @@ import controllers.journals.JAlarmsController;
 import javafx.collections.ObservableList;
 import javafx.scene.control.MenuBar;
 import pr.common.Utils;
-import pr.model.DvalTS;
+import pr.model.DvalTI;
 import single.ProgramProperty;
 import single.SingleFromDB;
 import single.SingleObject;
@@ -123,14 +123,20 @@ public class MenuBarController implements Initializable, IControllerInit {
 	
 	@FXML
 	private void setBaseVal() {
-		final Map<Integer, DvalTS> oldTS =  SingleFromDB.psClient.getOldTS();
+		final StringBuilder idBuilder = new StringBuilder();
+		idBuilder.append("{");
+		SingleObject.mainScheme.getIdSignals().forEach(s -> idBuilder.append(s + ","));
+		idBuilder.delete(idBuilder.length() - 1, idBuilder.length());
+		idBuilder.append("}");
+		
+		final Map<Integer, DvalTI> oldTS =  SingleFromDB.psClient.getOldTS(idBuilder.toString());
 		
 		final List<String> query = new ArrayList<>();
 		query.add("");
 		SingleObject.mainScheme.getSignalsTS().forEach(s -> {
-			DvalTS ts = oldTS.get(s);
+			DvalTI ts = oldTS.get(s);
 			if (ts != null) {
-				SingleFromDB.getSignals().get(ts.getSignalref()).setBaseval(ts.getVal());
+				SingleFromDB.signals.get(ts.getSignalref()).setBaseval(ts.getVal());
 				String sq = String.format("update t_signal set baseval=%s where idSignal=%s;", ts.getVal(), s);
 				query.set(0, query.get(0) + sq);
 			}

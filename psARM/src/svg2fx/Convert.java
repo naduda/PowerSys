@@ -16,7 +16,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
 public class Convert {
-	public static List<LinkedValue> listSignals = new ArrayList<>();
+	private static List<LinkedValue> listSignals = new ArrayList<>();
 	public static int idScheme = 0;
 	public static Paint backgroundColor;
 
@@ -69,10 +69,11 @@ public class Convert {
 	}
 	
 	public static Node getNodeBySVG(String filePath) {
+		listSignals.clear();
 		EntityFromXML efx = new EntityFromXML();
 		SVG svg = (SVG)efx.getObject(filePath, SVG.class);
 		SingleObject.svg = svg;
-
+		
 		try {
 			idScheme = Integer.parseInt(svg.getTitle());
 		} catch (Exception e) {
@@ -98,5 +99,9 @@ public class Convert {
 			}
 		});
 		return ret;
+	}
+
+	public static List<LinkedValue> getListSignals() {
+		return listSignals;
 	}
 }

@@ -94,10 +94,10 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	}
 
 	@Override
-	public Map<Integer, DvalTI> getOldTI() throws RemoteException {
+	public Map<Integer, DvalTI> getOldTI(String idSignals) throws RemoteException {
 		Map<Integer, DvalTI> rez = null;
 		try {
-			rez = pdb.getOldTI().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTI::getSignalref, obj -> obj));
+			rez = pdb.getOldTI(idSignals).stream().filter(it -> it != null).collect(Collectors.toMap(DvalTI::getSignalref, obj -> obj));
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
@@ -105,8 +105,8 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	}
 
 	@Override
-	public Map<Integer, DvalTS> getOldTS() throws RemoteException {
-		return pdb.getOldTS().stream().filter(it -> it != null).collect(Collectors.toMap(DvalTS::getSignalref, obj -> obj));
+	public Map<Integer, DvalTI> getOldTS(String idSignals) throws RemoteException {
+		return pdb.getOldTS(idSignals).stream().filter(it -> it != null).collect(Collectors.toMap(DvalTS::getSignalref, obj -> obj));
 	}
 
 	@Override

@@ -85,7 +85,7 @@ public class LineChartContainer extends StackPane {
 		idSignals.forEach(idSignal -> {
 			series = new XYChart.Series<>();
 			
-			VsignalView signal = SingleFromDB.getSignals().get(idSignal);
+			VsignalView signal = SingleFromDB.signals.get(idSignal);
 			series.setName(signal.getNamesignal());
 			yAxis.setLabel("Value, " + signal.getNameunit());
 			List<LinkedValue> dataSignal = dataList.stream().filter(f -> f.getId() == idSignal).collect(Collectors.toList());

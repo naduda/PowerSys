@@ -139,6 +139,7 @@ public class EShape extends AShape {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			LogFiles.log.log(Level.SEVERE, "void runScriptByName(...)", e);
 		}
 	}
@@ -198,6 +199,7 @@ public class EShape extends AShape {
 		
 		setLastDataDate(new Date(System.currentTimeMillis()));
 		if (updateInterval > 0) updateSignal(updateInterval);
+		
 		getValueProp().set(val); //Listener
 	}
 
@@ -220,7 +222,7 @@ public class EShape extends AShape {
 					decimalFormatSymbols.setGroupingSeparator(' ');
 					
 					DecimalFormat decimalFormat = new DecimalFormat(format, decimalFormatSymbols);
-					String textValue = decimalFormat.format(val) + "  " + SingleFromDB.getSignals().get(id).getNameunit().trim();
+					String textValue = decimalFormat.format(val) + "  " + SingleFromDB.signals.get(id).getNameunit().trim();
 					
 					t.setText(textValue);
 					
@@ -228,7 +230,13 @@ public class EShape extends AShape {
 							((Group)t.getParent()).getChildren().size() > 1) {
 						Group p = (Group)t.getParent();
 
-						Platform.runLater(() -> p.getChildren().remove(p.getChildren().get(1)));
+						Platform.runLater(() -> {
+							try {
+								p.getChildren().remove(p.getChildren().get(1));
+							} catch (Exception e) {
+								//e.printStackTrace();
+							}
+						});
 						
 						Node nn = ((Group)((Group)t.getParent().getParent().getParent().getParent()).getChildren().get(0)).getChildren().get(1);
 						Double textVal = nn.getBoundsInLocal().getWidth();
@@ -300,7 +308,7 @@ public class EShape extends AShape {
 	
 	private int getStateVal(int idSignal, String denom) {
 		try {
-			Tsignal tSignal = SingleFromDB.getTsignals().get(idSignal);
+			Tsignal tSignal = SingleFromDB.tsignals.get(idSignal);
 			return SingleFromDB.psClient.getSpTuCommand().stream()
 				.filter(f -> f.getObjref() == tSignal.getStateref() && f.getDenom().equals(denom.toUpperCase()))
 				.collect(Collectors.toList()).get(0).getVal();
@@ -319,7 +327,7 @@ public class EShape extends AShape {
 	}
 
 	public int getStatus() {
-		Tsignal tSignal = SingleFromDB.getTsignals().get(idTS);
+		Tsignal tSignal = SingleFromDB.tsignals.get(idTS);
 		return tSignal != null ? tSignal.getStatus() : status;
 	}
 	
@@ -332,12 +340,12 @@ public class EShape extends AShape {
 	}
 
 	public Tsignal gettSignalID() {
-		tSignalID = SingleFromDB.getTsignals().get(id);
+		tSignalID = SingleFromDB.tsignals.get(id);
 		return tSignalID;
 	}
 	
 	public Tsignal gettSignalIDTS() {
-		tSignalIDTS = SingleFromDB.getTsignals().get(idTS);
+		tSignalIDTS = SingleFromDB.tsignals.get(idTS);
 		return tSignalIDTS;
 	}
 }

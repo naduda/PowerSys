@@ -26,7 +26,6 @@ import pr.model.TViewParam;
 import single.ProgramProperty;
 import single.SingleFromDB;
 import single.SingleObject;
-import svg2fx.Convert;
 import ui.Scheme;
 import ui.tables.AlarmTableItem;
 import javafx.animation.PauseTransition;
@@ -128,7 +127,7 @@ public class AlarmTableController extends TableController {
 	@FXML
 	private void kvitPS() {
 		data.filtered(f -> ((AlarmTableItem)f).getAlarm().getLogstate() == 1)
-			.forEach(it -> Convert.listSignals.forEach(lv -> {
+			.forEach(it -> SingleObject.mainScheme.getListSignals().forEach(lv -> {
 				if (lv.getKey() == ((AlarmTableItem) it).getAlarm().getObjref()) {
 					confirmAlarm((AlarmTableItem) it, "");
 				}

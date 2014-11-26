@@ -8,10 +8,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
@@ -20,14 +18,13 @@ import controllers.ShapeController;
 import controllers.ToolBarController;
 import pr.common.Utils;
 import pr.log.LogFiles;
-import pr.model.DvalTI;
-import pr.model.DvalTS;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
 import pr.model.VsignalView;
 import single.SingleFromDB;
 import single.SingleObject;
 import svg2fx.Convert;
+import svg2fx.LinkedValue;
 import svg2fx.fxObjects.EShape;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -50,23 +47,14 @@ public class Scheme extends ScrollPane {
 	private final List<Integer> signalsTI = new ArrayList<>();
 	private final List<Integer> signalsTS = new ArrayList<>();
 	private final List<Integer> signalsTU = new ArrayList<>();
+	private final List<LinkedValue> listSignals = new ArrayList<>();
+	private final List<Integer> idSignals = new ArrayList<>();
 	
 	private int idScheme = 0;
 	private String schemeName;
-	private Collection<DvalTS> oldTS;
-	private Collection<DvalTI> oldTI;
-	private Map<Integer, VsignalView> signals;
 	
 	public Scheme() {
 		LogFiles.log.log(Level.INFO, "Start building scheme");
-		
-//		new Thread(() -> signals = SingleFromDB.getSignals()).start();
-//		new Thread(() -> oldTS = SingleFromDB.psClient.getOldTS().values()).start();
-//		new Thread(() -> oldTI = SingleFromDB.psClient.getOldTI().values()).start();
-		
-		signals = SingleFromDB.getSignals();
-		oldTS = SingleFromDB.psClient.getOldTS().values();
-		oldTI = SingleFromDB.psClient.getOldTI().values();
 
 		setContent(rootScheme);
 		
@@ -97,54 +85,42 @@ public class Scheme extends ScrollPane {
 		SingleObject.schemeInputStream = new ByteArrayInputStream(buf != null ? buf : new byte[0]);
 		
 		LogFiles.log.log(Level.INFO, "Start convert scheme");
+		long start = System.currentTimeMillis();
 		root = (Group) Convert.getNodeBySVG(fileName);
-		LogFiles.log.log(Level.INFO, "Finish convert scheme");
+		listSignals.addAll(Convert.getListSignals());
+		LogFiles.log.log(Level.INFO, "Finish convert scheme - " + (System.currentTimeMillis() - start) / 1000 + " s");
 		setIdScheme(Convert.idScheme);
 		rootScheme.getChildren().add(root);
 		
-		while (signals == null) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		Convert.listSignals.forEach(e -> {
+		listSignals.forEach(e -> {
 			if (e.getKey() != 0) {
+				if (!idSignals.contains(e.getKey())) idSignals.add(e.getKey());
 				try {
-					int typeSignal = signals.get(e.getKey()).getTypesignalref();
-					
-					switch (typeSignal) {
-					case 1:
-						signalsTI.add(e.getKey());
-						break;
-					case 2:
-						signalsTS.add(e.getKey());
-						break;
-					case 3:
-						signalsTU.add(e.getKey());
-						break;
-					default:
-						break;
+					VsignalView vSignal = SingleFromDB.signals.get(e.getKey());
+					if (vSignal != null) {
+						int typeSignal = vSignal.getTypesignalref();
+						
+						switch (typeSignal) {
+						case 1:
+							signalsTI.add(e.getKey());
+							break;
+						case 2:
+							signalsTS.add(e.getKey());
+							break;
+						case 3:
+							signalsTU.add(e.getKey());
+							break;
+						default:
+							break;
+						}
+					} else {
+						System.out.println(e.getKey());
 					}
 				} catch (Exception e1) {
 					LogFiles.log.log(Level.SEVERE, "signalsTI", e1);
 				}
 			}
 		});
-		
-		LogFiles.log.log(Level.INFO, "wait old values ...");
-		while (oldTI == null || oldTS == null) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		oldTI.forEach(ti -> ti.setVal(ti.getVal() * SingleFromDB.getSignals().get(ti.getSignalref()).getKoef()));
-		oldTI.forEach(s -> MainStage.controller.updateTI(this, s));
-		oldTS.forEach(s -> MainStage.controller.updateTI(this, s));
 		
 		try {	
 			setTransparants();
@@ -282,6 +258,14 @@ public class Scheme extends ScrollPane {
 	public Group getRoot() {
 		return root;
 	}
+	
+	public List<LinkedValue> getListSignals() {
+		return listSignals;
+	}
+	
+	public List<Integer> getIdSignals() {
+		return idSignals;
+	}
 //	--------------------------------------------------------------
 	private final class Events {
 		public void setOnScroll(ScrollEvent event) {
@@ -359,6 +343,5 @@ public class Scheme extends ScrollPane {
 	            		   y < r ? r : y - r > maxY ? maxY - r : y - r);
 			}
 		}
-		
 	}
 }

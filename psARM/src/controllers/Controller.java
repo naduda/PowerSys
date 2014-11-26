@@ -25,7 +25,6 @@ import single.SingleObject;
 import state.ProgramSettings;
 import state.SchemeSettings;
 import state.WindowState;
-import svg2fx.Convert;
 import svg2fx.fxObjects.EShape;
 import ui.MainStage;
 import ui.Scheme;
@@ -103,6 +102,8 @@ public class Controller implements IControllerInit, Initializable {
 		} catch (JAXBException e) {
 			LogFiles.log.log(Level.SEVERE, "void exitProgram()", e);
 		}
+		
+		LogFiles.log.log(Level.INFO, "Exit");
 		System.exit(0);
 	}
 	
@@ -141,13 +142,16 @@ public class Controller implements IControllerInit, Initializable {
 	}
 	
 	public void updateTI(Scheme mainScheme, DvalTI ti) {		
-		Convert.listSignals.stream().filter(f -> f.getKey().equals(ti.getSignalref())).forEach(s -> {
+		SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getKey().equals(ti.getSignalref())).forEach(s -> {
 			try {
 				EShape tt = mainScheme.getDeviceById(s.getValue());
+				if (tt == null) return;
 				
+				if(tt.getDt() != null && tt.getDt().compareTo(ti.getDt()) > 0) return;
+				
+				tt.setDt(ti.getDt());
 				tt.setValue(ti.getVal(), s.getTypeSignal());
 				tt.setRcode(ti.getRcode());
-				tt.setDt(ti.getDt());
 				
 				toolBarController.updateLabel(df.format(ti.getServdt()));
 			} catch (Exception e) {
@@ -157,10 +161,10 @@ public class Controller implements IControllerInit, Initializable {
 	}
 	
 	public static void updateSignal(int idSigal, int type_, int sec) {
-		Convert.listSignals.stream().filter(f -> f.getKey().equals(idSigal)).forEach(s -> {
+		SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getKey().equals(idSigal)).forEach(s -> {
 			EShape tt = SingleObject.mainScheme.getDeviceById(s.getValue());
 			if (tt == null) return;
-			int status = SingleFromDB.getSignals().get(idSigal).getStatus();
+			int status = SingleFromDB.signals.get(idSigal).getStatus();
 			if (status == WORK_STATUS) {
 				tt.updateSignal(sec);
 			}
