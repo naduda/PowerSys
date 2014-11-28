@@ -23,7 +23,8 @@ import pr.model.Transparant;
 import pr.model.Tsignal;
 import pr.topic.JMSConnection;
 import pr.log.LogFiles;
-import actualdata.LastData;
+import single.SQLConnect;
+import single.SingleFromDB;
 
 import com.sun.messaging.ConnectionConfiguration;
 import com.sun.messaging.ConnectionFactory;
@@ -48,7 +49,7 @@ public class SendTopic implements Runnable {
 
 	public SendTopic(String dbServer, String dbName, String dbUser, String dbPassword) {
 		try {
-			jConn = new JMSConnection("0.0.0.0", "7676", "admin", "admin");
+			jConn = new JMSConnection("127.0.0.1", "7676", "admin", "admin");
 			setConnectionParams(dbServer, dbName, dbUser, dbPassword);
 			pdb = getPdb();
 			
@@ -85,7 +86,7 @@ public class SendTopic implements Runnable {
 			}
 
 			List<Alarm> alsm = pdb.getAlarms(dt);
-			alsm.forEach(a -> { LastData.addAlarm(a); });
+			alsm.forEach(a -> { SingleFromDB.addAlarm(a); });
 			isDataFromDB = alsm == null ? false : true;
 		}
 		isDataFromDB = false;
@@ -94,7 +95,7 @@ public class SendTopic implements Runnable {
 		
 		while (!isDataFromDB) {
 			List<TSysParam> spm = pdb.getTSysParam();
-			LastData.setTsysparmams(spm);
+			SingleFromDB.setTsysparmams(spm);
 			isDataFromDB = spm == null ? false : true;
 		}
 		isDataFromDB = false;
@@ -103,7 +104,7 @@ public class SendTopic implements Runnable {
 		
 		while (!isDataFromDB) {
 			List<TViewParam> tvpm = pdb.getTViewParam();
-			LastData.setTviewparams(tvpm);
+			SingleFromDB.setTviewparams(tvpm);
 			isDataFromDB = tvpm == null ? false : true;
 		}
 		isDataFromDB = false;
@@ -112,7 +113,7 @@ public class SendTopic implements Runnable {
 				
 		while (!isDataFromDB) {
 			Map<Integer, Transparant> transparants = pdb.getTransparants();
-			LastData.setTransparants(transparants);
+			SingleFromDB.setTransparants(transparants);
 			isDataFromDB = transparants == null ? false : true;
 		}
 		LogFiles.log.log(Level.INFO, "transparants - " + (System.currentTimeMillis() - start) / 1000 + " s");
@@ -127,7 +128,9 @@ public class SendTopic implements Runnable {
 	}
 	
 	public PostgresDB getPdb() {
+		SingleFromDB.setSqlConnect(new SQLConnect(dbServer, dbPort, dbName, dbUser, dbPassword));
 		return new PostgresDB(dbServer, dbPort, dbName, dbUser, dbPassword);
+//		return new PostgresDB("127.0.0.1", "7676", "dimitrovEU");
 	}
 	
 	public void setConnectionParams(String dbServer, String dbName, String dbUser, String dbPassword) {

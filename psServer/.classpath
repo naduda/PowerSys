@@ -9,5 +9,8 @@
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/mybatis-3.2.7.jar"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/postgresql-9.3-1101.jdbc4.jar"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/psCommon.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jasper"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/batic"/>
+	<classpathentry kind="lib" path="D:/Install/glassfish4/mq/lib/jms.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

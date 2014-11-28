@@ -6,8 +6,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
@@ -19,6 +17,7 @@ import javax.xml.bind.JAXBException;
 
 import controllers.interfaces.IControllerInit;
 import controllers.journals.AlarmTableController;
+import controllers.tree.TreeController;
 import pr.log.LogFiles;
 import single.SingleFromDB;
 import single.SingleObject;
@@ -40,7 +39,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 
 public class Controller implements IControllerInit, Initializable {
-	private final DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	private static final int WORK_STATUS = 1;
 	
 	@FXML private ToolBarController toolBarController;
@@ -142,18 +140,18 @@ public class Controller implements IControllerInit, Initializable {
 	}
 	
 	public void updateTI(Scheme mainScheme, DvalTI ti) {		
-		SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getKey().equals(ti.getSignalref())).forEach(s -> {
+		SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getId() == ti.getSignalref()).forEach(s -> {
 			try {
-				EShape tt = mainScheme.getDeviceById(s.getValue());
+				EShape tt = mainScheme.getDeviceById(s.getVal().toString());
 				if (tt == null) return;
 				
 				if(tt.getDt() != null && tt.getDt().compareTo(ti.getDt()) > 0) return;
 				
 				tt.setDt(ti.getDt());
-				tt.setValue(ti.getVal(), s.getTypeSignal());
+				tt.setValue(ti.getVal(), s.getDt().toString());
 				tt.setRcode(ti.getRcode());
 				
-				toolBarController.updateLabel(df.format(ti.getServdt()));
+				toolBarController.updateLabel(ti.getServdt());
 			} catch (Exception e) {
 				LogFiles.log.log(Level.SEVERE, "void updateTI(...)", e);
 			}
@@ -161,8 +159,8 @@ public class Controller implements IControllerInit, Initializable {
 	}
 	
 	public static void updateSignal(int idSigal, int type_, int sec) {
-		SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getKey().equals(idSigal)).forEach(s -> {
-			EShape tt = SingleObject.mainScheme.getDeviceById(s.getValue());
+		SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getId() == idSigal).forEach(s -> {
+			EShape tt = SingleObject.mainScheme.getDeviceById(s.getVal().toString());
 			if (tt == null) return;
 			int status = SingleFromDB.signals.get(idSigal).getStatus();
 			if (status == WORK_STATUS) {

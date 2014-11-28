@@ -57,6 +57,10 @@ public class MainStage extends Stage implements Serializable {
 			controller.getSpTreeController().expandSchemes();
 			controller.getSpTreeController().addContMenu();
 			setScene(scene);
+			
+			heightProperty().addListener(e -> {
+				controller.getSpTreeController().setHeightTitlePanes(heightProperty().get() / 4);
+			});
 		} catch (IOException e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
@@ -85,7 +89,7 @@ public class MainStage extends Stage implements Serializable {
 		futures.add(service.submit(() -> (Map<Integer, DvalTI>) SingleFromDB.psClient.getOldTI(idBuilder.toString())));
 		futures.add(service.submit(() -> (Map<Integer, DvalTI>) SingleFromDB.psClient.getOldTS(idBuilder.toString())));
 		
-		controller.getToolBarController().updateLabel("");
+		controller.getToolBarController().updateLabel(null);
 		controller.getBpScheme().setCenter(SingleObject.mainScheme);
 		
 		Group root = SingleObject.mainScheme.getRoot();

@@ -3,6 +3,7 @@ package pr.powersys;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -28,56 +29,59 @@ import pr.model.UserEventJournalItem;
 import pr.model.VsignalView;
       
 public interface IPowersys extends Remote {
-	public static final int RMI_PORT = 1099;
+	static final int RMI_PORT = 1099;
 //	public static final String bindString = String.format("rmi://%s:%s/PowerSysService", RMI_PORT);
 	
 //	==============================================================================
 	void update(String query) throws RemoteException;
 	List<NormalModeJournalItem> getListNormalModeItems(String query) throws RemoteException;
 	List<SwitchEquipmentJournalItem> getSwitchJournalItems(String query) throws RemoteException;
+	
+	Map<Integer, String> getReports() throws RemoteException;
+	String getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd) throws RemoteException;
 //	==============================================================================
-	public Map<Integer, Tsignal> getTsignalsMap() throws RemoteException;
-	public Map<Integer, VsignalView> getVsignalViewMap() throws RemoteException;
-	public Map<Integer, ConfTree> getConfTreeMap() throws RemoteException;
-	public List<Alarm> getAlarmsCurrentDay() throws RemoteException;
-	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException;
-	public List<Alarm> getAlarmsPeriodById(Timestamp dtBeg, Timestamp dtEnd, int idSignal) throws RemoteException;
-	public Map<String, TSysParam> getTSysParam(String paramname) throws RemoteException;
-	public List<TViewParam> getTViewParam(String objdenom, String paramdenom, int userref) throws RemoteException;
-	public void setTS(int idsignal, double val, int schemeref) throws RemoteException;
-	public Map<Integer, DvalTI> getOldTI(String idSignals) throws RemoteException;
-	public Map<Integer, DvalTI> getOldTS(String idSignals) throws RemoteException;
-	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) throws RemoteException;
-	public void confirmAlarmAll(String lognote, int userref) throws RemoteException;
-	public Map<Integer, SPunit> getSPunitMap() throws RemoteException;
-	public Map<Integer, SpTypeSignal> getSpTypeSignalMap() throws RemoteException;
-	public List<SpTuCommand> getSpTuCommand() throws RemoteException;
-	public Map<Integer, Tuser> getTuserMap() throws RemoteException;
+	Map<Integer, Tsignal> getTsignalsMap() throws RemoteException;
+	Map<Integer, VsignalView> getVsignalViewMap() throws RemoteException;
+	Map<Integer, ConfTree> getConfTreeMap() throws RemoteException;
+	List<Alarm> getAlarmsCurrentDay() throws RemoteException;
+	List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException;
+	List<Alarm> getAlarmsPeriodById(Timestamp dtBeg, Timestamp dtEnd, int idSignal) throws RemoteException;
+	Map<String, TSysParam> getTSysParam(String paramname) throws RemoteException;
+	List<TViewParam> getTViewParam(String objdenom, String paramdenom, int userref) throws RemoteException;
+	void setTS(int idsignal, double val, int schemeref) throws RemoteException;
+	Map<Integer, DvalTI> getOldTI(String idSignals) throws RemoteException;
+	Map<Integer, DvalTI> getOldTS(String idSignals) throws RemoteException;
+	void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) throws RemoteException;
+	void confirmAlarmAll(String lognote, int userref) throws RemoteException;
+	Map<Integer, SPunit> getSPunitMap() throws RemoteException;
+	Map<Integer, SpTypeSignal> getSpTypeSignalMap() throws RemoteException;
+	List<SpTuCommand> getSpTuCommand() throws RemoteException;
+	Map<Integer, Tuser> getTuserMap() throws RemoteException;
 	
-	public List<LinkedValue> getData(int idSignal) throws RemoteException;
-	public List<LinkedValue> getDataArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd) throws RemoteException;
-	public List<LinkedValue> getDataIntegr(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) throws RemoteException;
-	public List<LinkedValue> getDataIntegrArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) throws RemoteException;
+	List<LinkedValue> getData(int idSignal) throws RemoteException;
+	List<LinkedValue> getDataArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd) throws RemoteException;
+	List<LinkedValue> getDataIntegr(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) throws RemoteException;
+	List<LinkedValue> getDataIntegrArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) throws RemoteException;
 	
-	public Object getTransparantById(int idTransparant) throws RemoteException;
-	public Map<Integer, Transparant> getTransparants() throws RemoteException;
-	public List<Ttransparant> getTtransparantsActive(int idScheme) throws RemoteException;
-	public List<Ttransparant> getTtransparantsNew(Timestamp settime) throws RemoteException;
-	public TtranspLocate getTransparantLocate(int trref) throws RemoteException;
-	public List<Ttransparant> getTtransparantsClosed(Timestamp closetime) throws RemoteException;
-	public List<Ttransparant> getTtransparantsUpdated(Timestamp lastupdate) throws RemoteException;
+	Object getTransparantById(int idTransparant) throws RemoteException;
+	Map<Integer, Transparant> getTransparants() throws RemoteException;
+	List<Ttransparant> getTtransparantsActive(int idScheme) throws RemoteException;
+	List<Ttransparant> getTtransparantsNew(Timestamp settime) throws RemoteException;
+	TtranspLocate getTransparantLocate(int trref) throws RemoteException;
+	List<Ttransparant> getTtransparantsClosed(Timestamp closetime) throws RemoteException;
+	List<Ttransparant> getTtransparantsUpdated(Timestamp lastupdate) throws RemoteException;
 	
-	public void insertTtransparant(int idtr, int signref, String objname, int tp, int schemeref) throws RemoteException;
-	public void insertTtranspHistory(int trref, int userref, String txt, int trtype) throws RemoteException;
-	public void deleteTtranspLocate(int trref, int scref) throws RemoteException;
-	public void insertTtranspLocate(int trref, int scref, int x, int y, int h, int w) throws RemoteException;
-	public int getMaxTranspID() throws RemoteException;
-	public void updateTtransparantLastUpdate(int idtr) throws RemoteException;
-	public void updateTtranspLocate(int trref, int scref, int x, int y, int h, int w) throws RemoteException;
-	public void updateTtransparantCloseTime(int idtr) throws RemoteException;
-	public TtranspHistory getTtranspHistory(int trref) throws RemoteException;
-	public void updateTtranspHistory(int trref, String txt) throws RemoteException;
-	public Ttransparant getTtransparantById(int idtr) throws RemoteException;
+	void insertTtransparant(int idtr, int signref, String objname, int tp, int schemeref) throws RemoteException;
+	void insertTtranspHistory(int trref, int userref, String txt, int trtype) throws RemoteException;
+	void deleteTtranspLocate(int trref, int scref) throws RemoteException;
+	void insertTtranspLocate(int trref, int scref, int x, int y, int h, int w) throws RemoteException;
+	int getMaxTranspID() throws RemoteException;
+	void updateTtransparantLastUpdate(int idtr) throws RemoteException;
+	void updateTtranspLocate(int trref, int scref, int x, int y, int h, int w) throws RemoteException;
+	void updateTtransparantCloseTime(int idtr) throws RemoteException;
+	TtranspHistory getTtranspHistory(int trref) throws RemoteException;
+	void updateTtranspHistory(int trref, String txt) throws RemoteException;
+	Ttransparant getTtransparantById(int idtr) throws RemoteException;
 	
 	public List<ControlJournalItem> getJContrlItems(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException;
 	void setBaseVal(int idSignal, double val) throws RemoteException;

@@ -6,7 +6,10 @@ import java.io.File;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +57,8 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 
 public class ToolBarController implements Initializable, IControllerInit {
+	private final DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	
 	private static final BooleanProperty showInfoProperty = new SimpleBooleanProperty();
 	private static final BooleanProperty showNormalMode = new SimpleBooleanProperty();
 	public static final DoubleProperty zoomProperty = new SimpleDoubleProperty();
@@ -124,11 +129,11 @@ public class ToolBarController implements Initializable, IControllerInit {
 					List<NormalModeJournalItem> items = SingleFromDB.psClient.getListNormalModeItems(query);
 					items.forEach(it -> {
 						if (it.getDt_new() == null) {
-							SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getKey().equals(it.getIdsignal())).forEach(s -> {
+							SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getId() == it.getIdsignal()).forEach(s -> {
 								try {
-									EShape tt = SingleObject.mainScheme.getDeviceById(s.getValue());
+									EShape tt = SingleObject.mainScheme.getDeviceById(s.getVal().toString());
 									tt.setNormalMode();
-									normalModeShapes.add(s.getValue());
+									normalModeShapes.add(s.getVal().toString());
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
@@ -261,8 +266,22 @@ public class ToolBarController implements Initializable, IControllerInit {
 	    stage.show();
 	}
 
-	public void updateLabel(String text) {
-		Platform.runLater(() -> lLastDate.setText(text));
+	public void updateLabel(Timestamp dt) {
+		if (dt == null) {
+			Platform.runLater(() -> lLastDate.setText(""));
+		} else {
+			if (lLastDate.getText().length() == 0) { 
+				Platform.runLater(() -> lLastDate.setText(df.format(dt)));
+			} else {
+				try {
+					if (dt.compareTo(df.parse(lLastDate.getText())) > 0)
+						Platform.runLater(() -> lLastDate.setText(df.format(dt)));
+				} catch (ParseException e) {
+					e.printStackTrace();
+					LogFiles.log.log(Level.SEVERE, "void updateLabel(Timestamp dt)", e);
+				}
+			}
+		}
 	}
 	
 	@FXML 

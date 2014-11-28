@@ -8,21 +8,5 @@
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/postgresql-9.3-1101.jdbc4.jar"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/psCommon.jar"/>
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/mybatis-3.2.7.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-awt-util.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-css.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-dom.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-svg-dom.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-svggen.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-transcoder.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-util.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/xml-apis-ext.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-ext.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-xml.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-parser.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-anim.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-bridge.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-gvt.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-script.jar"/>
-	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/batik/batik-codec.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

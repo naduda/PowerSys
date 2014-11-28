@@ -5,6 +5,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +69,23 @@ public class ClientPowerSys implements IPowersys {
 	@Override
 	public List<SwitchEquipmentJournalItem> getSwitchJournalItems(String query) throws RemoteException {
 		return myServer.getSwitchJournalItems(query);
+	}
+	
+	@Override
+	public Map<Integer, String> getReports() {
+		long st = System.currentTimeMillis();
+		try {
+			LogFiles.log.log(Level.INFO, "Get Reports ==> " + (System.currentTimeMillis() - st)  + " ms");
+			return myServer.getReports();
+		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "List<Report> getReports()", e);
+		}
+		return null;
+	}
+	
+	@Override
+	public String getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd) throws RemoteException {
+		return myServer.getReportById(idReport, dtBeg, dtEnd);
 	}
 //	==============================================================================
 	public Map<Integer, Tsignal> getTsignalsMap() {
@@ -196,6 +214,7 @@ public class ClientPowerSys implements IPowersys {
 		try {
 			return myServer.getTransparants();
 		} catch (RemoteException e) {
+			e.printStackTrace();
 			LogFiles.log.log(Level.SEVERE, "Map<Integer, Transparant> getTransparants()", e);
 			return null;
 		}

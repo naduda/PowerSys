@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f34fcf9d-fd7e-4f16-9506-e672ae259d3e">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="SQL">
+		<![CDATA[select * from d_valti where signalref in (1100284, 1100285) order by dt]]>
+	</queryString>
+	<field name="dt" class="java.sql.Timestamp"/>
+	<field name="signalref" class="java.lang.Integer"/>
+	<field name="val" class="java.lang.Double"/>
+	<field name="servdt" class="java.sql.Timestamp"/>
+	<field name="rcode" class="java.lang.Integer"/>
+	<field name="integritycnt" class="java.lang.Integer">
+		<fieldDescription><![CDATA[Количество интегрировнных значений в данной записи]]></fieldDescription>
+	</field>
+	<field name="integrityval" class="java.lang.Double">
+		<fieldDescription><![CDATA[Промежуточное значение для интегрированных значений(для получения среднего значения: val = integrityVal/integrity)]]></fieldDescription>
+	</field>
+	<field name="schemeref" class="java.lang.Integer">
+		<fieldDescription><![CDATA[Ссылка на схему (t_scheme.idscheme)]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="9ef923be-660e-47c8-b3fb-ae59fbb19cbc"/>
+				<text><![CDATA[dt]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="100" height="20" uuid="87f72562-5dc8-4d7b-997d-a8e9c5b3bd9f"/>
+				<text><![CDATA[signalref]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="0" width="100" height="20" uuid="70211a39-825e-4014-b1d6-92539101d6b5"/>
+				<text><![CDATA[val]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" uuid="e9d8a5d5-ec0e-4a08-9630-6d1fc20d2c84"/>
+				<textFieldExpression><![CDATA[$F{dt}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="100" height="20" uuid="8e028522-8077-4431-bc8e-69f448366937"/>
+				<textFieldExpression><![CDATA[$F{signalref}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="0" width="100" height="20" uuid="4120f16f-163e-4eb0-ae63-44ab1843131d"/>
+				<textFieldExpression><![CDATA[$F{val}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

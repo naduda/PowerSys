@@ -1,17 +1,23 @@
 package proxyPowersys;
-  
+
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import actualdata.LastData;
 import jdbc.PostgresDB;
 import pr.powersys.IPowersys;
+import pr.common.Utils;
 import pr.log.LogFiles;
 import pr.model.Alarm;
 import pr.model.ConfTree;
@@ -20,6 +26,7 @@ import pr.model.DvalTI;
 import pr.model.DvalTS;
 import pr.model.LinkedValue;
 import pr.model.NormalModeJournalItem;
+import pr.model.Report;
 import pr.model.SPunit;
 import pr.model.SpTuCommand;
 import pr.model.SpTypeSignal;
@@ -34,6 +41,8 @@ import pr.model.Ttransparant;
 import pr.model.Tuser;
 import pr.model.UserEventJournalItem;
 import pr.model.VsignalView;
+import reports.ReportTools;
+import single.SingleFromDB;
 
 public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	private static final long serialVersionUID = 1L;
@@ -59,6 +68,61 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	public List<SwitchEquipmentJournalItem> getSwitchJournalItems(String query) throws RemoteException {
 		return pdb.getSwitchJournalItems(query);
 	}
+	
+	@Override
+	public Map<Integer, String> getReports() throws RemoteException {	
+		Map<Integer, Report> reports = new HashMap<>();
+		Map<Integer, String> ret = new HashMap<>();
+		
+		String pathDir = Utils.getFullPath("./Reports");
+		File root = new File(pathDir);
+		String[] names = root.list();
+		
+		Arrays.asList(names).forEach(n -> {
+			File repDir = new File(pathDir + "/" + n);
+			
+		    if (repDir.isDirectory()) {
+		    	String[] files = repDir.list();
+		    	Report rep = new Report();
+		    	Arrays.asList(files).forEach(f -> {
+					String filePath = pathDir + "/" + n + "/" + f;
+		    		String ext = f.toLowerCase().substring(f.indexOf(".") + 1);
+		    		String fName = f.substring(0, f.indexOf("."));
+		    		
+		    		switch (ext) {
+					case "jrxml":
+						rep.setTemplate(new File(filePath));
+						break;
+					case "sql":
+						String query = "";
+						try {
+							List<String> strs = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
+							for (String s : strs) {
+								query = query + s;
+							}
+						} catch (Exception e) {
+							LogFiles.log.log(Level.SEVERE, "List<Report> getReports()", e);
+						}
+						rep.getQueries().put(fName, query);
+						break;
+					default:
+						break;
+					}
+		    	});
+		    	reports.put(reports.size() + 1, rep);
+		    	ret.put(ret.size() + 1, rep.getTemplate().getName().substring(0, rep.getTemplate().getName().indexOf(".")));
+		    }
+		});
+		
+		SingleFromDB.setReports(reports);
+		return ret;
+	}
+	
+	@Override
+	public String getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd) throws RemoteException {
+		ReportTools rt = new ReportTools(SingleFromDB.getSqlConnect());
+		return rt.getReportById(idReport, dtBeg, dtEnd);
+	}
 //	==============================================================================
 	@Override
 	public Map<Integer, Tsignal> getTsignalsMap() throws RemoteException {
@@ -72,19 +136,19 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 
 	@Override
 	public List<Alarm> getAlarmsCurrentDay() throws RemoteException {
-		return LastData.getAlarms();
+		return SingleFromDB.getAlarms();
 	}
 
 	@Override
 	public Map<String, TSysParam> getTSysParam(String paramname) throws RemoteException {
 		Map<String, TSysParam> ret = new HashMap<>();
-		LastData.getTsysparmams().stream().filter(it -> it.getParamname().equals(paramname)).forEach(it -> { ret.put(it.getVal(), it); });
+		SingleFromDB.getTsysparmams().stream().filter(it -> it.getParamname().equals(paramname)).forEach(it -> { ret.put(it.getVal(), it); });
 		return ret;
 	}
 
 	@Override
 	public List<TViewParam> getTViewParam(String objdenom, String paramdenom, int userref) throws RemoteException {
-		return LastData.getTviewparams().stream().filter(it -> it.getObjdenom().equals(objdenom)).
+		return SingleFromDB.getTviewparams().stream().filter(it -> it.getObjdenom().equals(objdenom)).
 			filter(it -> it.getParamdenom().equals(paramdenom)).filter(it -> it.getUserref() == userref).collect(Collectors.toList());
 	}
 
@@ -151,7 +215,7 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 
 	@Override
 	public Map<Integer, Transparant> getTransparants() throws RemoteException {
-		return LastData.getTransparants();
+		return SingleFromDB.getTransparants();
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import pr.log.LogFiles;
+import pr.model.LinkedValue;
 import single.SingleObject;
 import svg2fx.fxObjects.EShape;
 import svg2fx.svgObjects.G;

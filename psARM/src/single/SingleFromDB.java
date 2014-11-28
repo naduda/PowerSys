@@ -1,7 +1,5 @@
 package single;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -12,8 +10,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
-import javafx.scene.image.Image;
-import pr.common.WMF2PNG;
 import pr.log.LogFiles;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
@@ -34,6 +30,7 @@ public class SingleFromDB {
 	public static Map<Integer, Transparant> transpMap;
 	public static List<SpTuCommand> spTuCommands;
 	public static Map<Integer, SpTypeSignal> spTypeSignals;
+	
 	public Collection<DvalTS> oldTS;
 	public Collection<DvalTI> oldTI;
 	
@@ -74,17 +71,5 @@ public class SingleFromDB {
 		spTypeSignals = (Map<Integer, SpTypeSignal>) results.get("spTypeSignals");
 		
 		LogFiles.log.log(Level.INFO, "Finish reading DB - " + (System.currentTimeMillis() - start) / 1000 + " s");
-	}
-	
-	private static final Map<Integer, Image> imageMap = new HashMap<>();
-	public static Map<Integer, Image> getImageMap() {
-		if (imageMap.size() == 0) {
-			transpMap.forEach((key, transp) -> {
-				byte[] bytes = (byte[]) transpMap.get(key).getImg();
-				InputStream is = WMF2PNG.convert(new ByteArrayInputStream(bytes), 250);
-				imageMap.put(key, new Image(is));
-			});
-		}
-		return imageMap;
 	}
 }

@@ -10,6 +10,7 @@ public class Transparant implements Serializable {
 	private int objtyperef;
 	private String descr;
 	private Object img;
+	private byte[] imageByteArray;
 	
 	public Transparant() {
 		
@@ -58,5 +59,13 @@ public class Transparant implements Serializable {
 
 	public void setImg(Object img) {
 		this.img = img;
+	}
+
+	public byte[] getImageByteArray() {
+		return imageByteArray;
+	}
+
+	public void setImageByteArray(byte[] imageByteArray) {
+		this.imageByteArray = imageByteArray;
 	}
 }

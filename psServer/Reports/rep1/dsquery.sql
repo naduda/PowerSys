@@ -1,0 +1,1 @@
+select * from f_arcvalti(1100284, 'dtBeg', 'dtEnd', 30) order by dt

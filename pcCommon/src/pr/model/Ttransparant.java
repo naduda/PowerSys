@@ -74,7 +74,7 @@ public class Ttransparant implements Serializable {
 	public void setObjname(String objname) {
 		this.objname = objname;
 	}
-
+	
 	public int getSchemeref() {
 		return schemeref;
 	}

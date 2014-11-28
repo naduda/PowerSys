@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane prefHeight="30" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ReportPeriodController" styleClass="root">
+	<left>
+		<fx:include fx:id="tbJournal" source="journals/JournalToolBar.xml" />
+	</left>
+
+	<center>
+		<HBox styleClass="tool-bar">
+		</HBox>
+	</center>
+
+	<right>
+		<HBox fx:id="hBoxCount" alignment="center_right" styleClass="tool-bar">
+			<padding><Insets top="0" right="10" bottom="0" left="0"/></padding>
+			<Button fx:id="btnOK" text="OK" onAction="#okAction"/>
+			<Button fx:id="btnCancel" text="Cancel" onAction="#cancelAction"/>
+		</HBox>
+	</right>
+
+	<stylesheets>
+		<URL value="@Main.css" />
+	</stylesheets>
+</BorderPane>

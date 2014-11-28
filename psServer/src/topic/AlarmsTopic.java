@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import actualdata.LastData;
-
 import com.sun.messaging.ConnectionFactory;
 
 import jdbc.PostgresDB;
@@ -15,6 +13,7 @@ import pr.log.LogFiles;
 import pr.model.Alarm;
 import pr.topic.ASender;
 import pr.topic.JMSConnection;
+import single.SingleFromDB;
 
 public class AlarmsTopic extends ASender {
 
@@ -42,7 +41,7 @@ public class AlarmsTopic extends ASender {
 					try {
 						msgObject.setObject(a);
 						producer.send(topic, msgObject);
-						LastData.addAlarm(a);
+						SingleFromDB.addAlarm(a);
 					} catch (Exception e) {
 						LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 					}
@@ -56,11 +55,11 @@ public class AlarmsTopic extends ASender {
 						msgObject.setObject(a);
 						producer.send(topic, msgObject);
 						
-						Alarm oldAlarm = LastData.getAlarms().stream()
+						Alarm oldAlarm = SingleFromDB.getAlarms().stream()
 								.filter(f -> f.getEventdt().equals(a.getEventdt()) && f.getRecorddt().equals(a.getRecorddt()))
 								.collect(Collectors.toList()).get(0);
-						LastData.getAlarms().remove(oldAlarm);
-						LastData.addAlarm(a);
+						SingleFromDB.getAlarms().remove(oldAlarm);
+						SingleFromDB.addAlarm(a);
 					} catch (Exception e) {
 						LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 					}

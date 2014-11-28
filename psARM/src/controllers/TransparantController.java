@@ -1,5 +1,6 @@
 package controllers;
 
+import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
@@ -78,7 +80,8 @@ public class TransparantController implements Initializable, IControllerInit {
             super.updateItem(item, empty);
             if (item != null) {
 	            Rectangle rect = new Rectangle(IMAGE_SIZE, IMAGE_SIZE);
-				rect.setFill(new ImagePattern(SingleFromDB.getImageMap().get(item.getIdtr())));
+	            Image image = new Image(new ByteArrayInputStream(item.getImageByteArray()));
+				rect.setFill(new ImagePattern(image));
 				setGraphic(rect);
 				setText(item.getDescr());
 			}

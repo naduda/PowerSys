@@ -128,7 +128,7 @@ public class AlarmTableController extends TableController {
 	private void kvitPS() {
 		data.filtered(f -> ((AlarmTableItem)f).getAlarm().getLogstate() == 1)
 			.forEach(it -> SingleObject.mainScheme.getListSignals().forEach(lv -> {
-				if (lv.getKey() == ((AlarmTableItem) it).getAlarm().getObjref()) {
+				if (lv.getId() == ((AlarmTableItem) it).getAlarm().getObjref()) {
 					confirmAlarm((AlarmTableItem) it, "");
 				}
 			}));

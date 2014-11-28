@@ -1,0 +1,1 @@
+select * from d_valti where signalref in (1100284, 1100285) order by dt

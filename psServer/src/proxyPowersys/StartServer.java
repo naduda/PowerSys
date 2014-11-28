@@ -19,7 +19,7 @@ public class StartServer {
 	public StartServer(PostgresDB pdb) {
 		try {
 			PowerSys ps = new PowerSys(pdb);
-			String rmiString = String.format("rmi://%s:%s/PowerSysService", "0.0.0.0", IPowersys.RMI_PORT);
+			String rmiString = String.format("rmi://%s:%s/PowerSysService", "127.0.0.1", IPowersys.RMI_PORT);
 			
 			RMISocketFactory sf = new MySocketFactory();
 			UnicastRemoteObject.unexportObject(ps, true);

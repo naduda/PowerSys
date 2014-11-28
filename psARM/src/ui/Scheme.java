@@ -18,13 +18,14 @@ import controllers.ShapeController;
 import controllers.ToolBarController;
 import pr.common.Utils;
 import pr.log.LogFiles;
+import pr.model.LinkedValue;
+import pr.model.Transparant;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
 import pr.model.VsignalView;
 import single.SingleFromDB;
 import single.SingleObject;
 import svg2fx.Convert;
-import svg2fx.LinkedValue;
 import svg2fx.fxObjects.EShape;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -34,6 +35,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
@@ -93,28 +95,28 @@ public class Scheme extends ScrollPane {
 		rootScheme.getChildren().add(root);
 		
 		listSignals.forEach(e -> {
-			if (e.getKey() != 0) {
-				if (!idSignals.contains(e.getKey())) idSignals.add(e.getKey());
+			if (e.getId() != 0) {
+				if (!idSignals.contains(e.getId())) idSignals.add(e.getId());
 				try {
-					VsignalView vSignal = SingleFromDB.signals.get(e.getKey());
+					VsignalView vSignal = SingleFromDB.signals.get(e.getId());
 					if (vSignal != null) {
 						int typeSignal = vSignal.getTypesignalref();
 						
 						switch (typeSignal) {
 						case 1:
-							signalsTI.add(e.getKey());
+							signalsTI.add(e.getId());
 							break;
 						case 2:
-							signalsTS.add(e.getKey());
+							signalsTS.add(e.getId());
 							break;
 						case 3:
-							signalsTU.add(e.getKey());
+							signalsTU.add(e.getId());
 							break;
 						default:
 							break;
 						}
 					} else {
-						System.out.println(e.getKey());
+						System.out.println(e.getId());
 					}
 				} catch (Exception e1) {
 					LogFiles.log.log(Level.SEVERE, "signalsTI", e1);
@@ -199,7 +201,9 @@ public class Scheme extends ScrollPane {
 	private Shape createCircle(int idTransarant, double xT, double yT, double sizeT, int ident) {
 		Circle n = new Circle(xT + sizeT / 2, yT + sizeT / 2, sizeT / 2);
 		n.setStroke(Color.TRANSPARENT);
-		n.setFill(new ImagePattern(SingleFromDB.getImageMap().get(idTransarant)));
+		Transparant item = SingleFromDB.transpMap.get(idTransarant);
+		Image image = new Image(new ByteArrayInputStream(item.getImageByteArray()));
+		n.setFill(new ImagePattern(image));
 		n.setId("transparant_" + ident);
 		addContextMenu(n);
 		

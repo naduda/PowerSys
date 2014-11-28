@@ -13,6 +13,12 @@ public class LinkedValue implements Serializable {
 		
 	}
 	
+	public LinkedValue(int id, Object val, Object dt) {
+		this.id = id;
+		this.val = val;
+		this.dt = dt;
+	}
+	
 	@Override
 	public String toString() {
 		return val.toString();

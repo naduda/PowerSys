@@ -1,5 +1,9 @@
 package jdbc;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +32,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 
+import pr.common.WMF2PNG;
 import pr.log.LogFiles;
 import pr.model.Alarm;
 import pr.model.ConfTree;
@@ -506,13 +511,37 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.openSession();
-			return session.getMapper(IMapperT.class).getTransparants();
+			Map<Integer, Transparant> transp = session.getMapper(IMapperT.class).getTransparants();
+			transp.values().forEach(t -> {
+				byte[] bytes = (byte[]) t.getImg();
+				InputStream is = WMF2PNG.convert(new ByteArrayInputStream(bytes), 250);
+				t.setImageByteArray(InputStream2ByteArray(is));
+			});
+			return transp;
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 			return null;
 		} finally {
 			session.close();
 		}
+	}
+	
+	private byte[] InputStream2ByteArray(InputStream is) {
+		int nRead;
+		byte[] data = new byte[1024];
+
+		try (ByteArrayOutputStream buffer = new ByteArrayOutputStream();) {
+			while ((nRead = is.read(data, 0, data.length)) != -1) {
+			  buffer.write(data, 0, nRead);
+			}
+			buffer.flush();
+			
+			return buffer.toByteArray();
+		} catch (IOException e) {
+			LogFiles.log.log(Level.SEVERE, "InputStream2ByteArray(InputStream is)", e);
+		}
+
+		return null;
 	}
 
 	@Override
