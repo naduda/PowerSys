@@ -3,10 +3,12 @@ package ui;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -16,8 +18,11 @@ import pr.common.Utils;
 import controllers.Controller;
 import controllers.ToolBarController;
 import pr.log.LogFiles;
+import pr.model.Alarm;
 import pr.model.DvalTI;
+import pr.model.TalarmParam;
 import pr.model.Tsignal;
+import single.ProgramProperty;
 import single.SingleFromDB;
 import single.SingleObject;
 import javafx.fxml.FXMLLoader;
@@ -31,10 +36,29 @@ public class MainStage extends Stage implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	public static Map<Integer, Scheme> schemes = new HashMap<>();
-	public static Controller controller;	
+	public static Controller controller;
 	
 	public MainStage(String pathXML) {
 		try {
+			ProgramProperty.hightPriorityAlarmProperty.addListener(a -> {
+				Alarm hpa = ProgramProperty.hightPriorityAlarmProperty.get();
+				if (hpa != null) {
+					if (hpa != null) {
+						List<TalarmParam> params;
+						try {
+							params = SingleFromDB.psClient.getTalarmParams(hpa.getAlarmid());
+							params.forEach(p -> {
+								if ("ALARM_PARAM_SOUND".equals(p.getParamdenom())) {
+									SingleObject.alarmActivities.play(p.getParamval());
+								}
+							});
+						} catch (RemoteException e) {
+							LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
+						}
+					}
+				}
+			});
+			
 			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/Main.xml")));
 			
 			new Thread(() -> {
@@ -67,9 +91,9 @@ public class MainStage extends Stage implements Serializable {
 	}
 	
 	public static void setScheme(String schemeName) {
-		final ExecutorService service = Executors.newFixedThreadPool(2);
+		final ExecutorService service = Executors.newFixedThreadPool(4);
 		List<Future<Map<Integer, DvalTI>>> futures = new ArrayList<>();
-		
+				
 		if (schemeName == null) {
 			SingleObject.mainScheme = new Scheme();
 		} else {
@@ -85,9 +109,14 @@ public class MainStage extends Stage implements Serializable {
 		SingleObject.mainScheme.getIdSignals().forEach(s -> idBuilder.append(s + ","));
 		idBuilder.delete(idBuilder.length() - 1, idBuilder.length());
 		idBuilder.append("}");
+		SingleObject.activeSchemeSignals = idBuilder.toString();
 		
-		futures.add(service.submit(() -> (Map<Integer, DvalTI>) SingleFromDB.psClient.getOldTI(idBuilder.toString())));
-		futures.add(service.submit(() -> (Map<Integer, DvalTI>) SingleFromDB.psClient.getOldTS(idBuilder.toString())));
+		futures.add(service.submit(() -> SingleFromDB.psClient.getOldTI(SingleObject.activeSchemeSignals)));
+		futures.add(service.submit(() -> SingleFromDB.psClient.getOldTS(SingleObject.activeSchemeSignals)));
+		Future<List<Integer>> notConfirmedSignals = 
+				service.submit(() -> SingleFromDB.psClient.getNotConfirmedSignals(SingleObject.activeSchemeSignals));
+		Future<Alarm> hightPriorityAlarm = 
+				service.submit(() -> SingleFromDB.psClient.getHightPriorityAlarm());
 		
 		controller.getToolBarController().updateLabel(null);
 		controller.getBpScheme().setCenter(SingleObject.mainScheme);
@@ -105,6 +134,7 @@ public class MainStage extends Stage implements Serializable {
 		}
 		
 		LogFiles.log.log(Level.INFO, "Start update values");
+		
 		futures.forEach(f -> {
 			try {
 				f.get().values().stream().filter(p -> SingleObject.mainScheme.getIdSignals().contains(p.getSignalref()))
@@ -113,10 +143,18 @@ public class MainStage extends Stage implements Serializable {
 						if (tSignal.getTypesignalref() == 1) s.setVal(s.getVal() * tSignal.getKoef());
 						MainStage.controller.updateTI(SingleObject.mainScheme, s);
 				});
-			} catch (Exception e) {
+			} catch (InterruptedException | ExecutionException e) {
 				LogFiles.log.log(Level.SEVERE, "Error update old values in MainStage", e);
 			}
 		});
+		
+		try {
+			notConfirmedSignals.get().forEach(s -> controller.setNotConfirmed(s, false));
+			Alarm hpa = hightPriorityAlarm.get();
+			ProgramProperty.hightPriorityAlarmProperty.set(hpa);
+		} catch (InterruptedException | ExecutionException e) {
+			LogFiles.log.log(Level.SEVERE, "void setScheme(...) Futures ...", e);
+		}
 		LogFiles.log.log(Level.INFO, "Finish update values");
 	}
 }

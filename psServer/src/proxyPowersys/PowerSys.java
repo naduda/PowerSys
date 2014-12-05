@@ -33,6 +33,7 @@ import pr.model.SpTypeSignal;
 import pr.model.SwitchEquipmentJournalItem;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
+import pr.model.TalarmParam;
 import pr.model.Transparant;
 import pr.model.Tsignal;
 import pr.model.TtranspHistory;
@@ -114,7 +115,7 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 		    }
 		});
 		
-		SingleFromDB.setReports(reports);
+		SingleFromDB.getReports().putAll(reports);
 		return ret;
 	}
 	
@@ -182,7 +183,22 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	public void confirmAlarmAll(String lognote, int userref) {
 		pdb.confirmAlarmAll(lognote, userref);
 	}
-
+	
+	@Override
+	public List<Integer> getNotConfirmedSignals(String idSignals) throws RemoteException {
+		return pdb.getNotConfirmedSignals(idSignals);
+	}
+	
+	@Override
+	public Alarm getHightPriorityAlarm() throws RemoteException {
+		return pdb.getHightPriorityAlarm();
+	}
+	
+	@Override
+	public List<TalarmParam> getTalarmParams(int alarmref) {
+		return pdb.getTalarmParams(alarmref);
+	}
+	
 	@Override
 	public List<LinkedValue> getData(int idSignal) throws RemoteException {
 		return pdb.getData(idSignal);

@@ -6,10 +6,13 @@ import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 
 import javax.script.Invocable;
@@ -35,10 +38,12 @@ public class SingleObject {
 	public static String ipAddress = "";
 	public static Stage mainStage;
 	public static Scheme mainScheme;
+	public static String activeSchemeSignals = "";
 	public static EShape selectedShape;
 	public static ByteArrayInputStream schemeInputStream;
 	public static SVG svg;
 	public static Map<String, HotKeyClass> hotkeys = new HashMap<>();
+	public static AlarmActivities alarmActivities = new AlarmActivities();
 	
 	public static final ScriptEngineManager manager = new ScriptEngineManager();
 	public static final ScriptEngine engine = manager.getEngineByName("nashorn");
@@ -53,7 +58,7 @@ public class SingleObject {
 				URL[] urls = {file.toURI().toURL()};
 				SingleObject.classLoader = new URLClassLoader(urls);
 			} catch (MalformedURLException e) {
-				pr.log.LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
+				LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
 		return classLoader;
@@ -93,5 +98,16 @@ public class SingleObject {
 			}
 		}
 		return null;
+	}
+	
+	public static List<Integer> getActiveSchemeSignals() {
+		List<Integer> ret = new ArrayList<>();
+		String str = activeSchemeSignals.substring(1, activeSchemeSignals.length() - 1);
+		
+		StringTokenizer st = new StringTokenizer(str, ",");
+		while (st.hasMoreElements()) {
+			ret.add((Integer) st.nextElement());
+		}
+		return ret;
 	}
 }

@@ -47,7 +47,12 @@ public class AlarmTableItem {
 		
     	AlarmMessageParcer.setAlarmMessage(a);
 
-    	a.setpEventType(sysParamsEvent.get("" + a.getEventtype()).getParamdescr());
+    	try {
+			a.setpEventType(sysParamsEvent.get("" + a.getEventtype()).getParamdescr());
+		} catch (Exception e) {
+			System.out.println("=======================");
+			System.out.println(a.getAlarmid());
+		}
     	a.setpAlarmPriority(sysParamsPriority.get("" + a.getAlarmpriority()).getParamdescr());
     	
     	int lState = a.isAlarmuser_ack() ? a.getLogstate() : 10;

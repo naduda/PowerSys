@@ -203,6 +203,18 @@ public abstract class AShape extends Group {
 		if (updateInterval > 0) updateSignal(updateInterval);
 	}
 	
+	public void setNotConfirmed(boolean isConfirmed) {
+		if (isConfirmed) {
+			clearNormalMode();
+			timeline.stop();
+		} else {
+			isUpdateSignal = false;
+			rect.getStrokeDashArray().clear();
+			rect.setStroke(Color.YELLOW);
+			//timeline.play();
+		}
+	}
+	
 	public Paint getColorByName(String colorName) {
 		return Color.valueOf(colorName.toUpperCase());
 	}

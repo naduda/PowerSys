@@ -26,6 +26,7 @@ import pr.model.TViewParam;
 import single.ProgramProperty;
 import single.SingleFromDB;
 import single.SingleObject;
+import ui.MainStage;
 import ui.Scheme;
 import ui.tables.AlarmTableItem;
 import javafx.animation.PauseTransition;
@@ -33,6 +34,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -132,12 +134,22 @@ public class AlarmTableController extends TableController {
 					confirmAlarm((AlarmTableItem) it, "");
 				}
 			}));
+		
+		try {
+			SingleFromDB.psClient.getNotConfirmedSignals(SingleObject.activeSchemeSignals)
+				.forEach(s -> MainStage.controller.setNotConfirmed(s, false));
+		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "... getNotConfirmedSignals", e);
+		}
 	}
 	
 	@FXML
 	private void kvitAll() {
 		try {
 			SingleFromDB.psClient.confirmAlarmAll("", -1);
+			SingleObject.getActiveSchemeSignals().forEach(s -> MainStage.controller.setNotConfirmed(s, true));
+			SingleFromDB.psClient.getNotConfirmedSignals(SingleObject.activeSchemeSignals)
+				.forEach(s -> MainStage.controller.setNotConfirmed(s, false));
 		} catch (RemoteException e) {
 			LogFiles.log.log(Level.SEVERE, "void kvitAll(...)", e);
 		}
@@ -158,6 +170,12 @@ public class AlarmTableController extends TableController {
             int count = sequentialClickCount.get();
             if (count == 2) {
             	confirmAlarm((AlarmTableItem)tvTable.getSelectionModel().getSelectedItem(), "");
+            	try {
+        			SingleFromDB.psClient.getNotConfirmedSignals(SingleObject.activeSchemeSignals)
+        				.forEach(s -> MainStage.controller.setNotConfirmed(s, false));
+        		} catch (RemoteException e) {
+        			LogFiles.log.log(Level.SEVERE, "... getNotConfirmedSignals", e);
+        		}
             }
             sequentialClickCount.set(0);
         });
@@ -329,6 +347,7 @@ public class AlarmTableController extends TableController {
 				SingleFromDB.psClient.confirmAlarm(ati.getAlarm().getRecorddt(), ati.getAlarm().getEventdt(), 
 						ati.getAlarm().getObjref(), new Timestamp(System.currentTimeMillis()), comment,
 						ati.getAlarm().getUserref() == 0 ? -1 : ati.getAlarm().getUserref());
+				MainStage.controller.setNotConfirmed(ati.getAlarm().getObjref(), true);
 			} catch (RemoteException e) {
 				LogFiles.log.log(Level.SEVERE, "void confirmAlarm(...)", e);
 			}
@@ -370,11 +389,16 @@ public class AlarmTableController extends TableController {
 	
 	private void updateAlarm(Alarm a) {
 		try {
-			AlarmTableItem it = (AlarmTableItem) data.
-					filtered(item -> ((AlarmTableItem)item).getAlarm().getEventdt().equals(a.getEventdt())).get(0);			
-			data.remove(it);
-			addItem(new AlarmTableItem(a));
+			FilteredList<Object> filterData = 
+					data.filtered(item -> ((AlarmTableItem)item).getAlarm().getEventdt().equals(a.getEventdt()));
+			
+			if (filterData.size() > 0) {
+				AlarmTableItem it = (AlarmTableItem) filterData.get(0);
+				data.remove(it);
+				addItem(new AlarmTableItem(a));
+			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			LogFiles.log.log(Level.SEVERE, "void updateAlarm(...)", e);
 		}
 	}

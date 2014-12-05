@@ -47,6 +47,7 @@ import pr.model.SpTypeSignal;
 import pr.model.SwitchEquipmentJournalItem;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
+import pr.model.TalarmParam;
 import pr.model.Transparant;
 import pr.model.Tsignal;
 import pr.model.TtranspHistory;
@@ -189,7 +190,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<DvalTI> getLastTI(Timestamp servdt) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).getLastTI(servdt);
 		} catch (Exception e) {
 			return null;
@@ -201,7 +202,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<DvalTI> getOldTI(String idSignals) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).getOldTI(idSignals).stream().filter(f -> f != null).collect(Collectors.toList());
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -214,7 +215,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<DvalTS> getLastTS(Timestamp servdt) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).getLastTS(servdt);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -227,7 +228,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<DvalTS> getOldTS(String idSignals) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).getOldTS(idSignals).stream().filter(f -> f != null).collect(Collectors.toList());
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -240,7 +241,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public Integer setTS(int idsignal, double val, int schemeref) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).setTS(idsignal, val, schemeref);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -253,7 +254,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<Alarm> getAlarms(Timestamp eventdt) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).getAlarms(eventdt);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -266,8 +267,34 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<Alarm> getAlarmsConfirm(Timestamp confirmdt) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).getAlarmsConfirm(confirmdt);
+		} catch (Exception e) {
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+	
+	public Alarm getHightPriorityAlarm() {
+		SqlSession session = null;
+		try {
+			session = sqlSessionFactory.openSession(true);
+			return session.getMapper(IMapper.class).getHightPriorityAlarm();
+		} catch (Exception e) {
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+	
+	public List<TalarmParam> getTalarmParams(int alarmref) {
+		SqlSession session = null;
+		try {
+			session = sqlSessionFactory.openSession(true);
+			return session.getMapper(IMapper.class).getTalarmParams(alarmref);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 			return null;
@@ -279,7 +306,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<LinkedValue> getData(int signalref) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).getData(signalref);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -292,7 +319,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<LinkedValue> getDataIntegr(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).getDataIntegr(idSignal, dtBeg, dtEnd, period);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -305,7 +332,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<LinkedValue> getDataIntegrArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).getDataIntegrArc(idSignal, dtBeg, dtEnd, period);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -318,7 +345,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<LinkedValue> getDataArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).getDataArc(idSignal, dtBeg, dtEnd);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -331,7 +358,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).getAlarmsPeriod(dtBeg, dtEnd);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -344,8 +371,21 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<Alarm> getAlarmsPeriodById(Timestamp dtBeg, Timestamp dtEnd, int idSignal) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).getAlarmsPeriodById(dtBeg, dtEnd, idSignal);
+		} catch (Exception e) {
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+	
+	public List<Integer> getNotConfirmedSignals(String idSignals) {
+		SqlSession session = null;
+		try {
+			session = sqlSessionFactory.openSession(true);
+			return session.getMapper(IMapper.class).getNotConfirmedSignals(idSignals);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 			return null;
@@ -357,7 +397,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<ControlJournalItem> getJContrlItems(Timestamp dtBeg, Timestamp dtEnd) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).getJContrlItems(dtBeg, dtEnd);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -370,7 +410,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<UserEventJournalItem> getUserEventJournalItems(Timestamp dtBeg, Timestamp dtEnd) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapper.class).getUserEventJournalItems(dtBeg, dtEnd);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -384,7 +424,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public Map<Integer, SPunit> getSPunitMap() {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperSP.class).getSPunitMap();
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -398,7 +438,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<SpTuCommand> getSpTuCommand() {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperSP.class).getSpTuCommand();
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -412,7 +452,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public Map<Integer, SpTypeSignal> getSpTypeSignalMap() {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperSP.class).getSpTypeSignalMap();
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -426,7 +466,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public Map<Integer, Tsignal> getTsignalsMap() {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperT.class).getTsignalsMap();
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, "getTsignalsMap()", e);
@@ -440,7 +480,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public Map<Integer, Tuser> getTuserMap() {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperT.class).getTuserMap();
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -454,7 +494,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public Map<Integer, ConfTree> getConfTreeMap() {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperT.class).getConfTreeMap();
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -468,7 +508,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<TSysParam> getTSysParam() {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperT.class).getTSysParam();
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -482,7 +522,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<TViewParam> getTViewParam() {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperT.class).getTViewParam();
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -496,7 +536,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public Object getTransparantById(int idTransparant) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperT.class).getTransparantById(idTransparant);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -510,7 +550,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public Map<Integer, Transparant> getTransparants() {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			Map<Integer, Transparant> transp = session.getMapper(IMapperT.class).getTransparants();
 			transp.values().forEach(t -> {
 				byte[] bytes = (byte[]) t.getImg();
@@ -548,7 +588,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<Ttransparant> getTtransparantsActive(int idScheme) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperT.class).getTtransparantsActive(idScheme);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -562,7 +602,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<Ttransparant> getTtransparantsNew(Timestamp settime) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperT.class).getTtransparantsNew(settime);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -576,7 +616,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public TtranspLocate getTransparantLocate(int trref) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperT.class).getTransparantLocate(trref);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -590,7 +630,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<Ttransparant> getTtransparantsClosed(Timestamp closetime) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperT.class).getTtransparantsClosed(closetime);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -604,7 +644,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public List<Ttransparant> getTtransparantsUpdated(Timestamp lastupdate) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperT.class).getTtransparantsUpdated(lastupdate);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -618,7 +658,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public int getMaxTranspID() {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperT.class).getMaxTranspID();
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -645,7 +685,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public TtranspHistory getTtranspHistory(int trref) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperT.class).getTtranspHistory(trref);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -659,7 +699,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public Ttransparant getTtransparantById(int idtr) {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperT.class).getTtransparantById(idtr);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
@@ -860,7 +900,7 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 	public Map<Integer, VsignalView> getVsignalViewMap() {
 		SqlSession session = null;
 		try {
-			session = sqlSessionFactory.openSession();
+			session = sqlSessionFactory.openSession(true);
 			return session.getMapper(IMapperV.class).getVsignalViewMap();
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);

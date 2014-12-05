@@ -25,6 +25,7 @@ import pr.model.SpTypeSignal;
 import pr.model.SwitchEquipmentJournalItem;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
+import pr.model.TalarmParam;
 import pr.model.Transparant;
 import pr.model.Tsignal;
 import pr.model.TtranspHistory;
@@ -178,7 +179,22 @@ public class ClientPowerSys implements IPowersys {
 	public void confirmAlarmAll(String lognote, int userref) throws RemoteException {
 		myServer.confirmAlarmAll(lognote, userref);
 	}
-
+	
+	@Override
+	public List<Integer> getNotConfirmedSignals(String idSignals) throws RemoteException {
+		return myServer.getNotConfirmedSignals(idSignals);
+	}
+	
+	@Override
+	public Alarm getHightPriorityAlarm() throws RemoteException {
+		return myServer.getHightPriorityAlarm();
+	}
+	
+	@Override
+	public List<TalarmParam> getTalarmParams(int alarmref) throws RemoteException {
+		return myServer.getTalarmParams(alarmref);
+	}
+	
 	@Override
 	public List<LinkedValue> getData(int idSignal) throws RemoteException {
 		return myServer.getData(idSignal);

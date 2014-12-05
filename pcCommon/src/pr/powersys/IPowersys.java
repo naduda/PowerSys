@@ -19,6 +19,7 @@ import pr.model.SpTypeSignal;
 import pr.model.SwitchEquipmentJournalItem;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
+import pr.model.TalarmParam;
 import pr.model.Transparant;
 import pr.model.Tsignal;
 import pr.model.TtranspHistory;
@@ -53,6 +54,9 @@ public interface IPowersys extends Remote {
 	Map<Integer, DvalTI> getOldTS(String idSignals) throws RemoteException;
 	void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) throws RemoteException;
 	void confirmAlarmAll(String lognote, int userref) throws RemoteException;
+	List<Integer> getNotConfirmedSignals(String idSignals) throws RemoteException;
+	Alarm getHightPriorityAlarm() throws RemoteException;
+	List<TalarmParam> getTalarmParams(int alarmref) throws RemoteException;
 	Map<Integer, SPunit> getSPunitMap() throws RemoteException;
 	Map<Integer, SpTypeSignal> getSpTypeSignalMap() throws RemoteException;
 	List<SpTuCommand> getSpTuCommand() throws RemoteException;

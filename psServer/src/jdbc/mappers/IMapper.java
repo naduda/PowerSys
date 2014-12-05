@@ -10,6 +10,7 @@ import pr.model.DvalTS;
 import pr.model.LinkedValue;
 import pr.model.NormalModeJournalItem;
 import pr.model.SwitchEquipmentJournalItem;
+import pr.model.TalarmParam;
 import pr.model.UserEventJournalItem;
 
 import org.apache.ibatis.annotations.Param;
@@ -76,6 +77,22 @@ public interface IMapper {
 			+ "from d_eventlog) as eloginner join t_alarm on alarmid in (alarms) "
 			+ "where confirmdt > #{confirmdt} order by confirmdt desc")
 	List<Alarm> getAlarmsConfirm(Timestamp confirmdt);
+	
+	@Select("select distinct objref from "
+			+ "(select *, alarms_for_event(eventtype,objref,objStatus) as alarms "
+			+ "from d_eventlog) as eloginner join t_alarm on alarmid in (alarms) "
+			+ "where objref = ANY(#{idsignals}::int[]) and confirmdt is null and logstate != 2 "
+			+ "order by objref desc")
+	List<Integer> getNotConfirmedSignals(@Param("idsignals") String idSignals);
+	
+	@Select("select * from "
+			+ "(select *, alarms_for_event(eventtype,objref,objStatus) as alarms "
+			+ "from d_eventlog) as eloginner join t_alarm on alarmid in (alarms) "
+			+ "where confirmdt is null order by alarmpriority, eventdt desc limit 1")
+	Alarm getHightPriorityAlarm();
+	
+	@Select("select * from t_alarmparam where alarmref = #{alarmref}")
+	List<TalarmParam> getTalarmParams(@Param("alarmref")int alarmref);
 	
 	@Select("select dt, val, signalref from d_valti where signalref = #{signalref} order by dt")
 	@Results(value = {

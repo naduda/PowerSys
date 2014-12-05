@@ -58,9 +58,10 @@ public class JAlarmsController extends AJournal {
 		try {
 			List<Alarm> alarms;
 			if (isAlarmById) {
+				if (SingleObject.selectedShape == null) return;
 				alarms = SingleFromDB.psClient.getAlarmsPeriodById(dtBeg, dtEnd,
-						SingleObject.selectedShape.getIdTS() > 0 ?
-								SingleObject.selectedShape.getIdTS() : SingleObject.selectedShape.getIdSignal());
+					SingleObject.selectedShape.getIdTS() > 0 ?
+						SingleObject.selectedShape.getIdTS() : SingleObject.selectedShape.getIdSignal());
 			} else {
 				alarms = SingleFromDB.psClient.getAlarmsPeriod(dtBeg, dtEnd);
 			}

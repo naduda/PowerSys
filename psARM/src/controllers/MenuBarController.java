@@ -15,6 +15,7 @@ import controllers.interfaces.StageLoader;
 import controllers.journals.JAlarmsController;
 import javafx.collections.ObservableList;
 import javafx.scene.control.MenuBar;
+import pr.common.MyFormatter;
 import pr.common.Utils;
 import pr.model.DvalTI;
 import single.ProgramProperty;
@@ -35,6 +36,7 @@ public class MenuBarController implements Initializable, IControllerInit {
 	final FileChooser fileChooser = new FileChooser();
 	private String localeName;
 	private final Label lMenuExit = new Label();
+	private final Label lMenuAbout = new Label();
 	private JAlarmsController jAlarmController;
 	
 	@FXML private MenuBar menuBar;
@@ -54,9 +56,13 @@ public class MenuBarController implements Initializable, IControllerInit {
 			setElementText(Controller.getResourceBundle(new Locale("en")));
 		}
 		
-		menuExit.setText("");
 		menuExit.setGraphic(lMenuExit);
 		lMenuExit.setOnMouseReleased(e -> Controller.exitProgram());
+		menuAbout.setGraphic(lMenuAbout);
+		lMenuAbout.setOnMouseReleased(e -> {
+			MyFormatter.isDetailsLog = !MyFormatter.isDetailsLog;
+			System.out.println("MyFormatter.isDetailsLog = " + MyFormatter.isDetailsLog);
+		});
 	}
 	
 	@FXML
@@ -174,7 +180,7 @@ public class MenuBarController implements Initializable, IControllerInit {
 		menuTools.setText(rb.getString("keyTools"));
 		menuSettings.setText(rb.getString("keySettings"));
 		lMenuExit.setText(rb.getString("key_miExit"));
-		menuAbout.setText(rb.getString("keyAbout"));
+		lMenuAbout.setText(rb.getString("keyAbout"));
 
 		menuBar.getMenus().forEach(m -> updateMenuItem(rb, m));
 	}

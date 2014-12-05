@@ -1,9 +1,15 @@
 package controllers;
 
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
+import pr.log.LogFiles;
 import controllers.interfaces.IControllerInit;
 import controllers.journals.AlarmTableController;
+import single.SingleFromDB;
+import single.SingleObject;
+import ui.MainStage;
 import ui.tables.AlarmTableItem;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,6 +28,13 @@ public class TrCommentController implements IControllerInit {
 	@FXML 
 	protected void btnOK(ActionEvent event) {
 		AlarmTableController.confirmAlarm(alarmTableItem, txtArea.getText());
+		MainStage.controller.setNotConfirmed(alarmTableItem.getAlarm().getObjref(), true);
+		try {
+			SingleFromDB.psClient.getNotConfirmedSignals(SingleObject.activeSchemeSignals)
+				.forEach(s -> MainStage.controller.setNotConfirmed(s, false));
+		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "... getNotConfirmedSignals", e);
+		}
 		closeWindowTransparant(event);
 	}
 	

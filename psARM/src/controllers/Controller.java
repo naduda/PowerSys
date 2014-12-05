@@ -140,7 +140,7 @@ public class Controller implements IControllerInit, Initializable {
 	}
 	
 	public void updateTI(Scheme mainScheme, DvalTI ti) {		
-		SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getId() == ti.getSignalref()).forEach(s -> {
+		mainScheme.getListSignals().stream().filter(f -> f.getId() == ti.getSignalref()).forEach(s -> {
 			try {
 				EShape tt = mainScheme.getDeviceById(s.getVal().toString());
 				if (tt == null) return;
@@ -154,6 +154,19 @@ public class Controller implements IControllerInit, Initializable {
 				toolBarController.updateLabel(ti.getServdt());
 			} catch (Exception e) {
 				LogFiles.log.log(Level.SEVERE, "void updateTI(...)", e);
+			}
+		});	
+	}
+	
+	public void setNotConfirmed(int idSignal, boolean isConfirmed) {		
+		SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getId() == idSignal).forEach(s -> {
+			try {
+				EShape tt = SingleObject.mainScheme.getDeviceById(s.getVal().toString());
+				if (tt == null) return;
+				
+				tt.setNotConfirmed(isConfirmed);
+			} catch (Exception e) {
+				LogFiles.log.log(Level.SEVERE, "void setNotConfirmed(...)", e);
 			}
 		});	
 	}

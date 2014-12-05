@@ -115,9 +115,9 @@ public class InfoController implements Initializable, IControllerInit {
 	}
 	
 	private void updateDateValue() {
-		tValue.setText(SingleObject.selectedShape.getValue().getIdValue() + 
-				(SingleObject.selectedShape.getIdTS() == -1 || SingleObject.selectedShape.getIdTS() == 0 ? "" : 
-				String.format(" (TS = %s)", SingleObject.selectedShape.getValue().getIdTSValue())));
+		String s1 = SingleObject.selectedShape.getValue().getIdValue() + "";
+		String s2 = SingleObject.selectedShape.getValue().getIdTSValue() + "";
+		tValue.setText(s1 + (SingleObject.selectedShape.getIdTS() <= 0 ? "" : String.format(" (TS = %s)", s2)));
 		Timestamp dt = SingleObject.selectedShape.getDt();
 		tDate.setText(dt == null ? "" : dFormat.format(SingleObject.selectedShape.getDt()));
 	}

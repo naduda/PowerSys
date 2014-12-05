@@ -11,6 +11,6 @@
 	<classpathentry kind="lib" path="D:/GIT/PowerSys/lib/psCommon.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jasper"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/batic"/>
-	<classpathentry kind="lib" path="D:/Install/glassfish4/mq/lib/jms.jar"/>
+	<classpathentry kind="lib" path="D:/Install/glassfish4/glassfish/lib/gf-client.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -55,11 +55,14 @@ public class AlarmsTopic extends ASender {
 						msgObject.setObject(a);
 						producer.send(topic, msgObject);
 						
-						Alarm oldAlarm = SingleFromDB.getAlarms().stream()
+						List<Alarm> filterData = SingleFromDB.getAlarms().stream()
 								.filter(f -> f.getEventdt().equals(a.getEventdt()) && f.getRecorddt().equals(a.getRecorddt()))
-								.collect(Collectors.toList()).get(0);
-						SingleFromDB.getAlarms().remove(oldAlarm);
-						SingleFromDB.addAlarm(a);
+								.collect(Collectors.toList());
+						if (filterData.size() > 0) {
+							Alarm oldAlarm = filterData.get(0);
+							SingleFromDB.getAlarms().remove(oldAlarm);
+							SingleFromDB.addAlarm(a);
+						}
 					} catch (Exception e) {
 						LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 					}

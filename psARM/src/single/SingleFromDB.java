@@ -58,7 +58,7 @@ public class SingleFromDB {
 				results.put(k, f.get());
 			}
 		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		} finally {
 			service.shutdown();
 		}
