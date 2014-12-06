@@ -3,12 +3,15 @@ package pr.iec104;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 public class CP56Time2a {
 	private final byte[] value = new byte[7];
+	private final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private Date date;
 	
 	public CP56Time2a(Date dateTime) {
 		this(dateTime.getTime());
@@ -17,16 +20,19 @@ public class CP56Time2a {
 	public CP56Time2a(long timeInMillis) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(timeInMillis);
+		setDate(calendar.getTime());
 
-		int ms = calendar.get(Calendar.MILLISECOND) + 1000 * calendar.get(Calendar.SECOND);
-
-		value[0] = (byte) ms;
-		value[1] = (byte) (ms >> 8);
+		value[0] = (byte) calendar.get(Calendar.MILLISECOND);
+		value[1] = (byte) calendar.get(Calendar.SECOND);
 		value[2] = (byte) calendar.get(Calendar.MINUTE);
 		value[3] = (byte) calendar.get(Calendar.HOUR_OF_DAY);
-		value[4] = (byte) (calendar.get(Calendar.DAY_OF_MONTH) + ((((calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7) + 1) << 5));
+		value[4] = (byte) calendar.get(Calendar.DAY_OF_MONTH);// + ((((calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7) + 1) << 5));
 		value[5] = (byte) (calendar.get(Calendar.MONTH) + 1);
 		value[6] = (byte) (calendar.get(Calendar.YEAR) % 100);
+		
+		for (int i = 0; i < value.length; i++) {
+			System.out.print(Integer.toHexString(0xFF & value[i]) + " - ");
+		}
 	}
 
 	public CP56Time2a(DataInputStream inputStream) throws IOException {
@@ -34,12 +40,18 @@ public class CP56Time2a {
 	}
 	
 	public CP56Time2a(byte[] bytes) {
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-		String dateString = (2000 + ((Byte)bytes[0]).intValue()) + "-" +
-				((Byte)bytes[1]).intValue() + "-" + ((Byte)bytes[2]).intValue() + " " + 
-				((Byte)bytes[3]).intValue() + ":" + ((Byte)bytes[4]).intValue() + ":" + 
-				((Byte)bytes[5]).intValue() + "." + ((Byte)bytes[6]).intValue();
-		System.out.println(dateString);
+		String dateString = (2000 + (0xFF & bytes[0])) + "-" +
+				(0xFF & bytes[1]) + "-" + (0xFF & bytes[2]) + " " + 
+				(0xFF & bytes[3]) + ":" + (0xFF & bytes[4]) + ":" + 
+				(0xFF & bytes[5]) + "." + (0xFF & bytes[6]);
+		try {
+			System.out.println(dateString);
+			setDate(df.parse(dateString));
+			System.out.print(date + " - ");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public long getTimestamp(int earliestYear) {
@@ -58,8 +70,11 @@ public class CP56Time2a {
 		return calendar.getTimeInMillis();
 	}
 
-	@Override
-	public String toString() {
-		return "Time56: " + new Date(getTimestamp(0));
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 }

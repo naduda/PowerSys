@@ -1,7 +1,6 @@
 package pr.iec104;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
