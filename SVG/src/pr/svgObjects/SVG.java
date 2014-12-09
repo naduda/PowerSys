@@ -1,4 +1,4 @@
-package svg2fx.svgObjects;
+package pr.svgObjects;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,13 +19,13 @@ public class SVG {
 	private String height;
 	@XmlAttribute(name="viewBox")
 	private String viewBox;
-	@XmlElement(name="title", namespace="http://www.w3.org/2000/svg")
+	@XmlElement(name="title")
 	private String title;
-	@XmlElement(name="style", namespace="http://www.w3.org/2000/svg")
-	private String style;
-	@XmlElement(name="defs", namespace="http://www.w3.org/2000/svg")
+	@XmlElement(name="style")
+	private Style style;
+	@XmlElement(name="defs")
 	private Def defs;
-	@XmlElement(name="g", namespace="http://www.w3.org/2000/svg")
+	@XmlElement(name="g")
 	private List<G> g;
 
 	public String getWidth() {
@@ -68,17 +68,17 @@ public class SVG {
 		this.title = title;
 	}
 
-	public String getStyle() {
+	public Style getStyle() {
 		return style;
 	}
 
-	public void setStyle(String style) {
+	public void setStyle(Style style) {
 		this.style = style;
 	}
 	
 	public String getStyleByName(String name) {
 		HashMap<String, String> styles = new HashMap<>();
-		StringTokenizer st = new StringTokenizer(style, "}");
+		StringTokenizer st = new StringTokenizer(style.getContent(), "}");
 		while (st.hasMoreElements()) {
 			String elem = st.nextElement().toString().trim();
 			if (elem.contains("{")) {

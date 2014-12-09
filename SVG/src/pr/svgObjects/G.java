@@ -1,4 +1,4 @@
-package svg2fx.svgObjects;
+package pr.svgObjects;
 
 import java.util.List;
 
@@ -7,28 +7,34 @@ import javafx.scene.Node;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement(name="g", namespace="http://www.w3.org/2000/svg")
 public class G extends AClassSVG {
 	@XmlAttribute(name="id")
 	private String id;
 	@XmlAttribute(name="transform")
 	private String transform;
-	@XmlElement(name="title", namespace="http://www.w3.org/2000/svg")
+	@XmlElement(name="title")
 	private String title;
-	@XmlElement(name="g", namespace="http://www.w3.org/2000/svg")
+	@XmlElement(name="desc")
+	private String desc;
+	@XmlElement(name="g")
 	private List<G> listG;
-	@XmlElement(name="path", namespace="http://www.w3.org/2000/svg")
+	@XmlElement(name="path")
 	private List<PathSVG> lPath;
-	@XmlElement(name="rect", namespace="http://www.w3.org/2000/svg")
+	@XmlElement(name="rect")
 	private List<RectSVG> lRect;
-	@XmlElement(name="text", namespace="http://www.w3.org/2000/svg")
+	@XmlElement(name="text")
 	private List<TextSVG> lText;
-	@XmlElement(name="ellipse", namespace="http://www.w3.org/2000/svg")
+	@XmlElement(name="ellipse")
 	private List<EllipseSVG> lEllipse;
-	@XmlElement(name="text", namespace="http://www.w3.org/2000/svg")
+	@XmlElement(name="text")
 	private List<LineSVG> lLine;
 	@XmlElement(name="custProps", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
 	private CustProps custProps;
+	@XmlElement(name="textBlock", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private TextBlock textBlock;
 	
 	public String getId() {
 		return id;
@@ -145,5 +151,21 @@ public class G extends AClassSVG {
 		} else {
 			return transformed(group, getTransform());
 		}
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
+	public TextBlock getTextBlock() {
+		return textBlock;
+	}
+
+	public void setTextBlock(TextBlock textBlock) {
+		this.textBlock = textBlock;
 	}
 }

@@ -1,5 +1,8 @@
 package pr.iec104;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 public class Tools {
 	public static int getBit(byte ID, int position) {
 	   return (ID >> position) & 1;
@@ -13,5 +16,19 @@ public class Tools {
 		System.out.println("===========================");
 		CP56Time2a cp2 = new CP56Time2a(cp.getDate().getTime());
 		System.out.println("\nDATE = " + cp2.getDate());
+		
+		byte[] by = {0x03, 0x00, 0x00, 0x00};
+//		byte[] by = new byte[2];
+//		by[0] = 0xFF & 0x03;
+//		by[1] = 0xFF & 0x00;
+
+		try {
+			System.out.println(ByteBuffer.wrap(by).order(ByteOrder.LITTLE_ENDIAN).getInt());
+			//ibb.rewind();
+			System.out.println(ByteBuffer.wrap(by).order(ByteOrder.BIG_ENDIAN).getInt());
+		} catch (Exception e) {
+			System.out.println("err");
+			e.printStackTrace();
+		}
 	}
 }

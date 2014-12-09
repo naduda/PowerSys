@@ -1,4 +1,4 @@
-package svg2fx.svgObjects;
+package pr.svgObjects;
 
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -18,6 +18,7 @@ import pr.log.LogFiles;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class AClassSVG {
@@ -26,9 +27,13 @@ public abstract class AClassSVG {
 	@XmlAttribute(name="style")
 	private String style;
 	
+	@XmlTransient
 	public double startX;
+	@XmlTransient
 	public double startY;
+	@XmlTransient
 	public double endX;
+	@XmlTransient
 	public double endY;
 	
 	public String getClazz() {

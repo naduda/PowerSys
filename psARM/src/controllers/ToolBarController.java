@@ -206,7 +206,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 	}
 
 	@FXML
-	protected void save(ActionEvent event) {
+	protected void save() {
 		FileChooser fileChooser = new FileChooser();
 		FileChooser.ExtensionFilter extentionFilter = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.png");
 		fileChooser.getExtensionFilters().add(extentionFilter);
@@ -220,7 +220,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 	}
 
 	@FXML
-	protected void print(ActionEvent event) {
+	protected void print() {
 		Node node = SingleObject.mainScheme.getContent();
 		System.out.println("============================");
 		Printer.getAllPrinters().forEach(System.out::println);

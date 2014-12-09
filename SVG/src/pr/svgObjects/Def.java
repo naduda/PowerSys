@@ -1,17 +1,28 @@
-package svg2fx.svgObjects;
+package pr.svgObjects;
 
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Def {
+	@XmlAttribute(name = "id")
+	private String id;
 	@XmlElement(name="g", namespace="http://www.w3.org/2000/svg")
 	List<G> lg;
 	@XmlElement(name="marker", namespace="http://www.w3.org/2000/svg")
 	List<Marker> markers;
+	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 	
 	public List<G> getLg() {
 		return lg;

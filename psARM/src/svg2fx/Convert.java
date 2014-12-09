@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
+import pr.SVGModel;
 import pr.log.LogFiles;
 import pr.model.LinkedValue;
+import pr.svgObjects.G;
+import pr.svgObjects.SVG;
 import single.SingleObject;
 import svg2fx.fxObjects.EShape;
-import svg2fx.svgObjects.G;
-import svg2fx.svgObjects.SVG;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Paint;
@@ -38,7 +39,7 @@ public class Convert {
 			}); 
 			group.setUserData(gData);
 		}
-
+		
 		boolean isInRootFinal = !isInRoot;
 		List<G> listG = g.getListG();
 		if (listG != null) {
@@ -71,8 +72,8 @@ public class Convert {
 	
 	public static Node getNodeBySVG(String filePath) {
 		listSignals.clear();
-		EntityFromXML efx = new EntityFromXML();
-		SVG svg = (SVG)efx.getObject(filePath, SVG.class);
+		SVGModel svgModel = SVGModel.getInstance();
+		SVG svg = (SVG)svgModel.getObject(filePath, SVG.class);
 		SingleObject.svg = svg;
 		
 		try {

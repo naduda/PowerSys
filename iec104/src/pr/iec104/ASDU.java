@@ -25,11 +25,12 @@ public class ASDU implements Serializable {
 				for (int j = 0; j < infoBlockSize; j++) {
 					infoBlockArray[j] = bytes[infoBlockSize * i + 6 + j];
 				}
-				infoObjects.add(new InfoObject(infoBlockArray));
+				infoObjects.add(new InfoObject(infoBlockArray, EType.getForInt(0xFF & identBlock.getIdentType())));
 			}
 			infoObjects.forEach(o -> {
 				CP56Time2a tt = new CP56Time2a(o.getTimeArray());
-				
+				System.out.println(tt.getDate() + " - ioa = " + o.getAddress() + 
+						" [" + Integer.toHexString(o.getAddress()) + "]; value = " + o.getValue());
 			});
 		}
 		System.out.println(getIdentBlock());

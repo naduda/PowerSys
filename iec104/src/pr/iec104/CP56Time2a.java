@@ -26,13 +26,9 @@ public class CP56Time2a {
 		value[1] = (byte) calendar.get(Calendar.SECOND);
 		value[2] = (byte) calendar.get(Calendar.MINUTE);
 		value[3] = (byte) calendar.get(Calendar.HOUR_OF_DAY);
-		value[4] = (byte) calendar.get(Calendar.DAY_OF_MONTH);// + ((((calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7) + 1) << 5));
+		value[4] = (byte) calendar.get(Calendar.DAY_OF_MONTH);
 		value[5] = (byte) (calendar.get(Calendar.MONTH) + 1);
 		value[6] = (byte) (calendar.get(Calendar.YEAR) % 100);
-		
-		for (int i = 0; i < value.length; i++) {
-			System.out.print(Integer.toHexString(0xFF & value[i]) + " - ");
-		}
 	}
 
 	public CP56Time2a(DataInputStream inputStream) throws IOException {
@@ -40,16 +36,13 @@ public class CP56Time2a {
 	}
 	
 	public CP56Time2a(byte[] bytes) {
-		String dateString = (2000 + (0xFF & bytes[0])) + "-" +
-				(0xFF & bytes[1]) + "-" + (0xFF & bytes[2]) + " " + 
-				(0xFF & bytes[3]) + ":" + (0xFF & bytes[4]) + ":" + 
-				(0xFF & bytes[5]) + "." + (0xFF & bytes[6]);
+		String dateString = (2000 + (0xFF & bytes[6])) + "-" +
+				(0xFF & bytes[5]) + "-" + (0xFF & bytes[4]) + " " + 
+				(0xFF & bytes[3]) + ":" + (0xFF & bytes[2]) + ":" + 
+				(0xFF & bytes[1]) + "." + (0xFF & bytes[0]);
 		try {
-			System.out.println(dateString);
 			setDate(df.parse(dateString));
-			System.out.print(date + " - ");
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

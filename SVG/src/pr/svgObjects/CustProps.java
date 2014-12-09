@@ -1,4 +1,4 @@
-package svg2fx.svgObjects;
+package pr.svgObjects;
 
 import java.util.List;
 import java.util.stream.Collectors;

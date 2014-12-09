@@ -23,10 +23,10 @@ import javax.xml.bind.JAXBException;
 import controllers.Controller;
 import pr.common.Utils;
 import pr.log.LogFiles;
+import pr.svgObjects.SVG;
 import state.HotKeyClass;
 import state.ProgramSettings;
 import svg2fx.fxObjects.EShape;
-import svg2fx.svgObjects.SVG;
 import ui.MainStage;
 import ui.Scheme;
 import javafx.scene.control.Menu;
@@ -106,7 +106,7 @@ public class SingleObject {
 		
 		StringTokenizer st = new StringTokenizer(str, ",");
 		while (st.hasMoreElements()) {
-			ret.add((Integer) st.nextElement());
+			ret.add(Integer.parseInt(st.nextElement().toString()));
 		}
 		return ret;
 	}

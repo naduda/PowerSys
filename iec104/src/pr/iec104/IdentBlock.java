@@ -1,14 +1,15 @@
 package pr.iec104;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class IdentBlock implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private byte identType;
 	private byte sq;
-	private byte[] cause = new byte[2];
-	private byte[] addressArray = new byte[2];
+	private byte[] cause = new byte[4];
+	private byte[] addressArray = new byte[4];
 	
 	public IdentBlock() {
 		super();
@@ -19,23 +20,23 @@ public class IdentBlock implements Serializable {
 		setIdentType(bytes[0]);
 		setSq(bytes[1]);
 		
-		cause[0] = bytes[3];
-		cause[1] = bytes[2];
+		cause[0] = bytes[2];
+		cause[1] = bytes[3];
 		
-		addressArray[0] = bytes[5];
-		addressArray[1] = bytes[4];
+		addressArray[0] = bytes[4];
+		addressArray[1] = bytes[5];
 	}
 	
 	@Override
 	public String toString() {
-		return "Type = " + identType + "; " +
+		return "Type = " + (0xFF & identType) + "[" + EType.getForInt(0xFF & identType) + "]; " +
 				getSCtoString() + "; " + 
 				"Cause = " + bytesToInt(cause) + "; " + 
 				"Address = " + bytesToInt(addressArray) + "; ";
 	}
 	
 	private int bytesToInt(byte[] bb) {
-		return new BigInteger(bb).intValue();
+		return ByteBuffer.wrap(bb).order(ByteOrder.LITTLE_ENDIAN).getInt();
 	}
 	
 	private String getSCtoString() {
