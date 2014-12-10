@@ -49,7 +49,7 @@ public class Convert {
 				group.getChildren().add(n);
 			});
 			if (isInRoot) {
-				EShape eSh = new EShape(group);
+				EShape eSh = new EShape(group, g);
 				eSh.setId(g.getTitle().replace(".", "_"));
 				return g.transformed(eSh, g.getTransform());
 			} else {
@@ -61,7 +61,7 @@ public class Convert {
 			group.setId("text".equals(n.getId()) ? n.getId() : null);
 			
 			if (isInRoot) {
-				EShape eSh = new EShape(group);
+				EShape eSh = new EShape(group, g);
 				eSh.setId(g.getTitle().replace(".", "_"));
 				return eSh;
 			} else {				
@@ -72,8 +72,9 @@ public class Convert {
 	
 	public static Node getNodeBySVG(String filePath) {
 		listSignals.clear();
-		SVGModel svgModel = SVGModel.getInstance();
-		SVG svg = (SVG)svgModel.getObject(filePath, SVG.class);
+		SingleObject.svgModel = SVGModel.getInstance();
+		SVG svg = SingleObject.svgModel.getSVG(filePath);
+		svg.setFileName(filePath);
 		SingleObject.svg = svg;
 		
 		try {

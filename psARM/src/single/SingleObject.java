@@ -21,6 +21,7 @@ import javax.script.ScriptEngineManager;
 import javax.xml.bind.JAXBException;
 
 import controllers.Controller;
+import pr.SVGModel;
 import pr.common.Utils;
 import pr.log.LogFiles;
 import pr.svgObjects.SVG;
@@ -41,6 +42,7 @@ public class SingleObject {
 	public static String activeSchemeSignals = "";
 	public static EShape selectedShape;
 	public static ByteArrayInputStream schemeInputStream;
+	public static SVGModel svgModel;
 	public static SVG svg;
 	public static Map<String, HotKeyClass> hotkeys = new HashMap<>();
 	public static AlarmActivities alarmActivities = new AlarmActivities();

@@ -15,7 +15,7 @@ import single.Constants;
 import single.ProgramProperty;
 import single.SingleFromDB;
 import single.SingleObject;
-import controllers.interfaces.IControllerInit;
+import controllers.interfaces.AController;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -28,7 +28,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class InfoController implements Initializable, IControllerInit {
+public class InfoController extends AController implements Initializable {
 	private final BooleanProperty selectedShapeChangeProperty = new SimpleBooleanProperty();
 	private final DoubleProperty valueProperty = new SimpleDoubleProperty();
 	

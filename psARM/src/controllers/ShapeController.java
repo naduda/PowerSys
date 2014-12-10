@@ -116,7 +116,7 @@ public class ShapeController implements IControllerInit {
 		if (mOperationMode != null) mOperationMode.setText(rb.getString("keyOperationMode"));
 		if (miAddTransparant != null) miAddTransparant.setText(rb.getString("keyAddTransparant"));
 		if (miEdit != null) miEdit.setText(rb.getString("keyEdit"));
-		if (miDelete != null) miDelete.setText(rb.getString("keyDelete"));
+		if (miDelete != null) miDelete.setText(rb.getString("keyDeleteTransparant"));
 	}
 
 	public Menu getmOperationMode() {

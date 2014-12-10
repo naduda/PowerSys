@@ -66,7 +66,6 @@ public class ToolBarController implements Initializable, IControllerInit {
 	private static final double ZOOM_FACTOR = 0.1;
 	private static final double ZOOM_MAX = 5;
 	private static StageLoader infoStage;
-	private static InfoController infoController;
 	private Point2D infoStagePos;
 	
 	private final List<String> normalModeShapes = new ArrayList<>();
@@ -199,10 +198,18 @@ public class ToolBarController implements Initializable, IControllerInit {
 				infoStagePos = new Point2D(infoStage.getX(), infoStage.getY());
 				showInfoProperty.set(false);
 			});
-			infoController = (InfoController) infoStage.getController();
 		}
 		//infoController.updateStage();
 		showInfoProperty.set(!showInfoProperty.get());
+	}
+	
+	@FXML 
+	protected void previous() {
+		StageLoader cpStage = new StageLoader("CustomProperties.xml", SingleObject.getResourceBundle().getString("keyCustPropTitle"), true);
+		CustomPropertiesController controller = (CustomPropertiesController) cpStage.getController();
+		controller.updateStage();
+		
+		cpStage.show();
 	}
 
 	@FXML
@@ -339,7 +346,6 @@ public class ToolBarController implements Initializable, IControllerInit {
 	@Override
 	public void setElementText(ResourceBundle rb) {
 		lDataOn.setText(rb.getString("keyDataOn"));
-		if (infoController != null ) infoController.setElementText(rb);
 		
 		tbMain.getItems().filtered(f -> f.getClass().equals(Button.class)).forEach(it -> {
 			if (it.getId() != null) {

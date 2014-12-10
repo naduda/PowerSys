@@ -18,6 +18,14 @@ public class Marker extends AClassSVG {
 	private String markerUnits;
 	@XmlElement(name="use", namespace="http://www.w3.org/2000/svg")
 	private Use use;
+	@XmlAttribute(name="arrowType", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private String arrowType;
+	@XmlAttribute(name="arrowSize", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private String arrowSize;
+	@XmlAttribute(name="setback", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private String setback;
+	@XmlAttribute(name="overflow")
+	private String overflow;
 	
 	public String getId() {
 		return id;

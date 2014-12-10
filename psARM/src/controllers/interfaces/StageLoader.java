@@ -17,7 +17,6 @@ import pr.log.LogFiles;
 import single.SingleObject;
 
 public class StageLoader extends Stage {
-
 	private Object controller;
 	
 	public StageLoader(String xmlPath, boolean isMainStageOwner) {
@@ -25,6 +24,11 @@ public class StageLoader extends Stage {
 			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/" + xmlPath)));
 			Parent root = loader.load();
 			controller = loader.getController();
+			try {
+				((AController)controller).init();
+			} catch (Exception e) {
+				LogFiles.log.log(Level.WARNING, "Maybe Login");
+			}
 			
 			Scene scene = new Scene(root);
 			setScene(scene);
@@ -41,7 +45,6 @@ public class StageLoader extends Stage {
 				}
 			});
 		} catch (IOException e) {
-			e.printStackTrace();
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}

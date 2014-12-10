@@ -23,9 +23,9 @@ import pr.common.Utils;
 import pr.log.LogFiles;
 import pr.model.TSysParam;
 import pr.model.Tsignal;
+import pr.svgObjects.G;
 import single.SingleFromDB;
 import single.SingleObject;
-import svg2fx.SignalState;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
@@ -41,6 +41,7 @@ import javafx.scene.text.TextAlignment;
 
 public class EShape extends AShape {
 	private static final String TEXT_CONST = "text";
+	private final G svgGroup;
 	
 	private SignalState value = new SignalState();
 
@@ -61,8 +62,9 @@ public class EShape extends AShape {
 	
 	private HashMap<String, String> custProps;
 	@SuppressWarnings("unchecked")
-	public EShape(Group g) {
+	public EShape(Group g, G svgGroup) {
 		super(g);
+		this.svgGroup = svgGroup;
 		
 		if (g.getUserData() != null) {
 			custProps = (HashMap<String, String>) g.getUserData();
@@ -139,7 +141,6 @@ public class EShape extends AShape {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			LogFiles.log.log(Level.SEVERE, "void runScriptByName(...)", e);
 		}
 	}
@@ -347,5 +348,9 @@ public class EShape extends AShape {
 	public Tsignal gettSignalIDTS() {
 		tSignalIDTS = SingleFromDB.tsignals.get(idTS);
 		return tSignalIDTS;
+	}
+
+	public G getSvgGroup() {
+		return svgGroup;
 	}
 }

@@ -9,24 +9,35 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="svg", namespace="http://www.w3.org/2000/svg")
 public class SVG {
+	@XmlTransient
+	private String fileName;
+	@XmlElement(name="title")
+	private String title;
+	@XmlElement(name="documentProperties", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private DocumentProperties documentProperties;
 	@XmlAttribute(name="width")
 	private String width;
 	@XmlAttribute(name="height")
 	private String height;
 	@XmlAttribute(name="viewBox")
 	private String viewBox;
-	@XmlElement(name="title")
-	private String title;
 	@XmlElement(name="style")
 	private Style style;
 	@XmlElement(name="defs")
 	private Def defs;
 	@XmlElement(name="g")
 	private List<G> g;
+	@XmlAttribute(name = "space", namespace="http://www.w3.org/XML/1998/namespace", required = true)
+	private String space;
+	@XmlAttribute(name="color-interpolation-filters")
+	private String colorInterpolationFilters;
+	@XmlAttribute(name="class")
+	private String clazz;
 
 	public String getWidth() {
 		if (width.toLowerCase().endsWith("in")) {
@@ -103,5 +114,29 @@ public class SVG {
 
 	public void setG(List<G> g) {
 		this.g = g;
+	}
+
+	public String getColorInterpolationFilters() {
+		return colorInterpolationFilters;
+	}
+
+	public void setColorInterpolationFilters(String colorInterpolationFilters) {
+		this.colorInterpolationFilters = colorInterpolationFilters;
+	}
+
+	public String getClazz() {
+		return clazz;
+	}
+
+	public void setClazz(String clazz) {
+		this.clazz = clazz;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 }

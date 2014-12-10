@@ -10,7 +10,8 @@ import pr.iec104.APDU;
 public class Client {
 	@SuppressWarnings("null")
 	public static void main(String[] args) {
-		try (Socket clientSocket = new Socket("10.1.3.3", 4001);
+		try (//Socket clientSocket = new Socket("10.1.3.3", 4001);
+				Socket clientSocket = new Socket("10.1.3.220", 2404);
 				OutputStream outbound = clientSocket.getOutputStream();
 				InputStream is = clientSocket.getInputStream();) {
 			

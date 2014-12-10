@@ -1,13 +1,14 @@
 package pr.svgObjects;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name="textBlock", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class TextBlock {
-	@XmlAttribute(name="margins")
+	@XmlAttribute(name="margins", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
 	private String margins;
-	@XmlAttribute(name="tabSpace")
+	@XmlAttribute(name="tabSpace", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
 	private String tabSpace;
 	
 	public String getMargins() {

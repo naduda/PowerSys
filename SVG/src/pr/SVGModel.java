@@ -22,6 +22,7 @@ import org.xml.sax.XMLReader;
 import com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler;
 
 import pr.log.LogFiles;
+import pr.svgObjects.SVG;
 
 public class SVGModel {
 	private static SVGModel INSTANCE = null;
@@ -64,18 +65,24 @@ public class SVGModel {
 		return result;
 	}
 	
+	public SVG getSVG(String xmlFilePath) {
+		return (SVG) getObject(xmlFilePath, SVG.class);
+	}
+	
 	public void setObject(String xmlFilePath, Object object) {
 		try {
 			JAXBContext jc = JAXBContext.newInstance(object.getClass());
 			Marshaller m = jc.createMarshaller();
-			m.setProperty(CharacterEscapeHandler.class.getName(), 
+			m.setProperty(CharacterEscapeHandler.class.getName(),
 	                new CharacterEscapeHandler() {
 	                    @Override
 	                    public void escape(char[] ac, int i, int j, boolean flag, Writer writer) throws IOException {
 	                        writer.write(ac, i, j);
 	                    }
 	                });
-			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+//			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+//			String doctype = "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.0//EN\" \"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\">";
+//			m.setProperty("com.sun.xml.internal.bind.xmlHeaders", "\n" + doctype);
 			
 			m.marshal(object, new File(xmlFilePath));
 		} catch (JAXBException e) {

@@ -11,7 +11,23 @@ public class CP {
 	@XmlAttribute(name="lbl", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
 	private String lbl;
 	@XmlAttribute(name="val", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
-	private String val;
+	private String val;	
+	@XmlAttribute(name="prompt", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private String prompt;
+	@XmlAttribute(name="type", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private Integer type;
+	@XmlAttribute(name="format", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private String format;
+	@XmlAttribute(name="sortKey", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private String sortKey;
+	@XmlAttribute(name="invis", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private boolean invis;
+	@XmlAttribute(name="ask", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private boolean ask;
+	@XmlAttribute(name="langID", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private String langID;
+	@XmlAttribute(name="cal", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private String cal;	
 	@XmlAttribute(name="signals", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
 	private String signals;
 	@XmlAttribute(name="id", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
@@ -50,7 +66,13 @@ public class CP {
 	}
 
 	public void setVal(String val) {
-		this.val = val;
+		switch(type) {
+		case 2: this.val = "VT0(" + val + ")";
+			break;
+		default :
+			this.val = "VT4(" + val + ")";
+			break;	
+		}
 	}
 
 	public String getSignals() {
@@ -95,5 +117,69 @@ public class CP {
 
 	public void setPrecision(String precision) {
 		this.precision = precision;
+	}
+
+	public String getPrompt() {
+		return prompt;
+	}
+
+	public void setPrompt(String prompt) {
+		this.prompt = prompt;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
+	public String getSortKey() {
+		return sortKey;
+	}
+
+	public void setSortKey(String sortKey) {
+		this.sortKey = sortKey;
+	}
+
+	public boolean isInvis() {
+		return invis;
+	}
+
+	public void setInvis(boolean invis) {
+		this.invis = invis;
+	}
+
+	public boolean isAsk() {
+		return ask;
+	}
+
+	public void setAsk(boolean ask) {
+		this.ask = ask;
+	}
+
+	public String getLangID() {
+		return langID;
+	}
+
+	public void setLangID(String langID) {
+		this.langID = langID;
+	}
+
+	public String getCal() {
+		return cal;
+	}
+
+	public void setCal(String cal) {
+		this.cal = cal;
 	}
 }

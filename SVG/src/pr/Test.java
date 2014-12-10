@@ -10,6 +10,7 @@ public class Test {
 		SVG svg = (SVG)svgModel.getObject(filePath + ".svg", SVG.class);
 		svg.setTitle("ttt");
 		svgModel.setObject(filePath + "_2.svg", svg);
+		System.out.println(filePath + "_2.svg");
 	}
 
 }

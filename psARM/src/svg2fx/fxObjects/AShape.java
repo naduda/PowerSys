@@ -2,7 +2,9 @@ package svg2fx.fxObjects;
 
 import java.util.Date;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 
+import pr.log.LogFiles;
 import single.ProgramProperty;
 import single.SingleObject;
 import javafx.animation.KeyFrame;
@@ -146,7 +148,11 @@ public abstract class AShape extends Group {
 			if (c instanceof Group) {
 				getAllNodes((Group) c, path + "/" + i);
 			} else {
-				System.out.println((path + "/" + i) + " :::: " + c);
+				if (path.length() > 4) {
+					path = path.substring(3, path.length());
+					path = "[" + path + "]";
+					LogFiles.log.log(Level.INFO, path + " - " + c);
+				}
 			}
 			i++;
 		}

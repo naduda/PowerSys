@@ -6,7 +6,7 @@ public class AdapterCDATA extends XmlAdapter<String, String> {
 	
     @Override
     public String marshal(String arg0) throws Exception {
-        return "<![CDATA[" + arg0 + "]]>";
+        return "\n\t\t<![CDATA[\n\t\t" + arg0.trim() + "\n\t\t]]>\n\t";
     }
     
     @Override

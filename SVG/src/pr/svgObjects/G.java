@@ -11,14 +11,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="g", namespace="http://www.w3.org/2000/svg")
 public class G extends AClassSVG {
-	@XmlAttribute(name="id")
-	private String id;
-	@XmlAttribute(name="transform")
-	private String transform;
+	@XmlElement(name="userDefs", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private UserDefs userDefs;
 	@XmlElement(name="title")
 	private String title;
 	@XmlElement(name="desc")
 	private String desc;
+	@XmlElement(name="pageProperties", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private PageProperties pageProperties;
+	
+	@XmlElement(name="textBlock", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private TextBlock textBlock;
+	@XmlElement(name="textRect", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private TextRect textRect;
+	@XmlElement(name="layer", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private Layer layer;
+	@XmlAttribute(name="id")
+	private String id;
 	@XmlElement(name="g")
 	private List<G> listG;
 	@XmlElement(name="path")
@@ -33,8 +42,16 @@ public class G extends AClassSVG {
 	private List<LineSVG> lLine;
 	@XmlElement(name="custProps", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
 	private CustProps custProps;
-	@XmlElement(name="textBlock", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
-	private TextBlock textBlock;
+	@XmlAttribute(name="mID", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private Integer mID;
+	@XmlAttribute(name="groupContext", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private String groupContext;
+	@XmlAttribute(name="layerMember", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private String layerMember;
+	@XmlAttribute(name="index", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private Integer index;
+	@XmlAttribute(name="transform")
+	private String transform;
 	
 	public String getId() {
 		return id;
@@ -167,5 +184,13 @@ public class G extends AClassSVG {
 
 	public void setTextBlock(TextBlock textBlock) {
 		this.textBlock = textBlock;
+	}
+
+	public TextRect getTextRect() {
+		return textRect;
+	}
+
+	public void setTextRect(TextRect textRect) {
+		this.textRect = textRect;
 	}
 }

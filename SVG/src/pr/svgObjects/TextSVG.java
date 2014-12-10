@@ -16,6 +16,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlMixed;
+import javax.xml.bind.annotation.XmlTransient;
 
 import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
@@ -26,9 +27,12 @@ public class TextSVG extends AClassSVG {
 	private Double x;
 	@XmlAttribute(name="y")
 	private Double y;
+	@XmlAttribute(name="langID", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private String langID;
 	@XmlMixed
 	@XmlAnyElement(lax=false)
 	private List<Object> mixedValue = new ArrayList<>();
+	@XmlTransient
 	private List<Object> values = new ArrayList<>();
 	
 	public Double getX() {
