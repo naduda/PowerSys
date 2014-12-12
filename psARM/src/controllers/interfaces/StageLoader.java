@@ -24,11 +24,6 @@ public class StageLoader extends Stage {
 			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/" + xmlPath)));
 			Parent root = loader.load();
 			controller = loader.getController();
-			try {
-				((AController)controller).init();
-			} catch (Exception e) {
-				LogFiles.log.log(Level.WARNING, "Maybe Login");
-			}
 			
 			Scene scene = new Scene(root);
 			setScene(scene);

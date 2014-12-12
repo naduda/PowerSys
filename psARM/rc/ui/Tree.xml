@@ -4,13 +4,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 
-<ScrollPane fx:id="spTree" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.TreeController" hbarPolicy="NEVER">
+<ScrollPane fx:id="spTree" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.tree.TreeController" hbarPolicy="NEVER">
 	<padding>
 		<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
 	</padding>
 	<Accordion fx:id="accordTree">
 		<panes>
-			<TitledPane fx:id="tpSchemes" text="Схеми" prefWidth="${spTree.width-spTree.padding.left-spTree.padding.right-5}" prefHeight="${spTree.height/2}">
+			<TitledPane fx:id="tpSchemes" prefWidth="${spTree.width-spTree.padding.left-spTree.padding.right-5}" >
 				<graphic>
 					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 						<Image url="@../Icon/schemes.png"/>
@@ -24,38 +24,30 @@
 					</TreeView>
 				</content>
 			</TitledPane>
-			<TitledPane fx:id="tpTrends" text="Тренди" prefHeight="${spTree.height/2}">
+			<TitledPane fx:id="tpTrends" text="Тренди" >
 				<graphic>
 					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 						<Image url="@../Icon/trend2.png"/>
 					</ImageView>
 				</graphic>
 				<content>
-					<TreeView showRoot="false" >
+					<TreeView fx:id="tvTrends" showRoot="false">
 						<root>
-							<TreeItem value="trTrends">
-								<children>
-									<TreeItem value="Item1" />
-								</children>
-							</TreeItem>
+							<TreeItem fx:id="trTrends" value="trTrends"/>
 						</root>
 					</TreeView>
 				</content>
 			</TitledPane>
-			<TitledPane fx:id="tpReports" text="Звіти" prefHeight="${spTree.height/2}">
+			<TitledPane fx:id="tpReports" text="Звіти" >
 				<graphic>
 					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 						<Image url="@../Icon/report.png"/>
 					</ImageView>
 				</graphic>
 				<content>
-					<TreeView showRoot="false" >
+					<TreeView fx:id="tvReports" showRoot="false">
 						<root>
-							<TreeItem value="trReports">
-								<children>
-									<TreeItem value="Item1" />
-								</children>
-							</TreeItem>
+							<TreeItem fx:id="trReports" value="trReports"/>
 						</root>
 					</TreeView>
 				</content>

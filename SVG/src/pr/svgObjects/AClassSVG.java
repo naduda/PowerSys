@@ -6,7 +6,10 @@ import java.util.logging.Level;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
@@ -54,7 +57,7 @@ public abstract class AClassSVG {
 		if (styles == null) return sh;
 		Marker marker = null;
 		
-		sh = shapeWithStyle(sh, styles);
+		sh = shapeWithStyle(sh, styles, svg.getDefs());
 		Group ret = new Group();
 		ret.getChildren().add(sh);
 		
@@ -87,7 +90,7 @@ public abstract class AClassSVG {
 		
 		double strokeWidth = gr.getStrokeWidth();
 		Paint oldFill = gr.getFill();
-		gr = shapeWithStyle(gr, svg.getStyleByName(marker.getClazz()));
+		gr = shapeWithStyle(gr, svg.getStyleByName(marker.getClazz()), svg.getDefs());
 		
 		if (oldFill.equals(Color.TRANSPARENT)) {
 			gr.setFill(oldFill);
@@ -140,7 +143,7 @@ public abstract class AClassSVG {
 		}
 	}
 	
-	public Shape shapeWithStyle(Shape sh, String styles) {
+	public Shape shapeWithStyle(Shape sh, String styles, Def defs) {
 		if (styles == null) return sh;
 
 		boolean isFiled = false;
@@ -176,7 +179,43 @@ public abstract class AClassSVG {
 				if (command[1].equals("none")) {
 					sh.setFill(Color.TRANSPARENT);
 				} else {
-					sh.setFill(Color.web(command[1]));
+					try {
+						if (command[1].startsWith("url")) {
+							String gradName = command[1];
+							gradName = gradName.substring(5, gradName.length() - 1);
+							
+							pr.svgObjects.LinearGradient lg = defs.getLinearGradientById(gradName);
+							if (lg != null) {
+								setGradientFill(sh, lg);
+								isFiled = true;
+								break;
+							} else {
+								Pattern pattern = defs.getPatternById(gradName);
+								if (pattern != null) {
+									String styleGr = pattern.getPaths().get(0).getStyle();
+									styleGr = styleGr.substring(styleGr.indexOf("#") + 1, styleGr.indexOf(")"));
+									lg = defs.getLinearGradientById(styleGr);
+									if (lg.getX2() > 0) {
+										double oldVal = lg.getY1();
+										lg.setY1(lg.getX2());
+										setGradientFill(sh, lg);
+										lg.setY1(oldVal);
+									} else {
+										double oldVal = lg.getX2();
+										lg.setX2(lg.getY1());
+										setGradientFill(sh, lg);
+										lg.setX2(oldVal);
+									}
+									isFiled = true;
+									break;
+								}
+							}
+						}
+						
+						sh.setFill(Color.web(command[1]));
+					} catch (Exception e) {
+						LogFiles.log.log(Level.WARNING, "Color " + command[1] + " cannot be setting ...");
+					}
 				}
 				isFiled = true;
 				break;
@@ -184,6 +223,24 @@ public abstract class AClassSVG {
 		}
 		if (!isFiled) sh.setFill(Color.TRANSPARENT);
 		return sh;
+	}
+	
+	private void setGradientFill(Shape sh, pr.svgObjects.LinearGradient lg) {
+		Stop[] stops = new Stop[lg.getStops().size()];
+		
+		for (int i = 0; i < lg.getStops().size(); i++) {
+			String styleStop = lg.getStops().get(i).getStyle();
+			String stopColor = styleStop.substring(styleStop.indexOf("stop-color:") + 11);
+			stopColor = stopColor.substring(0, stopColor.indexOf(";"));
+			String stopOpacity = styleStop.substring(styleStop.indexOf("stop-opacity:") + 13);
+			double opacity = Double.parseDouble(stopOpacity);
+			stops[i] = new Stop(lg.getStops().get(i).getOffset(), Color.web(stopColor, opacity));
+		}
+		
+		LinearGradient lGrad = new LinearGradient(lg.getX1(), lg.getY1(), lg.getX2(), lg.getY2(), 
+				true, CycleMethod.NO_CYCLE, stops);
+		
+		sh.setFill(lGrad);
 	}
 	
 	public Node transformed(Node n, String str) {

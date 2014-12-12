@@ -48,6 +48,7 @@ import pr.model.SwitchEquipmentJournalItem;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import pr.model.TalarmParam;
+import pr.model.Tconftree;
 import pr.model.Transparant;
 import pr.model.Tsignal;
 import pr.model.TtranspHistory;
@@ -153,7 +154,6 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 			session.getMapper(BaseMapper.class).update(query);			
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
-			LogFiles.log.log(Level.SEVERE, query);
 		} finally {
 			session.close();
 		}
@@ -462,6 +462,20 @@ public class PostgresDB implements IMapperSP, IMapperT, IMapperAction, IMapperV 
 		}
 	}
 //	----- T -----
+	@Override
+	public Map<Integer, Tconftree> getTconftreeMap() {
+		SqlSession session = null;
+		try {
+			session = sqlSessionFactory.openSession(true);
+			return session.getMapper(IMapperT.class).getTconftreeMap();
+		} catch (Exception e) {
+			LogFiles.log.log(Level.SEVERE, "getTconftreeMap()", e);
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+	
 	@Override
 	public Map<Integer, Tsignal> getTsignalsMap() {
 		SqlSession session = null;

@@ -41,6 +41,9 @@ import javafx.scene.text.TextAlignment;
 
 public class EShape extends AShape {
 	private static final String TEXT_CONST = "text";
+	private final DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();	
+	private final DecimalFormat decimalFormat = new DecimalFormat("", decimalFormatSymbols);
+	
 	private final G svgGroup;
 	
 	private SignalState value = new SignalState();
@@ -65,6 +68,9 @@ public class EShape extends AShape {
 	public EShape(Group g, G svgGroup) {
 		super(g);
 		this.svgGroup = svgGroup;
+		
+		decimalFormatSymbols.setDecimalSeparator(',');
+		decimalFormatSymbols.setGroupingSeparator(' ');
 		
 		if (g.getUserData() != null) {
 			custProps = (HashMap<String, String>) g.getUserData();
@@ -141,7 +147,7 @@ public class EShape extends AShape {
 				}
 			}
 		} catch (Exception e) {
-			LogFiles.log.log(Level.SEVERE, "void runScriptByName(...)", e);
+			//LogFiles.log.log(Level.SEVERE, "void runScriptByName(...) " + scriptName, e);
 		}
 	}
 	
@@ -203,8 +209,22 @@ public class EShape extends AShape {
 		
 		getValueProp().set(val); //Listener
 	}
+	
+	public void setTextValue(Text txt, String val) {
+		txt.setText(val);
+	}
+	
+	public void setTextValue(Text txt, String val, String format) {
+		decimalFormat.applyPattern(format);
+		try {
+			txt.setText(decimalFormat.format(Double.parseDouble(val)));
+		} catch (Exception e) {
+			txt.setText(val);
+		}		
+	}
 
 	private void setTextValue(Node n, double val, final String format) {
+		decimalFormat.applyPattern(format);
 		if (n instanceof Group) {
 			Group gr = (Group)n;
 			gr.getChildren().forEach(ch -> setTextValue(ch, val, format) );
@@ -217,20 +237,14 @@ public class EShape extends AShape {
 						t.setText("");
 						return;
 					}
-									
-					DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
-					decimalFormatSymbols.setDecimalSeparator(',');
-					decimalFormatSymbols.setGroupingSeparator(' ');
 					
-					DecimalFormat decimalFormat = new DecimalFormat(format, decimalFormatSymbols);
-					String textValue = decimalFormat.format(val) + "  " + SingleFromDB.signals.get(id).getNameunit().trim();
-					
+					String textValue = decimalFormat.format(val) + "  " + SingleFromDB.signals.get(id).getNameunit().trim();					
 					t.setText(textValue);
 					
 					if (t.getParent().getParent().getParent().getParent().getId().toLowerCase().startsWith("digitaldevice") && 
 							((Group)t.getParent()).getChildren().size() > 1) {
 						Group p = (Group)t.getParent();
-
+						
 						Platform.runLater(() -> {
 							try {
 								p.getChildren().remove(p.getChildren().get(1));
@@ -298,7 +312,7 @@ public class EShape extends AShape {
 	public String getScriptPath() {
 		if (scriptName != null) {
 			scriptPath = Utils.getFullPath("./scripts/" + scriptName + ".js");
-		} else if (custProps != null) {
+		} else {
 			String sName = getId().replace("_", ".");
 			sName = sName.contains(".") ? sName.substring(0, sName.indexOf(".")) : sName;
 			if (TEXT_CONST.equals(sName)) return null;

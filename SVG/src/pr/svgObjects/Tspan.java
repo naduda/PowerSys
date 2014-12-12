@@ -9,8 +9,6 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="tspan", namespace="http://www.w3.org/2000/svg")
 public class Tspan {
-	private static final double ONE_EM = 12;
-	
 	@XmlAttribute(name="x")
 	private Double x;
 	@XmlAttribute(name="y")
@@ -44,9 +42,9 @@ public class Tspan {
 		return dx;
 	}
 	
-	public double getDxPix(double oldValue) {
+	public double getDxPix(double oldValue, double em) {
 		if (dx == null) return oldValue;
-		return Double.parseDouble(dx.substring(0, dx.indexOf("em"))) * ONE_EM + oldValue;
+		return Double.parseDouble(dx.substring(0, dx.indexOf("em"))) * em + oldValue;
 	}
 	
 	public void setDx(String dx) {
@@ -57,9 +55,9 @@ public class Tspan {
 		return dy;
 	}
 	
-	public double getDyPix(double oldValue) {
+	public double getDyPix(double oldValue, double em) {
 		if (dy == null) return oldValue;
-		return Double.parseDouble(dy.substring(0, dy.indexOf("em"))) * ONE_EM + oldValue;
+		return Double.parseDouble(dy.substring(0, dy.indexOf("em"))) * em + oldValue;
 	}
 	
 	public void setDy(String dy) {

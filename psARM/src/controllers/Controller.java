@@ -151,6 +151,12 @@ public class Controller implements IControllerInit, Initializable {
 				tt.setValue(ti.getVal(), s.getDt().toString());
 				tt.setRcode(ti.getRcode());
 				
+				if (tt.gettSignalID().getTypesignalref() == 3) {
+					updateSignal(tt.getIdSignal(), SingleFromDB.validTimeOutTI);
+				} else {
+					updateSignal(tt.getIdSignal(), SingleFromDB.validTimeOutTS);
+				}
+				
 				toolBarController.updateLabel(ti.getServdt());
 			} catch (Exception e) {
 				LogFiles.log.log(Level.SEVERE, "void updateTI(...)", e);
@@ -171,7 +177,7 @@ public class Controller implements IControllerInit, Initializable {
 		});	
 	}
 	
-	public static void updateSignal(int idSigal, int type_, int sec) {
+	public static void updateSignal(int idSigal, int sec) {
 		SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getId() == idSigal).forEach(s -> {
 			EShape tt = SingleObject.mainScheme.getDeviceById(s.getVal().toString());
 			if (tt == null) return;

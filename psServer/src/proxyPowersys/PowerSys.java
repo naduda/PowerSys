@@ -34,6 +34,7 @@ import pr.model.SwitchEquipmentJournalItem;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import pr.model.TalarmParam;
+import pr.model.Tconftree;
 import pr.model.Transparant;
 import pr.model.Tsignal;
 import pr.model.TtranspHistory;
@@ -128,6 +129,12 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	@Override
 	public Map<Integer, Tsignal> getTsignalsMap() throws RemoteException {
 		return pdb.getTsignalsMap();
+	}
+
+	
+	@Override
+	public Map<Integer, Tconftree> getTconftreeMap() throws RemoteException {
+		return pdb.getTconftreeMap();
 	}
 
 	@Override

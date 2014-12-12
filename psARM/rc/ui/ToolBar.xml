@@ -8,7 +8,7 @@
 	<Label fx:id="lDataOn"/>
 	<Label fx:id="lLastDate" prefWidth="150"/>
 	<Separator/>
-	<Button fx:id="previous" styleClass="toolBarButton" />
+	<Button fx:id="previous" onAction="#previous" styleClass="toolBarButton" />
 	<Button fx:id="next" styleClass="toolBarButton" />
 	<Separator/>
 	<Button fx:id="zoomMinus" onAction="#zoomMinus" styleClass="toolBarButton" />

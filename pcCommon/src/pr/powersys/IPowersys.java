@@ -20,6 +20,7 @@ import pr.model.SwitchEquipmentJournalItem;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import pr.model.TalarmParam;
+import pr.model.Tconftree;
 import pr.model.Transparant;
 import pr.model.Tsignal;
 import pr.model.TtranspHistory;
@@ -41,6 +42,7 @@ public interface IPowersys extends Remote {
 	Map<Integer, String> getReports() throws RemoteException;
 	String getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd) throws RemoteException;
 //	==============================================================================
+	Map<Integer, Tconftree> getTconftreeMap() throws RemoteException;
 	Map<Integer, Tsignal> getTsignalsMap() throws RemoteException;
 	Map<Integer, VsignalView> getVsignalViewMap() throws RemoteException;
 	Map<Integer, ConfTree> getConfTreeMap() throws RemoteException;

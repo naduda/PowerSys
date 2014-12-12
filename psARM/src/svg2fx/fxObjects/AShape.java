@@ -152,6 +152,9 @@ public abstract class AShape extends Group {
 					path = path.substring(3, path.length());
 					path = "[" + path + "]";
 					LogFiles.log.log(Level.INFO, path + " - " + c);
+				} else {
+					System.out.println(path);
+					System.out.println(c);
 				}
 			}
 			i++;
@@ -185,6 +188,7 @@ public abstract class AShape extends Group {
 	public void updateSignal(int sec) {
 		if (updateInterval == 0) updateInterval = sec;
 		if (lastDataDate == null || !isUpdateSignal) return;
+		
 		if ((System.currentTimeMillis() - lastDataDate.getTime()) < sec * 1000) {
 			if ((Color.WHITE).equals(rect.getStroke())) {
 				rect.setStroke(Color.TRANSPARENT);

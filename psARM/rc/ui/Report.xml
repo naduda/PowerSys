@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.web.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.*?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ReportController" styleClass="root">
+	<padding>
+		<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+	</padding>
+
+	<children>
+		<WebView fx:id="webView" />
+	</children>
+
+	<stylesheets>
+		<URL value="@Main.css" />
+	</stylesheets>
+</StackPane>

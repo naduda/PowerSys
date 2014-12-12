@@ -29,10 +29,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
-public class LoginController implements IControllerInit, Initializable {
-	private static final int TIMEOUT_TI_SEC = 35;
-	private static final int TIMEOUT_TS_SEC = 600;
-	
+public class LoginController implements IControllerInit, Initializable {	
 	@FXML private Label lbAddress;
 	@FXML private TextField txtAddress;
 	@FXML private Button btnOK;
@@ -61,8 +58,8 @@ public class LoginController implements IControllerInit, Initializable {
 		SingleObject.mainStage = stage;
 		
         new Thread(new ReceiveTopic(SingleObject.ipAddress + ":7676"), "ReceiveTopic").start();
-        new Thread(() -> new UpdateTimeOut(TIMEOUT_TI_SEC, 1), "UpdateTimeOut_TI").start();
-        new Thread(() -> new UpdateTimeOut(TIMEOUT_TS_SEC, 2), "UpdateTimeOut_TS").start();
+        new Thread(() -> new UpdateTimeOut(SingleFromDB.validTimeOutTI, 1), "UpdateTimeOut_TI").start();
+        new Thread(() -> new UpdateTimeOut(SingleFromDB.validTimeOutTS, 2), "UpdateTimeOut_TS").start();
         
         stage.setOnCloseRequest(e -> Controller.exitProgram());
         

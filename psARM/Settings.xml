@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <settings>
     <windowstate x="0.0" y="0.0" width="1370.0" height="744.0">
-        <alarmDividerPositions>0.7836538461538461</alarmDividerPositions>
+        <alarmDividerPositions>0.7644230769230769</alarmDividerPositions>
         <treeDividerPositions>0.16470588235294117</treeDividerPositions>
     </windowstate>
     <schemeSettings>
-        <schemeName>ПС-110 кВ 'Блок-4'</schemeName>
-        <schemeScale>0.6857011961452862</schemeScale>
+        <schemeName>Kazahstan</schemeName>
+        <schemeScale>0.6596206155876717</schemeScale>
     </schemeSettings>
     <localeName>en</localeName>
     <showAlarmColumns>1:1:1:1:1:1:0:0:1:1:0:1:0:</showAlarmColumns>

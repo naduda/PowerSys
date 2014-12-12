@@ -34,6 +34,8 @@ public class TextSVG extends AClassSVG {
 	private List<Object> mixedValue = new ArrayList<>();
 	@XmlTransient
 	private List<Object> values = new ArrayList<>();
+	@XmlTransient
+	private double fontSize = 10;
 	
 	public Double getX() {
 		return x;
@@ -84,6 +86,7 @@ public class TextSVG extends AClassSVG {
 		Group g = new Group();
 		String styles = svg.getStyleByName(getClazz());
 		Text t = new Text();
+		setFontSize(svg);
 		boolean isLastTspan = false;
 		
 		double curX = x;
@@ -95,8 +98,10 @@ public class TextSVG extends AClassSVG {
 				isLastTspan = false;
 			} else if (v instanceof Tspan) {
 				Tspan ts = (Tspan) v;
-				double tx = ts.getX() != null ? ts.getX() : isLastTspan ? ts.getDxPix(curX) : ts.getDxPix(curX) + t.getBoundsInLocal().getWidth();
-				double ty = ts.getY() != null ? ts.getY() : ts.getDyPix(curY);
+				double tx = ts.getX() != null ? ts.getX() : isLastTspan ? ts.getDxPix(curX, fontSize) : 
+					ts.getDxPix(curX, fontSize) + t.getBoundsInLocal().getWidth();
+				double ty = ts.getY() != null ? ts.getY() : ts.getDyPix(curY, fontSize);
+				
 				t = new Text(tx, ty, ts.getValue());
 				g.getChildren().add(textWithStyles(t, styles));
 				curX = tx + t.getBoundsInLocal().getWidth();
@@ -138,5 +143,23 @@ public class TextSVG extends AClassSVG {
 		t.setFont(f);
 		return t;
 	}
-	
+
+	public double getFontSize() {
+		return fontSize;
+	}
+
+	public void setFontSize(SVG svg) {
+		try {
+			String styleMain = svg.getStyleByName(getClazz());
+			String size = styleMain.substring(styleMain.indexOf("font-size:") + 10);
+			if (size.contains(";")) {
+				size = size.substring(0, size.indexOf(";")).replace("em", "").trim();
+			} else {
+				size = size.replace("em", "").trim();
+			}
+			fontSize = Double.parseDouble(size) * svg.getFontSize();
+		} catch (NumberFormatException e) {
+			System.out.println(getClazz());
+		}
+	}
 }

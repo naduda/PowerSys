@@ -44,12 +44,14 @@ public class AlarmActivities {
 			
 			try {
 				while (isPlay) {
+					
 					ms.playSound(filePath);
 					
 					Thread.sleep(500);
 				}
-			} catch (InterruptedException e) {
+			} catch (Exception e) {
 				LogFiles.log.log(Level.SEVERE, "void run()", e);
+				isPlay = false;
 			}
 		}	
 	}

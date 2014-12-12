@@ -1,11 +1,9 @@
 package pr;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 
@@ -74,12 +72,7 @@ public class SVGModel {
 			JAXBContext jc = JAXBContext.newInstance(object.getClass());
 			Marshaller m = jc.createMarshaller();
 			m.setProperty(CharacterEscapeHandler.class.getName(),
-	                new CharacterEscapeHandler() {
-	                    @Override
-	                    public void escape(char[] ac, int i, int j, boolean flag, Writer writer) throws IOException {
-	                        writer.write(ac, i, j);
-	                    }
-	                });
+					(CharacterEscapeHandler) (ac, i, j, flag, writer) -> writer.write(ac, i, j));
 //			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 //			String doctype = "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.0//EN\" \"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\">";
 //			m.setProperty("com.sun.xml.internal.bind.xmlHeaders", "\n" + doctype);

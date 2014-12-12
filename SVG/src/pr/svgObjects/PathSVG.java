@@ -18,7 +18,7 @@ public class PathSVG extends AClassSVG {
 		setStartEndXY(d);
 		SVGPath path = new SVGPath();
 		path.setContent(d);
-		shapeWithStyle(path, getStyle());
+		shapeWithStyle(path, getStyle(), svg.getDefs());
 		return setStyles(path, svg.getStyleByName(getClazz()), svg);
 	}
 }

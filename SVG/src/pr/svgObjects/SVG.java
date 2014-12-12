@@ -38,7 +38,9 @@ public class SVG {
 	private String colorInterpolationFilters;
 	@XmlAttribute(name="class")
 	private String clazz;
-
+	@XmlTransient
+	private double fontSize = 10;
+	
 	public String getWidth() {
 		if (width.toLowerCase().endsWith("in")) {
 			width = width.replace("in", "").trim();
@@ -138,5 +140,21 @@ public class SVG {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public double getFontSize() {
+		try {
+			String styleMain = getStyleByName(clazz);
+			String size = styleMain.substring(styleMain.indexOf("font-size:") + 10);
+			if (size.contains(";")) {
+				size = size.substring(0, size.indexOf(";")).replace("px", "").trim();
+			} else {
+				size = size.replace("px", "").trim();
+			}
+			fontSize = Double.parseDouble(size);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+		return fontSize;
 	}
 }

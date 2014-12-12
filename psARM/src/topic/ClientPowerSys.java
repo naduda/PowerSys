@@ -26,6 +26,7 @@ import pr.model.SwitchEquipmentJournalItem;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
 import pr.model.TalarmParam;
+import pr.model.Tconftree;
 import pr.model.Transparant;
 import pr.model.Tsignal;
 import pr.model.TtranspHistory;
@@ -94,6 +95,15 @@ public class ClientPowerSys implements IPowersys {
 			return myServer.getTsignalsMap();
 		} catch (RemoteException e) {
 			LogFiles.log.log(Level.SEVERE, "Map<Integer, Tsignal> getTsignalsMap()", e);
+		}
+		return null;
+	}
+	
+	public Map<Integer, Tconftree> getTconftreeMap() {
+		try {
+			return myServer.getTconftreeMap();
+		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "Map<Integer, Tconftree> getTconftreeMap()", e);
 		}
 		return null;
 	}

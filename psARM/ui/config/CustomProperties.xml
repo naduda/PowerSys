@@ -7,7 +7,7 @@
 <?import javafx.collections.*?>
 <?import java.lang.*?>
 
-<BorderPane fx:id="bp" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.CustomPropertiesController" styleClass="root">
+<BorderPane fx:id="bp" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.config.CustomPropertiesController" styleClass="root">
 	<padding>
 		<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
 	</padding>
@@ -30,8 +30,8 @@
 				<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
 			</padding>
 
-			<Button fx:id="btnOK" text="Встановити" onAction="#btnOK"/>
-			<Button fx:id="btnCancel" text="Відхилити" onAction="#btnCancel"/>
+			<Button fx:id="btnOK" onAction="#btnOK"/>
+			<Button fx:id="btnCancel" onAction="#btnCancel"/>
 		</HBox>
 	</bottom>
 </BorderPane>

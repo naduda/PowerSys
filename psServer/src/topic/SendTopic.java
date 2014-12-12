@@ -85,6 +85,14 @@ public class SendTopic implements Runnable {
 			this.dbPassword = "12345678";
 			return;
 		}
+		if (dbServer.equals("3")) {
+			this.dbServer = "vik-soft.com.ua";
+			this.dbPort = "5432";
+			this.dbName = "PowerSys_Kazahstan";
+			this.dbUser = "postgres";
+			this.dbPassword = "314159265";
+			return;
+		}
 		if (dbServer.indexOf(":") != -1) {
 			StringTokenizer st = new StringTokenizer(dbServer, ":");
 			this.dbServer = st.nextToken();

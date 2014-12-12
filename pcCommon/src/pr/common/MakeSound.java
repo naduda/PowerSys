@@ -29,7 +29,6 @@ public class MakeSound {
             sourceLine = (SourceDataLine) AudioSystem.getLine(info);
             sourceLine.open(audioFormat);
         } catch (Exception e) {
-            e.printStackTrace();
             return;
         }
 

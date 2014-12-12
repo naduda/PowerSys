@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Select;
 import pr.model.ConfTree;
 import pr.model.TSysParam;
 import pr.model.TViewParam;
+import pr.model.Tconftree;
 import pr.model.Transparant;
 import pr.model.Tsignal;
 import pr.model.TtranspHistory;
@@ -19,7 +20,10 @@ import pr.model.Ttransparant;
 import pr.model.Tuser;
 
 public interface IMapperT {
-
+	@Select("select * from t_conftree")
+	@MapKey("idnode")
+	Map<Integer, Tconftree> getTconftreeMap();
+	
 	@Select("select * from t_signal")
 	@MapKey("idsignal")
 	Map<Integer, Tsignal> getTsignalsMap();

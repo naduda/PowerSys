@@ -23,24 +23,31 @@ public class EllipseSVG extends AClassSVG {
 	public Double getCx() {
 		return cx;
 	}
+	
 	public void setCx(Double cx) {
 		this.cx = cx;
 	}
+	
 	public Double getCy() {
 		return cy;
 	}
+	
 	public void setCy(Double cy) {
 		this.cy = cy;
 	}
+	
 	public Double getRx() {
 		return rx;
 	}
+	
 	public void setRx(Double rx) {
 		this.rx = rx;
 	}
+	
 	public Double getRy() {
 		return ry;
 	}
+	
 	public void setRy(Double ry) {
 		this.ry = ry;
 	}
