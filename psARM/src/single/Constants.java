@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 public class Constants {
 	private final static int MANUAL_MODE = 107;
 	private final static int AUTO_MODE = 0;
+	public static final int TI_SIGNAL = 3;
 	
 	public static String getQuality(int rcode) {
 		ResourceBundle rb = SingleObject.getResourceBundle();

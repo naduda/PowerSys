@@ -26,7 +26,6 @@ public class UpdateTimeOut implements Runnable {
 			while (isRun) {
 				if (SingleObject.mainScheme != null) {
 					List<Integer> signals = type_ == 1 ? SingleObject.mainScheme.getSignalsTI() : SingleObject.mainScheme.getSignalsTS();
-					
 					signals.forEach(s -> Platform.runLater(() -> Controller.updateSignal(s, sec)));
 				}
 				

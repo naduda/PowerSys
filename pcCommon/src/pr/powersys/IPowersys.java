@@ -36,8 +36,8 @@ public interface IPowersys extends Remote {
 	
 //	==============================================================================
 	void update(String query) throws RemoteException;
-	List<NormalModeJournalItem> getListNormalModeItems(String query) throws RemoteException;
-	List<SwitchEquipmentJournalItem> getSwitchJournalItems(String query) throws RemoteException;
+	List<NormalModeJournalItem> getListNormalModeItems(Timestamp dtBeg, Timestamp dtEnd, String idSignals) throws RemoteException;
+	List<SwitchEquipmentJournalItem> getSwitchJournalItems(String idSignals) throws RemoteException;
 	
 	Map<Integer, String> getReports() throws RemoteException;
 	String getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd) throws RemoteException;

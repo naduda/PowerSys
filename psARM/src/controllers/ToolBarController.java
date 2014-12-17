@@ -111,22 +111,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 					Timestamp dtBeg = Timestamp.valueOf(LocalDate.now().atTime(0, 0, 0));
 					Timestamp dtEnd = Timestamp.valueOf(LocalDate.now().plusDays(1).atTime(0, 0));
 					
-					List<String> signalsArr = new ArrayList<>(1);
-					signalsArr.add("");
-					SingleObject.mainScheme.getSignalsTS().forEach(s -> signalsArr.set(0, signalsArr.get(0) + s + ","));
-					String signals = signalsArr.get(0).substring(0, signalsArr.get(0).length() - 1);
-					
-					String query = String.format("select path, nameSignal, idsignal, val, dt, (select min(dt) from d_arcvalts "
-							+ "where signalref = idsignal and dt > d.dt and val <> d.val) dt_new "
-							+ "from (select idSignal, signalpath(idSignal) as path, nameSignal, "
-							+ "coalesce(getval_ts(idSignal, '%s'::timestamp with time zone), baseval) as val, "
-							+ "getdt_ts(idSignal, '%s'::timestamp with time zone) as dt, baseval from t_signal s "
-							+ "where idSignal in (0, %s) union all select idSignal, signalpath(idSignal) as path, nameSignal, val, dt, baseval "
-							+ "from d_arcvalts join t_signal on signalref = idsignal "
-							+ "where idSignal in (0, %s) and dt > '%s' and dt < '%s') d where val <> baseval order by dt desc",
-							dtBeg, dtBeg, signals, signals, dtBeg, dtEnd);
-					
-					List<NormalModeJournalItem> items = SingleFromDB.psClient.getListNormalModeItems(query);
+					List<NormalModeJournalItem> items = SingleFromDB.psClient.getListNormalModeItems(dtBeg, dtEnd, SingleObject.activeSchemeSignals);
 					items.forEach(it -> {
 						if (it.getDt_new() == null) {
 							SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getId() == it.getIdsignal()).forEach(s -> {
@@ -279,14 +264,14 @@ public class ToolBarController implements Initializable, IControllerInit {
 		if (dt == null) {
 			Platform.runLater(() -> lLastDate.setText(""));
 		} else {
-			if (lLastDate.getText().length() == 0) { 
+			if (lLastDate.getText().length() == 0) {
 				Platform.runLater(() -> lLastDate.setText(df.format(dt)));
 			} else {
 				try {
-					if (dt.compareTo(df.parse(lLastDate.getText())) > 0)
+					if (dt.compareTo(df.parse(lLastDate.getText())) > 0) {
 						Platform.runLater(() -> lLastDate.setText(df.format(dt)));
+					}
 				} catch (ParseException e) {
-					e.printStackTrace();
 					LogFiles.log.log(Level.SEVERE, "void updateLabel(Timestamp dt)", e);
 				}
 			}

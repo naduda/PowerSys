@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 
 import com.sun.messaging.ConnectionFactory;
 
+import jdbc.BatisJDBC;
 import jdbc.PostgresDB;
+import jdbc.mappers.IMapper;
 import pr.log.LogFiles;
 import pr.model.Alarm;
 import pr.topic.ASender;
@@ -20,21 +22,22 @@ public class AlarmsTopic extends ASender {
 	private List<Alarm> ls = new ArrayList<>();
 	private List<Alarm> confirmed = new ArrayList<>();
 	private Timestamp dtConfirmed;
-	private PostgresDB pdb;
 	
 	public AlarmsTopic(ConnectionFactory factory, JMSConnection jConn, String topicName, PostgresDB pdb) {
 		super(factory, jConn, topicName);
-		this.pdb = pdb;
 		dtConfirmed = dt;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Timestamp senderMessage(Timestamp dt) {
 		try {
-			ls = pdb.getAlarms(dt);
-			confirmed = pdb.getAlarmsConfirm(dtConfirmed);
+			Timestamp newDT = dt;
+			ls = (List<Alarm>) new BatisJDBC(s -> s.getMapper(IMapper.class).getAlarms(newDT)).get();
+			Timestamp newDTconf = dtConfirmed;
+			confirmed = (List<Alarm>) new BatisJDBC(s -> s.getMapper(IMapper.class).getAlarmsConfirm(newDTconf)).get(); 
 			
-			ls.removeAll(confirmed);
+			if (ls != null && confirmed != null) ls.removeAll(confirmed);
 			if (ls != null && ls.size() > 0) {
 				dt = ls.get(0).getRecorddt();
 				ls.forEach(a -> {

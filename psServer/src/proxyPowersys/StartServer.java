@@ -12,13 +12,12 @@ import java.util.logging.Level;
 import pr.log.LogFiles;
 import pr.powersys.IPowersys;
 import pr.powersys.MySocketFactory;
-import jdbc.PostgresDB;
 
 public class StartServer {
 	
-	public StartServer(PostgresDB pdb) {
+	public StartServer() {
 		try {
-			PowerSys ps = new PowerSys(pdb);
+			PowerSys ps = new PowerSys();
 			String rmiString = String.format("rmi://%s:%s/PowerSysService", "127.0.0.1", IPowersys.RMI_PORT);
 			
 			RMISocketFactory sf = new MySocketFactory();

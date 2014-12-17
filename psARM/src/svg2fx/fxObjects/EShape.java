@@ -6,7 +6,6 @@ import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -24,9 +23,9 @@ import pr.log.LogFiles;
 import pr.model.TSysParam;
 import pr.model.Tsignal;
 import pr.svgObjects.G;
+import single.Constants;
 import single.SingleFromDB;
 import single.SingleObject;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -41,6 +40,7 @@ import javafx.scene.text.TextAlignment;
 
 public class EShape extends AShape {
 	private static final String TEXT_CONST = "text";
+	private static final int WORK_STATUS = 1;
 	private final DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();	
 	private final DecimalFormat decimalFormat = new DecimalFormat("", decimalFormatSymbols);
 	
@@ -51,7 +51,7 @@ public class EShape extends AShape {
 	private Map<String, Integer> signals = new HashMap<>();
 	private int id = -1;
 	private int idTS = -1;
-	private int status = 1;
+	private int status = -1;
 	private int rcode;
 	private Timestamp dt;
 	private String scriptName;
@@ -91,7 +91,7 @@ public class EShape extends AShape {
 			
 			setTextShape(TEXT_CONST.equals(g.getId()) && custProps.get("Value") != null);
 			if (isTextShape() && id > -1 ) {
-				setValue(0.0, "id");
+				setValue(-1, 0.0, "id");
 			}
 		}
 	    
@@ -191,7 +191,7 @@ public class EShape extends AShape {
 		return value;
 	}
 
-	public void setValue(double val, String typeSignal) {
+	public void setValue(int idSignal, double val, String typeSignal) {
 		if (typeSignal.toLowerCase().equals("id")) {
 			value.setIdValue(val);
 		} else if (typeSignal.toLowerCase().equals("idts")) {
@@ -204,8 +204,16 @@ public class EShape extends AShape {
 			setTextValue(this, val, format);
 		}
 		
-		setLastDataDate(new Date(System.currentTimeMillis()));
-		if (updateInterval > 0) updateSignal(updateInterval);
+		setLastDataDate(dt);
+		if (idSignal > 0) {
+			int status = idSignal == id ? gettSignalID().getStatus() : gettSignalIDTS().getStatus();
+			int typeSignalRef = idSignal == id ? tSignalID.getTypesignalref() : tSignalIDTS.getTypesignalref();
+			if (typeSignalRef == Constants.TI_SIGNAL && status == WORK_STATUS) {
+				updateSignal(SingleFromDB.validTimeOutTI);
+			} else if (typeSignalRef != Constants.TI_SIGNAL && status == WORK_STATUS) {
+				updateSignal(SingleFromDB.validTimeOutTS);
+			}
+		}
 		
 		getValueProp().set(val); //Listener
 	}
@@ -227,39 +235,53 @@ public class EShape extends AShape {
 		decimalFormat.applyPattern(format);
 		if (n instanceof Group) {
 			Group gr = (Group)n;
-			gr.getChildren().forEach(ch -> setTextValue(ch, val, format) );
+			gr.getChildren().forEach(ch -> setTextValue(ch, val, format));
 		} else {
 			if (n instanceof Text) {
 				Text t = (Text) n;
 				
 				try {
-					if (t.getText().length() < 5) {
-						t.setText("");
-						return;
-					}
+//					if (t.getText().length() < 5) {
+//						t.setText("");
+//						return;
+//					}
 					
 					String textValue = decimalFormat.format(val) + "  " + SingleFromDB.signals.get(id).getNameunit().trim();					
 					t.setText(textValue);
 					
-					if (t.getParent().getParent().getParent().getParent().getId().toLowerCase().startsWith("digitaldevice") && 
-							((Group)t.getParent()).getChildren().size() > 1) {
+					if (t.getParent().getParent().getParent().getParent().getId().toLowerCase().startsWith("digitaldevice")) {
 						Group p = (Group)t.getParent();
 						
-						Platform.runLater(() -> {
-							try {
-								p.getChildren().remove(p.getChildren().get(1));
-							} catch (Exception e) {
-								//e.printStackTrace();
-							}
-						});
+						try {
+							p.getChildren().remove(p.getChildren().get(1));
+						} catch (Exception e) {
+							//e.printStackTrace();
+						}
 						
-						Node nn = ((Group)((Group)t.getParent().getParent().getParent().getParent()).getChildren().get(0)).getChildren().get(1);
-						Double textVal = nn.getBoundsInLocal().getWidth();
+						Double textVal = svgGroup.getlRect().get(0).getWidth();
 						t.setWrappingWidth(textVal);
-						t.setTranslateX(-nn.getBoundsInLocal().getHeight());
+						
+						if (svgGroup.getlText().get(0).getvParagraph().getHorizAlign() != null) {
+							int ihAlign = svgGroup.getlText().get(0).getvParagraph().getHorizAlign();
+							switch (ihAlign) {
+							case 1:
+								t.setTextAlignment(TextAlignment.CENTER);
+								break;
+							case 2:
+								t.setTextAlignment(TextAlignment.RIGHT);
+								break;
+							default:
+								break;
+							}
+						} else {
+							t.setTextAlignment(TextAlignment.LEFT);
+						}
+						
+						String margins = svgGroup.getTextBlock().getMargins();
+						margins = margins.substring(margins.indexOf("(") + 1, margins.length() - 1);
+						String[] marginsArr = margins.split(",");
+						t.setTranslateX(-(t.getBoundsInParent().getMinX() + Double.parseDouble(marginsArr[1])));
 					}
-					
-					t.setTextAlignment(TextAlignment.RIGHT);
 				} catch (Exception e) {
 					//LogFiles.log.log(Level.WARNING, "void setTextValue(...)", e);
 				}

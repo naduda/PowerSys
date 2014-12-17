@@ -11,6 +11,7 @@ public class Client {
 	@SuppressWarnings("null")
 	public static void main(String[] args) {
 		try (//Socket clientSocket = new Socket("10.1.3.3", 4001);
+//				Socket clientSocket = new Socket("10.1.3.220", 2404);
 				Socket clientSocket = new Socket("10.1.3.220", 2404);
 				OutputStream outbound = clientSocket.getOutputStream();
 				InputStream is = clientSocket.getInputStream();) {
@@ -57,17 +58,6 @@ public class Client {
 				}
 				
 				Thread.sleep(100);
-					
-//				if (isRequest && (System.currentTimeMillis() - c) > 10000) {
-//					outbound.write(testFR);
-//					System.out.println("S ==> testFR");
-//					isRequest = false;
-//					c = System.currentTimeMillis();
-//				} else if ((System.currentTimeMillis() - c) > 10000) {
-//					outbound.write(startDT);
-//					System.out.println("S ==> startDT");
-//					c = System.currentTimeMillis();
-//				}
 				
 			}
 		} catch (IOException | InterruptedException e) {

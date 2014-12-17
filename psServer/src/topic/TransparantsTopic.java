@@ -7,7 +7,9 @@ import java.util.logging.Level;
 
 import com.sun.messaging.ConnectionFactory;
 
+import jdbc.BatisJDBC;
 import jdbc.PostgresDB;
+import jdbc.mappers.IMapperT;
 import pr.model.Ttransparant;
 import pr.topic.ASender;
 import pr.topic.JMSConnection;
@@ -20,23 +22,24 @@ public class TransparantsTopic extends ASender {
 	private Timestamp dtConfirmed;
 	private List<Ttransparant> updated = new ArrayList<>();
 	private Timestamp dtUpdated;
-	private PostgresDB pdb;
 	
 	public TransparantsTopic(ConnectionFactory factory, JMSConnection jConn, String topicName, PostgresDB pdb) {
 		super(factory, jConn, topicName);
-		this.pdb = pdb;
 		dtConfirmed = dt;
 		dtUpdated = dt;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Timestamp senderMessage(Timestamp dt) {
 		try {
-			ls = pdb.getTtransparantsNew(dt);
-			confirmed = pdb.getTtransparantsClosed(dtConfirmed);
-			updated = pdb.getTtransparantsUpdated(dtUpdated);
+			Timestamp newDT = dt;
+			ls = (List<Ttransparant>) new BatisJDBC(s -> s.getMapper(IMapperT.class).getTtransparantsNew(newDT)).get();
 			
-			ls.removeAll(confirmed);
+			confirmed = (List<Ttransparant>) new BatisJDBC(s -> s.getMapper(IMapperT.class).getTtransparantsClosed(dtConfirmed)).get();
+			updated = (List<Ttransparant>) new BatisJDBC(s -> s.getMapper(IMapperT.class).getTtransparantsUpdated(dtUpdated)).get();
+			
+			if (ls != null && confirmed != null) ls.removeAll(confirmed);
 			if (ls != null && ls.size() > 0) {
 				dt = ls.get(0).getSettime();
 				ls.forEach(a -> {

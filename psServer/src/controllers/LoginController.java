@@ -36,7 +36,7 @@ public class LoginController {
         SendTopic sTopic = new SendTopic(dbServer.getText(), dbName.getText(), user.getText(), password.getText());
         new Thread(sTopic, "taskSendTopic").start();
 
-        new StartServer(sTopic.getPdb());
+        new StartServer();
         actiontarget.setText("Sending...");
     }
 

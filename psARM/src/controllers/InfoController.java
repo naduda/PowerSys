@@ -115,11 +115,13 @@ public class InfoController extends AController implements Initializable {
 	}
 	
 	private void updateDateValue() {
-		String s1 = SingleObject.selectedShape.getValue().getIdValue() + "";
-		String s2 = SingleObject.selectedShape.getValue().getIdTSValue() + "";
-		tValue.setText(s1 + (SingleObject.selectedShape.getIdTS() <= 0 ? "" : String.format(" (TS = %s)", s2)));
-		Timestamp dt = SingleObject.selectedShape.getDt();
-		tDate.setText(dt == null ? "" : dFormat.format(SingleObject.selectedShape.getDt()));
+		if (SingleObject.selectedShape != null) {
+			String s1 = SingleObject.selectedShape.getValue().getIdValue() + "";
+			String s2 = SingleObject.selectedShape.getValue().getIdTSValue() + "";
+			tValue.setText(s1 + (SingleObject.selectedShape.getIdTS() <= 0 ? "" : String.format(" (TS = %s)", s2)));
+			Timestamp dt = SingleObject.selectedShape.getDt();
+			tDate.setText(dt == null ? "" : dFormat.format(SingleObject.selectedShape.getDt()));
+		}
 	}
 	
 	private void resize() {

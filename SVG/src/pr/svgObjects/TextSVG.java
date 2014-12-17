@@ -15,6 +15,7 @@ import javafx.scene.text.Text;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -29,6 +30,8 @@ public class TextSVG extends AClassSVG {
 	private Double y;
 	@XmlAttribute(name="langID", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
 	private String langID;
+	@XmlElement(name="paragraph", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	private Vparagraph vParagraph;
 	@XmlMixed
 	@XmlAnyElement(lax=false)
 	private List<Object> mixedValue = new ArrayList<>();
@@ -161,5 +164,9 @@ public class TextSVG extends AClassSVG {
 		} catch (NumberFormatException e) {
 			System.out.println(getClazz());
 		}
+	}
+
+	public Vparagraph getvParagraph() {
+		return vParagraph;
 	}
 }

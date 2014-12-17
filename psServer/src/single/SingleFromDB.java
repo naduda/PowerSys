@@ -15,7 +15,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
+import jdbc.BatisJDBC;
 import jdbc.PostgresDB;
+import jdbc.mappers.IMapper;
+import jdbc.mappers.IMapperT;
 import pr.log.LogFiles;
 import pr.model.Alarm;
 import pr.model.Report;
@@ -35,12 +38,14 @@ public class SingleFromDB {
 	private final static List<TViewParam> tviewparams = new ArrayList<>();
 	private final static Map<Integer, Transparant> transparants = new HashMap<>();
 	private final static Map<Integer, Report> reports = new HashMap<>();
-	public final static Map<Integer, Tsignal> signals = new HashMap<>();
+	private final static Map<Integer, Tsignal> signals = new HashMap<>();
 	private static SQLConnect sqlConnect;
 	private Timestamp dt = null;
+	private static PostgresDB pdb;
 	
 	@SuppressWarnings("unchecked")
-	public SingleFromDB(PostgresDB pdb) {
+	public SingleFromDB() {
+		pdb = getPdb();
 		final ExecutorService service = Executors.newFixedThreadPool(5);
 		LogFiles.log.log(Level.INFO, "Start reading DB");
 		
@@ -52,11 +57,16 @@ public class SingleFromDB {
 				LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 			}
 			
-			futures.put("alarms", service.submit(() -> pdb.getAlarms(dt)));
-			futures.put("tsysparmams", service.submit(() -> pdb.getTSysParam()));
-			futures.put("tviewparams", service.submit(() -> pdb.getTViewParam()));
-			futures.put("transparants", service.submit(() -> pdb.getTransparants()));
-			futures.put("signals", service.submit(() -> pdb.getTsignalsMap()));
+			futures.put("alarms", service.submit(() -> 
+				new BatisJDBC(s -> s.getMapper(IMapper.class).getAlarms(dt)).get()));
+			futures.put("tsysparmams", service.submit(() -> 
+				new BatisJDBC(s -> s.getMapper(IMapperT.class).getTSysParam()).get()));
+			futures.put("tviewparams", service.submit(() -> 
+				new BatisJDBC(s -> s.getMapper(IMapperT.class).getTViewParam()).get()));
+			futures.put("transparants", service.submit(() -> 
+				new BatisJDBC(s -> s.getMapper(IMapperT.class).getTransparants()).get()));
+			futures.put("signals", service.submit(() -> 
+				new BatisJDBC(s -> s.getMapper(IMapperT.class).getTsignalsMap()).get()));
 			
 			for (String k : futures.keySet()) {
 				Future<Object> f = futures.get(k);
@@ -110,5 +120,23 @@ public class SingleFromDB {
 
 	public static void setSqlConnect(SQLConnect sqlConnect) {
 		SingleFromDB.sqlConnect = sqlConnect;
+	}
+
+	public static Map<Integer, Tsignal> getSignals() {
+		return signals;
+	}
+
+	public static PostgresDB getPdb() {
+		if (pdb == null) {
+			pdb = new PostgresDB(sqlConnect.getIpAddress(), sqlConnect.getPort(), sqlConnect.getDbName(),
+					sqlConnect.getUser(), sqlConnect.getPassword());
+		}
+		return pdb;
+//		...\glassfish\glassfish\lib\gf-client.jar
+//		return new PostgresDB("127.0.0.1", "3700", "dimitrovEU");
+	}
+
+	public void setPdb(PostgresDB pdb) {
+		SingleFromDB.pdb = pdb;
 	}
 }

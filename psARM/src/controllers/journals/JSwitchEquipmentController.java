@@ -2,7 +2,6 @@ package controllers.journals;
 
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -25,18 +24,8 @@ public class JSwitchEquipmentController extends TableController {
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);
 		
-		List<String> signalsArr = new ArrayList<>(1);
-		signalsArr.add("");
-		SingleObject.mainScheme.getSignalsTS().forEach(s -> signalsArr.set(0, signalsArr.get(0) + s + ","));
-		String signals = signalsArr.get(0).substring(0, signalsArr.get(0).length() - 1);
-		
 		try {
-			String query = String.format("select formatvalue(id,val) as txtval , * "
-					+ "from (select t.namesignal, (getlast_ts(t.idsignal, null, 0)).* "
-					+ "from t_signal t where t.typesignalref = 2 and t.idsignal in (%s)) as t "
-					+ "order by t.namesignal", signals);
-			
-			List<SwitchEquipmentJournalItem> items = SingleFromDB.psClient.getSwitchJournalItems(query);
+			List<SwitchEquipmentJournalItem> items = SingleFromDB.psClient.getSwitchJournalItems(SingleObject.activeSchemeSignals);
 			items.forEach(it -> addItem(new SwitchEquipmentTableItem(it)));
 			tCount.setText(items.size() + "");
 		} catch (RemoteException e) {

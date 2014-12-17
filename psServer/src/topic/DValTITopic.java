@@ -9,7 +9,9 @@ import java.util.logging.Level;
 
 import com.sun.messaging.ConnectionFactory;
 
+import jdbc.BatisJDBC;
 import jdbc.PostgresDB;
+import jdbc.mappers.IMapper;
 import pr.model.DvalTI;
 import pr.model.Tsignal;
 import pr.topic.ASender;
@@ -20,18 +22,18 @@ public class DValTITopic extends ASender {
 
 	private List<DvalTI> ls = null;
 	private Map<Integer, Tsignal> signals;
-	private PostgresDB pdb;
 
 	public DValTITopic(ConnectionFactory factory, JMSConnection jConn, String topicName, Map<Integer, Tsignal> signals, PostgresDB pdb) {
 		super(factory, jConn, topicName);
 		this.signals = signals;
-		this.pdb = pdb;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public Timestamp senderMessage(Timestamp dt) {		
 		try {
-			ls = pdb.getLastTI(dt);
+			Timestamp newDT = dt;
+			ls = (List<DvalTI>) new BatisJDBC(s -> s.getMapper(IMapper.class).getLastTI(newDT)).get();
 	
 			if (ls != null) {
 				for (int i = 0; i < ls.size(); i++) {

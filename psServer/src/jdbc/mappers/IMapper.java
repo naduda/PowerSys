@@ -21,8 +21,6 @@ import org.apache.ibatis.annotations.Select;
 public interface IMapper {
 //	==============================================================================
 	void update(String query);
-	List<NormalModeJournalItem> getListNormalModeItems(String query);
-	List<SwitchEquipmentJournalItem> getSwitchJournalItems(String query);
 //	==============================================================================
 	
 	@Select("select * from d_valti where servdt > #{servdt} order by servdt desc")
@@ -144,4 +142,21 @@ public interface IMapper {
 			+ "left join t_sysparam v2 on v2.val = d.objref and v2.paramname = 'APPLIST' "
 			+ "where eventdt >= #{dtBeg} and eventdt<#{dtEnd} order by eventdt")
 	List<UserEventJournalItem> getUserEventJournalItems(@Param("dtBeg")Timestamp dtBeg, @Param("dtEnd")Timestamp dtEnd);
+	
+	@Select("select path, nameSignal, idsignal, val, dt, (select min(dt) from d_arcvalts "
+			+ "where signalref = idsignal and dt > d.dt and val <> d.val) dt_new "
+			+ "from (select idSignal, signalpath(idSignal) as path, nameSignal, "
+			+ "coalesce(getval_ts(idSignal, #{dtBeg}::timestamp with time zone), baseval) as val, "
+			+ "getdt_ts(idSignal, #{dtBeg}::timestamp with time zone) as dt, baseval from t_signal s "
+			+ "where idsignal = ANY(#{idsignals}::int[]) union all select idSignal, signalpath(idSignal) as path, nameSignal, val, dt, baseval "
+			+ "from d_arcvalts join t_signal on signalref = idsignal "
+			+ "where idsignal = ANY(#{idsignals}::int[]) and dt > #{dtBeg} and dt < #{dtEnd}) d where val <> baseval order by dt desc")
+	List<NormalModeJournalItem> getListNormalModeItems(@Param("dtBeg")Timestamp dtBeg, @Param("dtEnd")Timestamp dtEnd, 
+			@Param("idsignals") String idSignals);
+	
+	@Select("select formatvalue(id,val) as txtval , * "
+			+ "from (select t.namesignal, (getlast_ts(t.idsignal, null, 0)).* "
+			+ "from t_signal t where t.typesignalref = 2 and t.idsignal = ANY(#{idsignals}::int[])) as t "
+			+ "order by t.namesignal")
+	List<SwitchEquipmentJournalItem> getSwitchJournalItems(@Param("idsignals") String idSignals);
 }

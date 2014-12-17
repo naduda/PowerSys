@@ -64,8 +64,8 @@ public class ClientPowerSys implements IPowersys {
 	}
 	
 	@Override
-	public List<NormalModeJournalItem> getListNormalModeItems(String query) throws RemoteException {
-		return myServer.getListNormalModeItems(query);
+	public List<NormalModeJournalItem> getListNormalModeItems(Timestamp dtBeg, Timestamp dtEnd, String idSignals) throws RemoteException {
+		return myServer.getListNormalModeItems(dtBeg, dtEnd, idSignals);
 	}
 	
 	@Override

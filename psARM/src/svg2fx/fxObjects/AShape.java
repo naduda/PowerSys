@@ -191,12 +191,14 @@ public abstract class AShape extends Group {
 		
 		if ((System.currentTimeMillis() - lastDataDate.getTime()) < sec * 1000) {
 			if ((Color.WHITE).equals(rect.getStroke())) {
-				rect.setStroke(Color.TRANSPARENT);
+				Platform.runLater(() -> rect.setStroke(Color.TRANSPARENT));
 			}
 			timeline.stop();
 		} else {
-			rect.getStrokeDashArray().clear();
-			rect.setStroke(Color.WHITE);
+			Platform.runLater(() -> {
+				rect.getStrokeDashArray().clear();
+				rect.setStroke(Color.WHITE);
+			});
 			//timeline.play();
 		}
 	}
@@ -216,12 +218,14 @@ public abstract class AShape extends Group {
 	public void setNotConfirmed(boolean isConfirmed) {
 		if (isConfirmed) {
 			clearNormalMode();
-			timeline.stop();
+			Platform.runLater(() -> timeline.stop());
 		} else {
 			isUpdateSignal = false;
-			rect.getStrokeDashArray().clear();
-			rect.setStroke(Color.YELLOW);
-			//timeline.play();
+			Platform.runLater(() -> {
+				rect.getStrokeDashArray().clear();
+				rect.setStroke(Color.YELLOW);
+				//timeline.play();
+			});
 		}
 	}
 	

@@ -44,7 +44,7 @@ public class MyFormatter extends Formatter {
 				e.printStackTrace(new PrintWriter(errors));
 				
 				builder.append(fixedLenthString("", tabLength)).append(errors.toString()).append("\n");
-				System.out.println("================================================");
+				builder.append("******************************************").append("\n");
 				e.printStackTrace();
 			}
 			for(Object o : record.getParameters()) {

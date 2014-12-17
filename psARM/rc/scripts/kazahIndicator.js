@@ -8,11 +8,11 @@ function onDoubleClick(sh)
 function onValueChange(sh) 
 {
 	var n = sh.getNodeById('0/0'); 
-	sh.setShapeFill(n, 'red', 'yellow');
+	sh.setShapeFill(n, 'red', 'gold');
 }
 
 function onSignalUpdate(sh) 
 {
 	var n = sh.getNodeById('0/0'); 
-	sh.setShapeFill(n, 'red', 'yellow');
+	sh.setShapeFill(n, 'red', 'gold');
 }

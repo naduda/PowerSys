@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <settings>
-    <windowstate x="0.0" y="0.0" width="1370.0" height="744.0">
-        <alarmDividerPositions>0.7836538461538461</alarmDividerPositions>
-        <treeDividerPositions>0.16470588235294117</treeDividerPositions>
+    <windowstate x="0.0" y="0.0" width="1366.0" height="740.0">
+        <alarmDividerPositions>0.7750809061488673</alarmDividerPositions>
+        <treeDividerPositions>0.16740412979351033</treeDividerPositions>
     </windowstate>
     <schemeSettings>
-        <schemeName>Kazahstan</schemeName>
-        <schemeScale>0.6735366623300276</schemeScale>
+        <schemeName>ПС-110 кВ 'Блок-4'</schemeName>
+        <schemeScale>0.6715630271526</schemeScale>
     </schemeSettings>
     <localeName>en</localeName>
     <showAlarmColumns>1:1:1:1:1:1:0:0:1:1:0:1:0:</showAlarmColumns>
     <iconWidth>16</iconWidth>
     <HotKeys>
-        <hotkey id="miJNormalMode" alt="false" ctrl="false" shift="false" code=""/>
+        <hotkey id="miJNormalMode" alt="true" ctrl="false" shift="false" code="Q"/>
         <hotkey id="next" alt="false" ctrl="false" shift="false" code=""/>
         <hotkey id="ru" alt="false" ctrl="true" shift="false" code="2"/>
         <hotkey id="miJAlarms" alt="false" ctrl="false" shift="false" code=""/>

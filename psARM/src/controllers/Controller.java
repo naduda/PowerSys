@@ -139,7 +139,7 @@ public class Controller implements IControllerInit, Initializable {
 		updateTI(SingleObject.mainScheme, ti);
 	}
 	
-	public void updateTI(Scheme mainScheme, DvalTI ti) {		
+	public void updateTI(Scheme mainScheme, DvalTI ti) {
 		mainScheme.getListSignals().stream().filter(f -> f.getId() == ti.getSignalref()).forEach(s -> {
 			try {
 				EShape tt = mainScheme.getDeviceById(s.getVal().toString());
@@ -148,15 +148,9 @@ public class Controller implements IControllerInit, Initializable {
 				if(tt.getDt() != null && tt.getDt().compareTo(ti.getDt()) > 0) return;
 				
 				tt.setDt(ti.getDt());
-				tt.setValue(ti.getVal(), s.getDt().toString());
+				tt.setValue(ti.getSignalref(), ti.getVal(), s.getDt().toString());
 				tt.setRcode(ti.getRcode());
-				
-				if (tt.gettSignalID().getTypesignalref() == 3) {
-					updateSignal(tt.getIdSignal(), SingleFromDB.validTimeOutTI);
-				} else {
-					updateSignal(tt.getIdSignal(), SingleFromDB.validTimeOutTS);
-				}
-				
+								
 				toolBarController.updateLabel(ti.getServdt());
 			} catch (Exception e) {
 				LogFiles.log.log(Level.SEVERE, "void updateTI(...)", e);
