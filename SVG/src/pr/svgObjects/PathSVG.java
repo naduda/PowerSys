@@ -15,7 +15,14 @@ public class PathSVG extends AClassSVG {
 	
 	@Override
 	public Node getNode(SVG svg) {
-		setStartEndXY(d);
+		try {
+			while (d.indexOf("  ") != -1) {
+				d = d.replaceAll("  ", " ");
+			}
+			setStartEndXY(d);
+		} catch (Exception e) {
+			System.out.println(d);
+		}
 		SVGPath path = new SVGPath();
 		path.setContent(d);
 		shapeWithStyle(path, getStyle(), svg.getDefs());

@@ -149,8 +149,13 @@ public class ClientPowerSys implements IPowersys {
 	}
 
 	@Override
-	public void setTS(int idsignal, double val, int schemeref) throws RemoteException {
-		myServer.setTS(idsignal, val, schemeref);
+	public void setTS(int idsignal, double val, int rCode, int userId, int schemeref) throws RemoteException {
+		myServer.setTS(idsignal, val, rCode, userId, schemeref);
+	}
+
+	@Override
+	public void setTU(int idsignal, double val, int rCode, int userId, int schemeref) throws RemoteException {
+		myServer.setTU(idsignal, val, rCode, userId, schemeref);
 	}
 
 	@Override
@@ -402,5 +407,4 @@ public class ClientPowerSys implements IPowersys {
 		}
 		return null;
 	}
-
 } 

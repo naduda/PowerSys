@@ -51,7 +51,8 @@ public interface IPowersys extends Remote {
 	List<Alarm> getAlarmsPeriodById(Timestamp dtBeg, Timestamp dtEnd, int idSignal) throws RemoteException;
 	Map<String, TSysParam> getTSysParam(String paramname) throws RemoteException;
 	List<TViewParam> getTViewParam(String objdenom, String paramdenom, int userref) throws RemoteException;
-	void setTS(int idsignal, double val, int schemeref) throws RemoteException;
+	void setTS(int idsignal, double val, int rCode, int userId, int schemeref) throws RemoteException;
+	void setTU(int idsignal, double val, int rCode, int userId, int schemeref) throws RemoteException;
 	Map<Integer, DvalTI> getOldTI(String idSignals) throws RemoteException;
 	Map<Integer, DvalTI> getOldTS(String idSignals) throws RemoteException;
 	void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) throws RemoteException;

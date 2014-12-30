@@ -143,11 +143,15 @@ public class MainStage extends Stage implements Serializable {
 			try {
 				f.get().values().stream().filter(p -> SingleObject.mainScheme.getIdSignals().contains(p.getSignalref()))
 					.forEach(s -> {
-						Tsignal tSignal = SingleFromDB.tsignals.get(s.getSignalref());
-						if (tSignal.getTypesignalref() == 1) s.setVal(s.getVal() * tSignal.getKoef());
-						controller.updateTI(SingleObject.mainScheme, s);
-						
-						if (s.getServdt().getTime() > maxOldDTimestamp.getTime()) maxOldDTimestamp.setTime(s.getServdt().getTime());
+						try {
+							Tsignal tSignal = SingleFromDB.tsignals.get(s.getSignalref());
+							if (tSignal.getTypesignalref() == 1) s.setVal(s.getVal() * tSignal.getKoef());
+							controller.updateTI(SingleObject.mainScheme, s);
+							
+							if (s.getServdt().getTime() > maxOldDTimestamp.getTime()) maxOldDTimestamp.setTime(s.getServdt().getTime());
+						} catch (Exception e) {
+							LogFiles.log.log(Level.WARNING, "Update oldValues", e);
+						}
 				});
 			} catch (InterruptedException | ExecutionException e) {
 				LogFiles.log.log(Level.SEVERE, "Error update old values in MainStage", e);

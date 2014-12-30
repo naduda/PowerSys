@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <settings>
-    <windowstate x="0.0" y="0.0" width="1366.0" height="740.0">
-        <alarmDividerPositions>0.782258064516129</alarmDividerPositions>
-        <treeDividerPositions>0.16740412979351033</treeDividerPositions>
+    <windowstate x="0.0" y="0.0" width="1370.0" height="744.0">
+        <alarmDividerPositions>0.8076923076923077</alarmDividerPositions>
+        <treeDividerPositions>0.16691176470588234</treeDividerPositions>
     </windowstate>
     <schemeSettings>
-        <schemeName>Kazahstan</schemeName>
-        <schemeScale>0.6679702436330853</schemeScale>
+        <schemeName>Kazahstan_інвертор</schemeName>
+        <schemeScale>0.6971959755278323</schemeScale>
     </schemeSettings>
     <localeName>en</localeName>
     <showAlarmColumns>1:1:1:1:1:1:0:0:1:1:0:1:0:</showAlarmColumns>

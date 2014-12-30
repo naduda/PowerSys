@@ -54,4 +54,9 @@ public class SpTuCommand implements Serializable {
 	public void setDenom(String denom) {
 		this.denom = denom;
 	}
+
+	@Override
+	public String toString() {
+		return getTxt();
+	}
 }

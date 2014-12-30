@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <settings>
-    <windowstate x="0.0" y="0.0" width="1366.0" height="740.0">
-        <alarmDividerPositions>0.7750809061488673</alarmDividerPositions>
-        <treeDividerPositions>0.16740412979351033</treeDividerPositions>
+    <windowstate x="0.0" y="0.0" width="1370.0" height="744.0">
+        <alarmDividerPositions>0.7676282051282052</alarmDividerPositions>
+        <treeDividerPositions>0.16691176470588234</treeDividerPositions>
     </windowstate>
     <schemeSettings>
-        <schemeName>ПС-110 кВ 'Блок-4'</schemeName>
-        <schemeScale>0.6715630271526</schemeScale>
+        <schemeName>Rivne РП-2</schemeName>
+        <schemeScale>0.6982076416372077</schemeScale>
     </schemeSettings>
     <localeName>en</localeName>
     <showAlarmColumns>1:1:1:1:1:1:0:0:1:1:0:1:0:</showAlarmColumns>

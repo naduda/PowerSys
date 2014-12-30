@@ -7,9 +7,9 @@ function onDoubleClick(sh)
 
 function onValueChange(sh) 
 {
-	var n = sh.getNodeById('/0');
-
-	n.setFill(sh.getColorByName([id] == 1 ? 'red' : 'gold'));
+	var n = sh.getNodeById('0/1');
+	if ([id] == 1) {sh.setTextValue(n, ' Силовой модуль включен');}
+	if ([id] == 0) {sh.setTextValue(n, ' Силовой модуль отключен');}
 }
 
 function onSignalUpdate(sh) 

@@ -181,9 +181,25 @@ public class EShape extends AShape {
 	
 	public void setTS(int idSignal, int val) {
 		try {
-			SingleFromDB.psClient.setTS(idSignal, val, SingleObject.mainScheme.getIdScheme());
+			SingleFromDB.psClient.setTS(idSignal, val, 107, -1, SingleObject.mainScheme.getIdScheme());
 		} catch (RemoteException | NumberFormatException e) {
 			LogFiles.log.log(Level.SEVERE, "void setTS(...)", e);
+		}
+	}
+	
+	public void setTU(int idSignal, double val) {
+		try {
+			switch (getStatus()) {
+			case 1:
+				SingleFromDB.psClient.setTU(idSignal, val, 0, -1, SingleObject.mainScheme.getIdScheme());
+				break;
+			case 3:
+				SingleFromDB.psClient.setTU(idSignal, val, 107, -1, SingleObject.mainScheme.getIdScheme());
+				break;
+			}
+			
+		} catch (RemoteException | NumberFormatException e) {
+			LogFiles.log.log(Level.SEVERE, "void setTU(...)", e);
 		}
 	}
 
@@ -220,6 +236,7 @@ public class EShape extends AShape {
 	
 	public void setTextValue(Text txt, String val) {
 		txt.setText(val);
+		setTextParameters(txt);
 	}
 	
 	public void setTextValue(Text txt, String val, String format) {
@@ -241,51 +258,62 @@ public class EShape extends AShape {
 				Text t = (Text) n;
 				
 				try {
-//					if (t.getText().length() < 5) {
-//						t.setText("");
-//						return;
-//					}
-					
-					String textValue = decimalFormat.format(val) + "  " + SingleFromDB.signals.get(id).getNameunit().trim();					
-					t.setText(textValue);
-					
 					if (t.getParent().getParent().getParent().getParent().getId().toLowerCase().startsWith("digitaldevice")) {
-						Group p = (Group)t.getParent();
-						
-						try {
-							p.getChildren().remove(p.getChildren().get(1));
-						} catch (Exception e) {
-							//e.printStackTrace();
-						}
-						
-						Double textVal = svgGroup.getlRect().get(0).getWidth();
-						t.setWrappingWidth(textVal);
-						
-						if (svgGroup.getlText().get(0).getvParagraph().getHorizAlign() != null) {
-							int ihAlign = svgGroup.getlText().get(0).getvParagraph().getHorizAlign();
-							switch (ihAlign) {
-							case 1:
-								t.setTextAlignment(TextAlignment.CENTER);
-								break;
-							case 2:
-								t.setTextAlignment(TextAlignment.RIGHT);
-								break;
-							default:
-								break;
-							}
-						} else {
-							t.setTextAlignment(TextAlignment.LEFT);
-						}
-						
-						String margins = svgGroup.getTextBlock().getMargins();
-						margins = margins.substring(margins.indexOf("(") + 1, margins.length() - 1);
-						String[] marginsArr = margins.split(",");
-						t.setTranslateX(-(t.getBoundsInParent().getMinX() + Double.parseDouble(marginsArr[1])));
+						String unit = " " + SingleFromDB.signals.get(id).getNameunit().trim();
+						if (unit.length() > 7) unit = ""; //Ne zadano
+						String textValue = decimalFormat.format(val) + unit;
+						t.setText(textValue);
 					}
+					setTextParameters(t);
+//						
+//						Double textVal = svgGroup.getlRect().get(0).getWidth();
+//						t.setWrappingWidth(textVal);
+//						
+//						if (svgGroup.getlText().get(0).getvParagraph().getHorizAlign() != null) {
+//							int ihAlign = svgGroup.getlText().get(0).getvParagraph().getHorizAlign();
+//							switch (ihAlign) {
+//							case 1:
+//								t.setTextAlignment(TextAlignment.CENTER);
+//								break;
+//							case 2:
+//								t.setTextAlignment(TextAlignment.RIGHT);
+//								break;
+//							}
+//						}
+//						
+//						String margins = svgGroup.getTextBlock().getMargins();
+//						margins = margins.substring(margins.indexOf("(") + 1, margins.length() - 1);
+//						String[] marginsArr = margins.split(",");
+//						t.setTranslateX(-(t.getBoundsInParent().getMinX() + Double.parseDouble(marginsArr[1])));
+//					}
 				} catch (Exception e) {
 					//LogFiles.log.log(Level.WARNING, "void setTextValue(...)", e);
 				}
 			}
+		}
+	}
+	
+	private void setTextParameters(Text t) {
+		if (t.getTranslateX() == 0) {
+			Double textVal = svgGroup.getlRect().get(0).getWidth();
+			t.setWrappingWidth(textVal);
+			
+			if (svgGroup.getlText().get(0).getvParagraph().getHorizAlign() != null) {
+				int ihAlign = svgGroup.getlText().get(0).getvParagraph().getHorizAlign();
+				switch (ihAlign) {
+				case 1:
+					t.setTextAlignment(TextAlignment.CENTER);
+					break;
+				case 2:
+					t.setTextAlignment(TextAlignment.RIGHT);
+					break;
+				}
+			}
+			
+			String margins = svgGroup.getTextBlock().getMargins();
+			margins = margins.substring(margins.indexOf("(") + 1, margins.length() - 1);
+			String[] marginsArr = margins.split(",");
+			t.setTranslateX(-(t.getBoundsInParent().getMinX() + Double.parseDouble(marginsArr[1])));
 		}
 	}
 

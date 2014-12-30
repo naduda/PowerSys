@@ -148,14 +148,16 @@ public abstract class AShape extends Group {
 			if (c instanceof Group) {
 				getAllNodes((Group) c, path + "/" + i);
 			} else {
+				if (path.length() < 4) return;
 				if (path.length() > 4) {
 					path = path.substring(3, path.length());
-					path = "[" + path + "]";
-					LogFiles.log.log(Level.INFO, path + " - " + c);
 				} else {
-					System.out.println(path);
-					System.out.println(c);
+					if (path.length() > 3) {
+						path = path.substring(2, path.length());
+					}
 				}
+				path = "[" + path + "]";
+				LogFiles.log.log(Level.INFO, path + " - " + c);
 			}
 			i++;
 		}

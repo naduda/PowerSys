@@ -130,7 +130,7 @@ public class DataWrapper {
 			try {
 				int startIndex = obj1.toString().indexOf("Date=") + 5;
 				Date d1 = dFormat.parse(obj1.toString().substring(startIndex, startIndex + formatDate.length()));
-				startIndex = obj1.toString().indexOf("Date=") + 5;
+				startIndex = obj2.toString().indexOf("Date=") + 5;
 				Date d2 = dFormat.parse(obj2.toString().substring(startIndex, startIndex + formatDate.length()));
 				
 				return d1.compareTo(d2);

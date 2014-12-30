@@ -49,8 +49,13 @@ public interface IMapper {
 	})
 	List<DvalTS> getOldTS(@Param("idsignals") String idSignals);
 	
-	@Select("select set_ts(#{idsignal}, #{val}, now()::timestamp without time zone, 107, -1, #{schemeref})")
-	Integer setTS(@Param("idsignal") int idsignal, @Param("val") double val, @Param("schemeref") int schemeref);
+	@Select("select set_ts(#{idsignal}, #{val}, now()::timestamp without time zone, #{rCode}, #{userId}, #{schemeref})")
+	Integer setTS(@Param("idsignal") int idsignal, @Param("val") double val, @Param("rCode") int rCode,
+			@Param("userId") int userId, @Param("schemeref") int schemeref);
+	
+	@Select("select Set_TU(#{idsignal}, #{val}, null, #{rCode}, #{userId}, #{schemeref})")
+	Integer setTU(@Param("idsignal") int idsignal, @Param("val") double val, @Param("rCode") int rCode,
+			@Param("userId") int userId, @Param("schemeref") int schemeref);
 	
 	@Select("select * from "
 			+ "(select *, alarms_for_event(eventtype,objref,objStatus) as alarms "

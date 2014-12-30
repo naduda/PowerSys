@@ -136,7 +136,7 @@ public class SingleFromDB {
 //		return new PostgresDB("127.0.0.1", "3700", "dimitrovEU");
 	}
 
-	public void setPdb(PostgresDB pdb) {
+	public static void setPdb(PostgresDB pdb) {
 		SingleFromDB.pdb = pdb;
 	}
 }

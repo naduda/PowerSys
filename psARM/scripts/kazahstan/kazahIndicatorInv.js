@@ -7,8 +7,9 @@ function onDoubleClick(sh)
 
 function onValueChange(sh) 
 {
-	var n = sh.getNodeById('0/0'); 
-	sh.setShapeFill(n, 'red', 'gold');
+	var n = sh.getNodeById('/0');
+
+	n.setFill(sh.getColorByName([id] == 0 ? 'red' : 'gold'));
 }
 
 function onSignalUpdate(sh) 

@@ -71,6 +71,7 @@ public class Controller implements IControllerInit, Initializable {
 	}
 	
 	public static void exitProgram() {
+		if (SingleObject.mainScheme == null) return;
 		Window w = SingleObject.mainScheme.getScene().getWindow();
 		WindowState ws = new WindowState(w.getX() < 0 ? 0 : w.getX(), w.getY() < 0 ? 0 : w.getY(), 
 				w.getX() < 0 ? w.getX() + w.getWidth(): w.getWidth(), 

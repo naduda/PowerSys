@@ -81,6 +81,15 @@ public class SendTopic implements Runnable {
 			SingleFromDB.setSqlConnect(new SQLConnect(dbServer, dbPort, dbName, dbUser, dbPassword));
 			return;
 		}
+		if (dbServer.equals("4")) {
+			dbServer = "7.95.146.102";
+			dbPort = "5432";
+			dbName = "PowerSys";
+			dbUser = "postgres";
+			dbPassword = "12345678";
+			SingleFromDB.setSqlConnect(new SQLConnect(dbServer, dbPort, dbName, dbUser, dbPassword));
+			return;
+		}
 		if (dbServer.indexOf(":") != -1) {
 			StringTokenizer st = new StringTokenizer(dbServer, ":");
 			dbServer = st.nextToken();

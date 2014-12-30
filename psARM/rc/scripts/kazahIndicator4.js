@@ -12,14 +12,14 @@ function onValueChange(sh)
 
 	if ([id] == 1) {
 		sh.setTextValue(t, 'Ток');
-		n.setFill(sh.getColorByName('LightGreen'));
+		//n.setFill(sh.getColorByName('LightGreen'));
 	}
 	if ([id] == 2) {
 		sh.setTextValue(t, 'Напряжение');
-		n.setFill(sh.getColorByName('Yellow'));
+		//n.setFill(sh.getColorByName('Yellow'));
 	}
 	if ([id] == 3) {
 		sh.setTextValue(t, 'Потенциал');
-		n.setFill(sh.getColorByName('LightGreen'));
+		//n.setFill(sh.getColorByName('LightGreen'));
 	}
 }

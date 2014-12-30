@@ -127,6 +127,7 @@ public class LineChartContainer extends StackPane {
     private double yLowerBound = -1;
     private double yUpperBound = -1;
 	private void setChartBounds(List<LinkedValue> dataList) {
+		if (dataList.size() == 0) return;
 		double xLowerBoundNew = dataList.stream().mapToDouble(e -> ((Timestamp)e.getDt()).getTime()).min().getAsDouble();
 		double xUpperBoundNew = dataList.stream().mapToDouble(e -> ((Timestamp)e.getDt()).getTime()).max().getAsDouble();
 		

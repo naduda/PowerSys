@@ -178,6 +178,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 	
 	@FXML 
 	protected void info() {
+		if (SingleObject.selectedShape == null) return;
 		if (infoStage == null) {
 			infoStage = new StageLoader("Info.xml", SingleObject.getResourceBundle().getString("keyTooltip_info"), true);
 			infoStage.setOnCloseRequest(e -> {
@@ -185,8 +186,11 @@ public class ToolBarController implements Initializable, IControllerInit {
 				showInfoProperty.set(false);
 			});
 		}
-		//infoController.updateStage();
+		
 		showInfoProperty.set(!showInfoProperty.get());
+		
+//		StageLoader tu = new StageLoader("FormTU.xml", SingleObject.getResourceBundle().getString("keyTooltip_info"), true);
+//		tu.show();
 	}
 	
 	@FXML 

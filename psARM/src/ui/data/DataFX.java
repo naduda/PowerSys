@@ -17,7 +17,7 @@ public class DataFX {
 	}
 		
 	private void rewriteID() {
-		idSignals.clear();
+		if (data.size() > 0) idSignals.clear();
 		List<LinkedValue> dataListChart = new ArrayList<>();
 		dataListChart.addAll(data);
 		

@@ -22,8 +22,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
 public class TextSVG extends AClassSVG {
-	private static final double ONE_PT = 12;
-	
 	@XmlAttribute(name="x")
 	private Double x;
 	@XmlAttribute(name="y")
@@ -39,6 +37,8 @@ public class TextSVG extends AClassSVG {
 	private List<Object> values = new ArrayList<>();
 	@XmlTransient
 	private double fontSize = 10;
+	@XmlTransient
+	private double svgFontSize = 10;
 	
 	public Double getX() {
 		return x;
@@ -124,11 +124,12 @@ public class TextSVG extends AClassSVG {
 		StringTokenizer st = new StringTokenizer(styles, ";");
 		while (st.hasMoreElements()) {
 			String[] command = st.nextElement().toString().split(":");
+			
 			switch (command[0].toLowerCase()) {
 				case "fill": t.setFill(Color.web(command[1])); break;
 				case "font-family": fontName = command[1]; break;
-				case "font-size": 
-					fontSize = Double.parseDouble(command[1].substring(0, command[1].indexOf("em"))) * ONE_PT; 
+				case "font-size":
+					fontSize = Double.parseDouble(command[1].substring(0, command[1].indexOf("em"))) * svgFontSize;
 					break;
 				case "font-style": 
 					if ("italic".equals(command[1])) {
@@ -160,7 +161,8 @@ public class TextSVG extends AClassSVG {
 			} else {
 				size = size.replace("em", "").trim();
 			}
-			fontSize = Double.parseDouble(size) * svg.getFontSize();
+			svgFontSize = svg.getFontSize();
+			fontSize = Double.parseDouble(size) * svgFontSize;
 		} catch (NumberFormatException e) {
 			System.out.println(getClazz());
 		}

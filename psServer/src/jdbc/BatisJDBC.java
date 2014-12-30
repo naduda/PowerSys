@@ -1,7 +1,10 @@
 package jdbc;
 
+import java.util.logging.Level;
+
 import org.apache.ibatis.session.SqlSession;
 
+import pr.log.LogFiles;
 import single.SingleFromDB;
 
 public class BatisJDBC {
@@ -17,7 +20,8 @@ public class BatisJDBC {
 			session = SingleFromDB.getPdb().getSqlSessionFactory().openSession(true);
 			return iBatis.getResult(session);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LogFiles.log.log(Level.SEVERE, "BatisJDBC.get() ", e);
+			SingleFromDB.setPdb(null);
 			return null;
 		} finally {
 			session.close();

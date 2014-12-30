@@ -168,8 +168,13 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	}
 
 	@Override
-	public void setTS(int idsignal, double val, int schemeref) {
-		new BatisJDBC(s -> s.getMapper(IMapper.class).setTS(idsignal, val, schemeref)).get();
+	public void setTS(int idsignal, double val, int rCode, int userId, int schemeref) {
+		new BatisJDBC(s -> s.getMapper(IMapper.class).setTS(idsignal, val, rCode, userId, schemeref)).get();
+	}
+	
+	@Override
+	public void setTU(int idsignal, double val, int rCode, int userId, int schemeref) throws RemoteException {
+		new BatisJDBC(s -> s.getMapper(IMapper.class).setTU(idsignal, val, rCode, userId, schemeref)).get();
 	}
 
 	@Override

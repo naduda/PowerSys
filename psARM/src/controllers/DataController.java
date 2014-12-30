@@ -127,7 +127,6 @@ public class DataController implements Initializable, IControllerInit {
 			data.addAll(SingleFromDB.psClient.getDataIntegrArc(idSignal, Timestamp.valueOf(dpBegin.getValue().atTime(cbHourBegin.getValue(), 0)), 
 					Timestamp.valueOf(dpEnd.getValue().atTime(cbHourEnd.getValue(), 0)), period));
 		} catch (Exception e) {
-			e.printStackTrace();
 			LogFiles.log.log(Level.SEVERE, "List<LinkedValue> getDataFromDB(...)", e);
 		}
 		return data;
