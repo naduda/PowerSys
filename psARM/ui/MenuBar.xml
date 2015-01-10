@@ -34,6 +34,7 @@
 		<Menu fx:id="menuTools">
 			<items>
 				<MenuItem fx:id="miSetBaseVal" onAction="#setBaseVal" />
+				<MenuItem fx:id="miChat" onAction="#chat" />
 			</items>
 		</Menu>
 		<Menu fx:id="menuSettings">
@@ -45,7 +46,8 @@
 						<MenuItem fx:id="uk" text="Українська" onAction="#changeLocale" />
 					</items>
 				</Menu>
-				<MenuItem fx:id="hotkeys" text="HotKeys" onAction="#hotKeys" />
+				<MenuItem fx:id="miConfig" onAction="#schemeConfig" />
+				<MenuItem fx:id="hotkeys" onAction="#hotKeys" />
 			</items>
 		</Menu>
 		<Menu fx:id="menuExit"/>

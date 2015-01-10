@@ -6,6 +6,7 @@ import javax.jms.TopicSubscriber;
 
 import pr.log.LogFiles;
 import topic.messagelisteners.AlarmMessageListener;
+import topic.messagelisteners.ChatMessageListener;
 import topic.messagelisteners.TIMessageListener;
 import topic.messagelisteners.TSMessageListener;
 import topic.messagelisteners.TransparantMessageListener;
@@ -59,6 +60,10 @@ public class ReceiveTopic extends javafx.concurrent.Task<Void> {
 			Topic tTransparants = session.createTopic("Transparants");
 			TopicSubscriber subscribertTransparants = session.createSubscriber(tTransparants);						
 			subscribertTransparants.setMessageListener(new TransparantMessageListener());
+			
+			Topic tChat = session.createTopic("ChatTopic");
+			TopicSubscriber subscribertChat = session.createSubscriber(tChat);						
+			subscribertChat.setMessageListener(new ChatMessageListener());
 			
 			int k = 0;
 			while (isRun) {

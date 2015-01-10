@@ -25,7 +25,6 @@ import pr.common.Utils;
 import pr.common.WMF2PNG;
 import pr.log.LogFiles;
 import pr.model.NormalModeJournalItem;
-import controllers.config.CustomPropertiesController;
 import controllers.interfaces.IControllerInit;
 import controllers.interfaces.StageLoader;
 import controllers.journals.JAlarmsController;
@@ -193,14 +192,12 @@ public class ToolBarController implements Initializable, IControllerInit {
 //		tu.show();
 	}
 	
-	@FXML 
-	protected void previous() {
-		StageLoader cpStage = new StageLoader("config/CustomProperties.xml", 
-				SingleObject.getResourceBundle().getString("keyCustPropTitle"), true);
-		CustomPropertiesController controller = (CustomPropertiesController) cpStage.getController();
-		controller.updateStage();
+	@FXML protected void previous() {
 		
-		cpStage.show();
+	}
+	
+	@FXML protected void next() {
+		SingleObject.chat.show();
 	}
 
 	@FXML

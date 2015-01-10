@@ -19,4 +19,8 @@ public abstract class AController {
 	}
 	
 	public abstract void setElementText(ResourceBundle rb);
+	
+	public void setStageLoader(StageLoader stage) {
+		
+	}
 }

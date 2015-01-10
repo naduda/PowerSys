@@ -14,7 +14,8 @@
 
 	<top>
 		<ToolBar>
-			<Button fx:id="preset" onAction="#preset" text="Preset" styleClass="toolBarButton" />
+			<Button fx:id="add" onAction="#add" text="Add" styleClass="toolBarButton" />
+			<Button fx:id="script" onAction="#script" text="Script" styleClass="toolBarButton" />
 		</ToolBar>
 	</top>
 

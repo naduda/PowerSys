@@ -18,6 +18,7 @@ import single.SingleObject;
 
 public class StageLoader extends Stage {
 	private Object controller;
+	private IStageLoader method;
 	
 	public StageLoader(String xmlPath, boolean isMainStageOwner) {
 		try {
@@ -37,11 +38,17 @@ public class StageLoader extends Stage {
 				if (t.getCode()==KeyCode.ESCAPE) {
 					LogFiles.log.log(Level.INFO, "Exit " + getTitle());
 					((Stage)((Scene)t.getSource()).getWindow()).hide();
+				} else if (t.getCode()==KeyCode.ENTER) {
+					runOnEnter(method);
 				}
 			});
 		} catch (IOException e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
+	}
+	
+	public void runOnEnter(IStageLoader method) {
+		if (method != null) method.runOnEnter();
 	}
 	
 	public StageLoader(String xmlPath, String title, boolean isMainStageOwner) {
@@ -57,5 +64,9 @@ public class StageLoader extends Stage {
 
 	public Object getController() {
 		return controller;
+	}
+
+	public void setMethod(IStageLoader method) {
+		this.method = method;
 	}
 }

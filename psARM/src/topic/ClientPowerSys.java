@@ -14,6 +14,7 @@ import java.util.logging.Level;
 
 import pr.log.LogFiles;
 import pr.model.Alarm;
+import pr.model.ChatMessage;
 import pr.model.ConfTree;
 import pr.model.ControlJournalItem;
 import pr.model.DvalTI;
@@ -53,6 +54,15 @@ public class ClientPowerSys implements IPowersys {
 		}
 	}
 	
+//	==============================================================================
+	@Override
+	public void sendChatMessage(ChatMessage message) {
+		try {
+			myServer.sendChatMessage(message);
+		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "void sendChatMessage(...)", e);
+		}
+	}
 //	==============================================================================
 	@Override
 	public void update(String query) {

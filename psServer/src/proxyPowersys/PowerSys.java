@@ -26,6 +26,7 @@ import pr.powersys.IPowersys;
 import pr.common.Utils;
 import pr.log.LogFiles;
 import pr.model.Alarm;
+import pr.model.ChatMessage;
 import pr.model.ConfTree;
 import pr.model.ControlJournalItem;
 import pr.model.DvalTI;
@@ -51,6 +52,7 @@ import pr.model.UserEventJournalItem;
 import pr.model.VsignalView;
 import reports.ReportTools;
 import single.SingleFromDB;
+import single.SingleObject;
 
 @SuppressWarnings("unchecked")
 public class PowerSys extends UnicastRemoteObject  implements IPowersys {
@@ -58,6 +60,12 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	
 	public PowerSys() throws RemoteException {
 		super();
+	}
+	
+//	==============================================================================
+	@Override
+	public void sendChatMessage(ChatMessage message) {
+		SingleObject.chatTopic.setChatMessage(message);
 	}
 //	==============================================================================
 	@Override

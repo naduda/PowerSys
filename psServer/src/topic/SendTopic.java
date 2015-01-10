@@ -13,6 +13,7 @@ import pr.topic.JMSConnection;
 import pr.log.LogFiles;
 import single.SQLConnect;
 import single.SingleFromDB;
+import single.SingleObject;
 
 import com.sun.messaging.ConnectionConfiguration;
 import com.sun.messaging.ConnectionFactory;
@@ -35,6 +36,7 @@ public class SendTopic implements Runnable {
 			
 			factory = new com.sun.messaging.ConnectionFactory();
 			factory.setProperty(ConnectionConfiguration.imqAddressList, jConn.getConnConfiguration());
+			LogFiles.log.log(Level.INFO, "<JMSConnection> is ready. Port = 7676");
 		} catch (JMSException e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
@@ -48,6 +50,8 @@ public class SendTopic implements Runnable {
 		new Thread(new DValTSTopic(factory, jConn, "DvalTS", SingleFromDB.getPdb()), "SendDValTS_Thread").start();
 		new Thread(new AlarmsTopic(factory, jConn, "Alarms", SingleFromDB.getPdb()), "SendAlarms_Thread").start();
 		new Thread(new TransparantsTopic(factory, jConn, "Transparants", SingleFromDB.getPdb()), "Transparants_Thread").start();
+		SingleObject.chatTopic = new ChatTopic(factory, jConn, "ChatTopic");
+		new Thread(SingleObject.chatTopic, "ChatTopic_Thread").start();
 		
 		LogFiles.log.log(Level.INFO, "Send... ");
 	}

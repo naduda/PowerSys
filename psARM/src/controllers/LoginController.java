@@ -17,6 +17,7 @@ import topic.ReceiveTopic;
 import ui.MainStage;
 import ui.UpdateTimeOut;
 import controllers.interfaces.IControllerInit;
+import controllers.interfaces.StageLoader;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -90,6 +91,9 @@ public class LoginController implements IControllerInit, Initializable {
 				SingleObject.mainStage.getScene().getAccelerators().put(kk, () -> btn.getOnAction().handle(null));
         	}
         });
+        
+        SingleObject.chat = new StageLoader("Chat.xml", 
+				SingleObject.getResourceBundle().getString("keyChatTitle"), true);
         
         LogFiles.log.log(Level.INFO, "Show");
         stage.show();

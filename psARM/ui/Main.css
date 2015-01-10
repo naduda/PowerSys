@@ -22,3 +22,7 @@
 .titled-pane > .title{
    -fx-padding: 0 0 0 -9;
 }
+
+.chat *.content {
+    -fx-background-color: silver;
+}

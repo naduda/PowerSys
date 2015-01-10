@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import controllers.config.CustomPropertiesController;
 import controllers.interfaces.IControllerInit;
 import controllers.interfaces.StageLoader;
 import controllers.journals.JAlarmsController;
@@ -127,8 +128,7 @@ public class MenuBarController implements Initializable, IControllerInit {
 	    stage.show();
 	}
 	
-	@FXML
-	private void setBaseVal() {
+	@FXML private void setBaseVal() {
 		final StringBuilder idBuilder = new StringBuilder();
 		idBuilder.append("{");
 		SingleObject.mainScheme.getIdSignals().forEach(s -> idBuilder.append(s + ","));
@@ -150,8 +150,11 @@ public class MenuBarController implements Initializable, IControllerInit {
 		SingleFromDB.psClient.update(query.get(0));
 	}
 	
-	@FXML
-	private void exit() {
+	@FXML protected void chat() {
+		SingleObject.chat.show();
+	}
+	
+	@FXML private void exit() {
 		Controller.exitProgram();
 	}
 	
@@ -162,6 +165,15 @@ public class MenuBarController implements Initializable, IControllerInit {
 		MainStage.controller.setElementText(Controller.getResourceBundle(new Locale(localeName)));
 		SingleObject.getProgramSettings().setLocaleName(localeName);
 		ProgramProperty.localeName.set(localeName);
+	}
+	
+	@FXML protected void schemeConfig() {
+		StageLoader cpStage = new StageLoader("config/CustomProperties.xml", 
+				SingleObject.getResourceBundle().getString("keyCustPropTitle"), true);
+		CustomPropertiesController controller = (CustomPropertiesController) cpStage.getController();
+		controller.updateStage();
+		
+		cpStage.show();
 	}
 	
 	@FXML

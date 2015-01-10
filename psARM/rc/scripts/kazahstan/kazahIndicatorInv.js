@@ -9,7 +9,7 @@ function onValueChange(sh)
 {
 	var n = sh.getNodeById('/0');
 
-	n.setFill(sh.getColorByName([id] == 1 ? 'red' : 'gold'));
+	n.setFill(sh.getColorByName([id] == 0 ? 'red' : 'gold'));
 }
 
 function onSignalUpdate(sh) 

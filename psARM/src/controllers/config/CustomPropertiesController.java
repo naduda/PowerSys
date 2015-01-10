@@ -1,8 +1,12 @@
 package controllers.config;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
+import pr.common.Utils;
+import pr.log.LogFiles;
 import pr.svgObjects.CP;
 import pr.svgObjects.CustProps;
 import single.ProgramProperty;
@@ -64,8 +68,15 @@ public class CustomPropertiesController extends AController implements Initializ
 		((Stage)gridPane.getScene().getWindow()).hide();
 	}
 	
-	@FXML 
-	protected void preset() {
+	@FXML protected void add() {
+		StageLoader newProp = new StageLoader("config/AddCustProp.xml", 
+				SingleObject.getResourceBundle().getString("keyNewPropertyTitle"), true);
+		
+		newProp.showAndWait();
+		updateStage();
+	}
+	
+	@FXML protected void script() {
 		
 	}
 	
@@ -84,19 +95,37 @@ public class CustomPropertiesController extends AController implements Initializ
 		Button btnEdit = new Button(edit);
 		btnEdit.setId("btnEdit_" + gridPaneSize);
 		btnEdit.setOnAction(a -> {
-			if (tSignal == null) {
-				tSignal = new StageLoader("config/SignalTree.xml", 
-					SingleObject.getResourceBundle().getString("keySignalTreeTitle"), true);
-				tSignalsController = (SignalTreeController) tSignal.getController();
+			if (lbl.getText().toLowerCase().equals("id") || lbl.getText().toLowerCase().equals("idts")) {
+				if (tSignal == null) {
+					tSignal = new StageLoader("config/SignalTree.xml", 
+						SingleObject.getResourceBundle().getString("keySignalTreeTitle"), true);
+					tSignalsController = (SignalTreeController) tSignal.getController();
+				}
+				tSignalsController.setTextField(tField);
+				if (prop.getVal() != null) {
+					try {
+						int idSignal = Integer.parseInt(prop.getVal());
+						tSignalsController.selectNode(idSignal);
+					} catch (Exception e) {
+						LogFiles.log.log(Level.WARNING, "It is not a number!", e);
+					}
+				}
+				tSignal.show();
 			}
-			tSignalsController.setTextField(tField);
-			try {
-				int idSignal = Integer.parseInt(prop.getVal());
-				tSignalsController.selectNode(idSignal);
-			} catch (Exception e) {
-				
+			if (lbl.getText().toLowerCase().equals("script")) {
+				String scriptFile = Utils.getFullPath("./scripts/" + prop.getVal() + ".js");
+				try {
+					String editor = "d:/Install/Sublime Text/sublime_text.exe";
+					File f = new File(editor);
+					if (!f.exists()) {
+						editor = "Notepad.exe";
+					}
+					ProcessBuilder pb = new ProcessBuilder(editor, scriptFile);
+					pb.start();
+				} catch (Exception e) {
+					LogFiles.log.log(Level.SEVERE, "=== Notepad.exe start error ===", e);
+				}
 			}
-			tSignal.show();
 		});
 		gridPane.add(btnEdit, 2, gridPaneSize);
 		

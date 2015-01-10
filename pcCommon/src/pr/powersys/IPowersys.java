@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import pr.model.Alarm;
+import pr.model.ChatMessage;
 import pr.model.ConfTree;
 import pr.model.ControlJournalItem;
 import pr.model.DvalTI;
@@ -33,7 +34,9 @@ import pr.model.VsignalView;
 public interface IPowersys extends Remote {
 	static final int RMI_PORT = 1099;
 //	public static final String bindString = String.format("rmi://%s:%s/PowerSysService", RMI_PORT);
-	
+
+//	==============================================================================
+	void sendChatMessage(ChatMessage message) throws RemoteException;
 //	==============================================================================
 	void update(String query) throws RemoteException;
 	List<NormalModeJournalItem> getListNormalModeItems(Timestamp dtBeg, Timestamp dtEnd, String idSignals) throws RemoteException;

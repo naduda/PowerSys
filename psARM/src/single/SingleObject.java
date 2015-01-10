@@ -21,6 +21,7 @@ import javax.script.ScriptEngineManager;
 import javax.xml.bind.JAXBException;
 
 import controllers.Controller;
+import controllers.interfaces.StageLoader;
 import pr.SVGModel;
 import pr.common.Utils;
 import pr.log.LogFiles;
@@ -51,6 +52,7 @@ public class SingleObject {
 	public static final ScriptEngine engine = manager.getEngineByName("nashorn");
 	public static final Invocable invokeEngine = (Invocable) SingleObject.engine;
 	public static final Map<String, Map<String, String>> readedScripts = new HashMap<>();
+	public static StageLoader chat = null;
 	
 	private static ClassLoader classLoader;
 	public static ClassLoader getClassLoader() {

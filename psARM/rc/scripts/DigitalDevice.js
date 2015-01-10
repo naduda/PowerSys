@@ -2,10 +2,10 @@ function onDoubleClick(sh)
 {
 	//sh.setTS([idTS] == 0 ? 1 : 0);
 	sh.getAllNodes(sh, '');
-	print(sh.getId());
+	//print(sh.getId());
 }
 
-function onValueChange(sh) 
+function onValueChange(sh)
 {
 	sh.setDeadZone(2);
 	// print('a');
