@@ -29,14 +29,16 @@ public class SignalTreeController extends AController implements Initializable {
 	private TextField tField;
 	private Map<Integer, TreeItem<LinkedValue>> treeLeaves = new HashMap<>();
 	
-	@FXML 
-	protected void btnOK() {
-		
+	@FXML protected void btnOK() {
+		TreeItem<LinkedValue> it = tvSignals.getSelectionModel().getSelectedItem();
+		Tsignal tSignal = (Tsignal) ((LinkedValue)it.getValue()).getDt();
+		if (tSignal != null) {
+			tField.setText(tSignal.getIdsignal() + "");
+		}
 		btnCancel();
 	}
 	
-	@FXML 
-	protected void btnCancel() {
+	@FXML protected void btnCancel() {
 		((Stage)tvSignals.getScene().getWindow()).hide();
 	}
 
@@ -45,14 +47,7 @@ public class SignalTreeController extends AController implements Initializable {
 		init();
 		addNodes(trSignals);
 		tvSignals.setOnMouseClicked(e -> {
-			if (e.getClickCount() == 2) {
-				TreeItem<LinkedValue> it = tvSignals.getSelectionModel().getSelectedItem();
-				Tsignal tSignal = (Tsignal) ((LinkedValue)it.getValue()).getDt();
-				if (tSignal != null) {
-					tField.setText(tSignal.getIdsignal() + "");
-					btnCancel();
-				}
-			}
+			if (e.getClickCount() == 2) btnOK();
 		});
 	}
 	

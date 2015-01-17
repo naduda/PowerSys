@@ -1,31 +1,29 @@
-function onDoubleClick(sh)
+//function onDoubleClick(sh)
+function onMouseReleased(sh)
 {
 	//sh.setTS([idTS] == 0 ? 1 : 0);
 	//sh.getAllNodes(sh, '');
-	//print(sh.getId());
+	//print('B = ' + sh);
 	var StageLoader = Java.type("controllers.interfaces.StageLoader");
 	var SingleObject = Java.type("single.SingleObject");
 
 	var frmTU = new StageLoader("FormTU.xml", SingleObject.getResourceBundle().getString("keyFormTUTitle"), true);
 	var controller = frmTU.getController();
-	controller.setTuSignal(sh.gettSignalIDTS());
-	var typeSignal = 1; //TI
+	controller.setTuSignal(sh.gettSignalID());
+	var typeSignal = 3; //TU
 	if (controller.isOkPressed(typeSignal)) {
 		var status = controller.getTuSignal().getStatus(); //work or manual
 		if (status == 1) {
 			var value = controller.getValue();
-			print(value);
+			sh.setTU(sh.getIdSignal(), value);
 		} else {
 			print('status = ' + status);
 		}
 	}
 }
 
-function onValueChange(sh)
+function onValueChange(sh) 
 {
-	sh.setDeadZone(2);
-	// print('a');
-	//var n = sh.getNodeById('0/0'); 
-
-	//n.setFill(sh.getColorByName([idTS] == 0 ? 'red' : 'GREEN'));
+	var n = sh.getNodeById('0/0'); 
+	sh.setShapeFill(n, 'green', 'red');
 }

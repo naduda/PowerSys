@@ -22,7 +22,6 @@ public class APDU implements Serializable {
 		if ((0xFF & getApci().getLength()) != (0xFF & bytes.length - 2)) {
 			System.out.println("APDU not valid - " + (0xFF & bytes.length - 2) + " - " + 
 					((Byte)getApci().getLength()).intValue() + " - " + Integer.toHexString(getApci().getLength()));
-			System.exit(1);
 		}
 		if (bytes.length > 6) setAsdu(new ASDU(bytesASDU));
 	}

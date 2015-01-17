@@ -9,21 +9,21 @@ function onDoubleClick(sh)
 	var frmTU = new StageLoader("FormTU.xml", SingleObject.getResourceBundle().getString("keyFormTUTitle"), true);
 	var controller = frmTU.getController();
 	controller.setTuSignal(sh.gettSignalIDTS());
-	var typeSignal = 1; //TI
-	if (controller.isOkPressed(typeSignal)) {
+	
+	if (controller.isOkPressed(1)) {
 		var status = controller.getTuSignal().getStatus(); //work or manual
 		if (status == 1) {
 			var value = controller.getValue();
-			print(value);
+			sh.setTU(sh.getIdTS(), value);
 		} else {
-			print('status = ' + status);
+			print('not work status => ' + status);
 		}
 	}
 }
 
 function onValueChange(sh)
 {
-	sh.setDeadZone(2);
+	//sh.setDeadZone(2);
 	// print('a');
 	//var n = sh.getNodeById('0/0'); 
 

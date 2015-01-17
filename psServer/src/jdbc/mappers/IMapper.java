@@ -17,6 +17,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 public interface IMapper {
 //	==============================================================================
@@ -56,6 +57,23 @@ public interface IMapper {
 	@Select("select Set_TU(#{idsignal}, #{val}, null, #{rCode}, #{userId}, #{schemeref})")
 	Integer setTU(@Param("idsignal") int idsignal, @Param("val") double val, @Param("rCode") int rCode,
 			@Param("userId") int userId, @Param("schemeref") int schemeref);
+	
+	@Select("select sendok from d_valtu where signalref = #{idsignal} order by dt desc limit 1")
+	Integer getSendOK(@Param("idsignal") int idsignal);
+	
+	@Update("update t_device set state = #{state} where iddevice = ANY(#{iddevices}::int[])")
+	void setDevicesState(@Param("iddevices")String iddevices, @Param("state")int state);
+	
+	@Select("select iddevice, namedevice, state from t_device where iddevice = ANY(#{iddevices}::int[]) order by state")
+	@Results(value = {
+			@Result(property="id", column="iddevice"),
+			@Result(property="val", column="state"),
+			@Result(property="dt", column="namedevice")
+	})
+	List<LinkedValue> getDevicesState(@Param("iddevices") String iddevices);
+	
+	@Select("select distinct deviceref from t_devicesignal where signalref = ANY(#{idsignals}::int[])")
+	List<Integer> getActiveDevices(@Param("idsignals") String idSignals);
 	
 	@Select("select * from "
 			+ "(select *, alarms_for_event(eventtype,objref,objStatus) as alarms "

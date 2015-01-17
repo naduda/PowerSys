@@ -184,6 +184,29 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	public void setTU(int idsignal, double val, int rCode, int userId, int schemeref) throws RemoteException {
 		new BatisJDBC(s -> s.getMapper(IMapper.class).setTU(idsignal, val, rCode, userId, schemeref)).get();
 	}
+	
+	@Override
+	public void setDevicesState(String iddevices, int state) throws RemoteException {
+		new BatisJDBC(s -> {
+			s.getMapper(IMapper.class).setDevicesState(iddevices, state);
+			return 0;
+		}).get();
+	}
+
+	@Override
+	public List<LinkedValue> getDevicesState(String iddevices) {
+		return (List<LinkedValue>) new BatisJDBC(s -> s.getMapper(IMapper.class).getDevicesState(iddevices)).get();
+	}
+
+	@Override
+	public List<Integer> getActiveDevices(String idSignals) throws RemoteException {
+		return (List<Integer>) new BatisJDBC(s -> s.getMapper(IMapper.class).getActiveDevices(idSignals)).get();
+	}
+	
+	@Override
+	public int getSendOK(int idsignal) throws RemoteException {
+		return (int) new BatisJDBC(s -> s.getMapper(IMapper.class).getSendOK(idsignal)).get();
+	}
 
 	@Override
 	public Map<Integer, DvalTI> getOldTI(String idSignals) {

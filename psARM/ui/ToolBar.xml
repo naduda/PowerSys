@@ -26,6 +26,8 @@
 	<Button fx:id="retro" styleClass="toolBarButton" />
 	<Button fx:id="normalMode" onAction="#showNormalMode" styleClass="toolBarButton" />
 	<Separator/>
+	<Button fx:id="server" onAction="#server" styleClass="toolBarButton" />
+	<Separator/>
 	<Button fx:id="save" onAction="#save" styleClass="toolBarButton" />
 	<Button fx:id="print" onAction="#print" styleClass="toolBarButton" />
 </ToolBar>

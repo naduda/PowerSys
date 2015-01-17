@@ -3,6 +3,7 @@ package svg2fx.fxObjects;
 import pr.log.LogFiles;
 import single.SingleObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -21,6 +22,11 @@ public class ScriptClass {
 			if (SingleObject.readedScripts.keySet().contains(filePath)) {
 				functions = SingleObject.readedScripts.get(filePath);
 			} else {
+				File f = new File(filePath);
+				if (!f.exists()) {
+					LogFiles.log.log(Level.INFO, filePath + " not exist");
+					return;
+				}
 				List<String> strs = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
 				
 				String func = "";

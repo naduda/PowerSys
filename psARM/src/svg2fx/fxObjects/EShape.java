@@ -33,6 +33,7 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
@@ -96,7 +97,7 @@ public class EShape extends AShape {
 		}
 	    
 	    rect.setOnMouseClicked(t -> {
-			if(t.getButton().toString().equals("SECONDARY")) {
+			if(t.getButton().equals(MouseButton.SECONDARY)) {
 				setContextMenu();
 				contextMenu.show(rect, t.getScreenX(), t.getSceneY());
 			}
@@ -117,6 +118,11 @@ public class EShape extends AShape {
 	@Override
 	public void onDoubleClick() {
 		runScriptByName("onDoubleClick");
+	}
+	
+	@Override
+	public void onMouseReleased() {
+		runScriptByName("onMouseReleased");
 	}
 	
 	@Override

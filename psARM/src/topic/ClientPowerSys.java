@@ -167,6 +167,45 @@ public class ClientPowerSys implements IPowersys {
 	public void setTU(int idsignal, double val, int rCode, int userId, int schemeref) throws RemoteException {
 		myServer.setTU(idsignal, val, rCode, userId, schemeref);
 	}
+	
+	@Override
+	public int getSendOK(int idsignal) {
+		try {
+			return myServer.getSendOK(idsignal);
+		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "int getSendOK(int idsignal) ...", e);
+		}
+		return -1;
+	}
+	
+	@Override
+	public void setDevicesState(String iddevices, int state) {
+		try {
+			myServer.setDevicesState(iddevices, state);
+		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "void setDevicesState(String iddevices, int state) ...", e);
+		}
+	}
+
+	@Override
+	public List<LinkedValue> getDevicesState(String iddevices) {
+		try {
+			return myServer.getDevicesState(iddevices);
+		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "List<Integer> getDevicesState(String iddevices) ...", e);
+		}
+		return null;
+	}
+
+	@Override
+	public List<Integer> getActiveDevices(String idSignals) {
+		try {
+			return myServer.getActiveDevices(idSignals);
+		} catch (RemoteException e) {
+			LogFiles.log.log(Level.SEVERE, "List<Integer> getActiveDevices(String idSignals) ...", e);
+		}
+		return null;
+	}
 
 	@Override
 	public Map<Integer, DvalTI> getOldTI(String idSignals) {

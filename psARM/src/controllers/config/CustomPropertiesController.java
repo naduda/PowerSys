@@ -57,14 +57,12 @@ public class CustomPropertiesController extends AController implements Initializ
 	private String edit;
 	private String delete;
 	
-	@FXML 
-	protected void btnOK() {
+	@FXML protected void btnOK() {
 		SingleObject.svgModel.setObject(SingleObject.svg.getFileName(), SingleObject.svg);
 		btnCancel();
 	}
 	
-	@FXML 
-	protected void btnCancel() {
+	@FXML protected void btnCancel() {
 		((Stage)gridPane.getScene().getWindow()).hide();
 	}
 	
@@ -132,8 +130,12 @@ public class CustomPropertiesController extends AController implements Initializ
 		Button btnDelete = new Button(delete);
 		btnDelete.setId("btnDelete_" + gridPaneSize);
 		btnDelete.setOnAction(a -> {
-			SingleObject.selectedShape.getSvgGroup().getCustProps().getCustomProps().
-				remove(prop);
+			CustProps сustProps = SingleObject.selectedShape.getSvgGroup().getCustProps();
+			сustProps.getCustomProps().remove(prop);
+			if (сustProps.getCustomProps().size() == 0) {
+				сustProps.setCustomProps(null);
+				SingleObject.selectedShape.getSvgGroup().setCustProps(null);
+			}
 			gridPane.getChildren().remove(lbl);
 			gridPane.getChildren().remove(tField);
 			gridPane.getChildren().remove(btnEdit);

@@ -12,18 +12,24 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
 import javafx.print.*;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import pr.common.Utils;
 import pr.common.WMF2PNG;
 import pr.log.LogFiles;
+import pr.model.LinkedValue;
 import pr.model.NormalModeJournalItem;
 import controllers.interfaces.IControllerInit;
 import controllers.interfaces.StageLoader;
@@ -37,23 +43,32 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 public class ToolBarController implements Initializable, IControllerInit {
@@ -67,6 +82,9 @@ public class ToolBarController implements Initializable, IControllerInit {
 	private static final double ZOOM_MAX = 5;
 	private static StageLoader infoStage;
 	private Point2D infoStagePos;
+	private String stateReading1;
+	private String stateReading2;
+	private String stateReading3;
 	
 	private final List<String> normalModeShapes = new ArrayList<>();
 	
@@ -200,8 +218,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 		SingleObject.chat.show();
 	}
 
-	@FXML
-	protected void save() {
+	@FXML protected void save() {
 		FileChooser fileChooser = new FileChooser();
 		FileChooser.ExtensionFilter extentionFilter = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.png");
 		fileChooser.getExtensionFilters().add(extentionFilter);
@@ -214,8 +231,114 @@ public class ToolBarController implements Initializable, IControllerInit {
 		}
 	}
 
-	@FXML
-	protected void print() {
+//	==============================================================================================================
+	private String activeDevices;
+	@FXML protected void server() {
+		List<Integer> devices = SingleFromDB.psClient.getActiveDevices(SingleObject.activeSchemeSignals);
+		activeDevices = "{";
+		devices.forEach(d -> activeDevices = activeDevices + d + ",");
+		activeDevices = activeDevices.substring(0, activeDevices.length() - 1) + "}";
+		SingleFromDB.psClient.setDevicesState(activeDevices, 4);
+		ProgressReading pr = new ProgressReading(stateReading1, 120);
+		pr.show();
+	}
+	
+	private class ProgressReading extends Stage {
+		final StringProperty pr = new SimpleStringProperty("0");
+		private boolean isRun = true;
+		private List<LinkedValue> states = new ArrayList<>();
+		final private Map<Integer, ProgressIndicator> pins = new HashMap<>();
+		final private Map<Integer, Label> lStates = new HashMap<>();
+		
+		public ProgressReading(String title, int timeout) {
+			Group root = new Group();
+	        Scene scene = new Scene(root);
+	        setScene(scene);
+	        setTitle(title);
+	        initModality(Modality.NONE);
+			initOwner(SingleObject.mainStage.getScene().getWindow());
+	        
+			states = SingleFromDB.psClient.getDevicesState(activeDevices);;
+	        
+			final VBox vb = new VBox();
+			vb.setPadding(new Insets(5, 5, 5, 5));
+			vb.setSpacing(5);
+			
+			states.forEach(d -> {
+		        final ProgressIndicator pin = new ProgressIndicator();
+		        pin.setPrefSize(25, 25);
+		        pins.put(d.getId(), pin);
+		        pin.setProgress(-1);
+		        
+		        final Label lState = new Label();
+		        lState.setAlignment(Pos.CENTER_LEFT);
+		        lStates.put(d.getId(), lState);
+		        
+		        final HBox hb = new HBox();
+		        hb.setSpacing(5);
+		        hb.setAlignment(Pos.CENTER);
+		        hb.getChildren().addAll(new Label(d.getDt().toString()), pin, lState);
+		        
+		        vb.getChildren().add(hb);
+			});
+			scene.setRoot(vb);
+						
+	        new Thread(() -> {
+	        	while(isRun) {
+	        		try {
+						Thread.sleep(1000);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+		        	Platform.runLater(() -> {
+		        		int t = Integer.parseInt(pr.get()) + 1;
+		        		pr.set("" + t);
+		        		setTitle(title + " -> " + t);
+		        		if (getWidth() < 300) setWidth(300);
+		        		
+		        		if (t >= timeout) {
+		        			isRun = false;
+		        		}
+		        		
+		        		isRun = false;
+		        		states.forEach(s -> {
+		        			if (!isRun && !(Integer.parseInt(s.getVal().toString()) == 2 || Integer.parseInt(s.getVal().toString()) == 3)) isRun = true;
+		        			
+		        			switch (Integer.parseInt(s.getVal().toString())) {
+		        				case 1:
+		        					lStates.get(s.getId()).setText(stateReading1);
+		        					break;
+		        				case 2:
+		        					lStates.get(s.getId()).setText(stateReading2);
+		        					pins.get(s.getId()).setProgress(1);
+		        					pr.set("0");
+		        					break;
+		        				case 3:
+		        					lStates.get(s.getId()).setText(stateReading3);
+		        					pins.get(s.getId()).setProgress(1);
+		        					pr.set("0");
+		        					break;
+		        			}
+		        		});
+		        		
+		        		states = SingleFromDB.psClient.getDevicesState(activeDevices);
+		        	});
+	        	}
+	        }).start();
+	        
+	        getScene().addEventHandler(KeyEvent.KEY_PRESSED, t -> {
+				if (t.getCode()==KeyCode.ESCAPE) {
+					LogFiles.log.log(Level.INFO, "Exit " + getTitle());
+					isRun = false;
+					close();
+				}
+			});
+	        setOnCloseRequest(wc -> isRun = false);
+		}
+	}
+//	==============================================================================================================
+	
+	@FXML protected void print() {
 		Node node = SingleObject.mainScheme.getContent();
 		System.out.println("============================");
 		Printer.getAllPrinters().forEach(System.out::println);
@@ -334,6 +457,9 @@ public class ToolBarController implements Initializable, IControllerInit {
 	@Override
 	public void setElementText(ResourceBundle rb) {
 		lDataOn.setText(rb.getString("keyDataOn"));
+		stateReading1 = rb.getString("key_stateReading1");
+		stateReading2 = rb.getString("key_stateReading2");
+		stateReading3 = rb.getString("key_stateReading3");
 		
 		tbMain.getItems().filtered(f -> f.getClass().equals(Button.class)).forEach(it -> {
 			if (it.getId() != null) {
@@ -352,6 +478,4 @@ public class ToolBarController implements Initializable, IControllerInit {
 	public ToolBar getTbMain() {
 		return tbMain;
 	}
-	
-	
 }

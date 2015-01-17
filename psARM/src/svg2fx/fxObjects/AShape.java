@@ -20,6 +20,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -49,6 +50,7 @@ public abstract class AShape extends Group {
 		rect.getStrokeDashArray().addAll(2d, 5d);
 		rect.setStrokeWidth(RECT_LINE_WIDTH);
 		rect.setFill(Color.TRANSPARENT);
+//		rect.setStroke(Color.GREEN);
 
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.setAutoReverse(true);
@@ -61,18 +63,24 @@ public abstract class AShape extends Group {
         final IntegerProperty sequentialClickCount = new SimpleIntegerProperty(0);
         clickTimer.setOnFinished(event -> {
             int count = sequentialClickCount.get();
-            if (count == 2) {
-            	Platform.runLater(() -> onDoubleClick());
+            
+            switch (count) {
+            	case 1: Platform.runLater(() -> onMouseReleased()); break;
+            	case 2: Platform.runLater(() -> onDoubleClick()); break;
             }
 
             sequentialClickCount.set(0);
         });
         
 	    setOnMouseClicked(event -> {
-	    	setSelection(true);
-	    	sequentialClickCount.set(sequentialClickCount.get() + 1);
-            clickTimer.playFromStart();
+	    	if (event.getButton().equals(MouseButton.PRIMARY)) {
+		    	setSelection(true);
+		    	sequentialClickCount.set(sequentialClickCount.get() + 1);
+	            clickTimer.playFromStart();
+	    	}
 		});
+	    
+	    //setOnMouseReleased(e -> Platform.runLater(() -> onMouseReleased()));
 	    
 	    valueProp.set(-888888.888888);
 	    valueProp.addListener((observable, oldValue, newValue) -> {
@@ -102,7 +110,8 @@ public abstract class AShape extends Group {
 	
 	abstract void onDoubleClick();
 	abstract void onValueChange(Double newValue);
-	abstract void onSignalUpdate(); 
+	abstract void onSignalUpdate();
+	abstract void onMouseReleased();
 	
 	public void setSelection(boolean isSelected) {
 		boolean isChanged = !this.equals(SingleObject.selectedShape);

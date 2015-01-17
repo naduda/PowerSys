@@ -56,6 +56,10 @@ public interface IPowersys extends Remote {
 	List<TViewParam> getTViewParam(String objdenom, String paramdenom, int userref) throws RemoteException;
 	void setTS(int idsignal, double val, int rCode, int userId, int schemeref) throws RemoteException;
 	void setTU(int idsignal, double val, int rCode, int userId, int schemeref) throws RemoteException;
+	int getSendOK(int idsignal) throws RemoteException;
+	void setDevicesState(String iddevices, int state) throws RemoteException;
+	List<LinkedValue> getDevicesState(String iddevices) throws RemoteException;
+	List<Integer> getActiveDevices(String idSignals) throws RemoteException;
 	Map<Integer, DvalTI> getOldTI(String idSignals) throws RemoteException;
 	Map<Integer, DvalTI> getOldTS(String idSignals) throws RemoteException;
 	void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) throws RemoteException;

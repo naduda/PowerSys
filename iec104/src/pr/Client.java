@@ -50,9 +50,9 @@ public class Client {
 				if (bytesAPDU != null) {
 					APDU apdu = new APDU(bytesAPDU);
 					if (apdu.getApci().getType() == 1) {
-						byte[] conf  = new byte[] { (byte) 0x68, (byte)0x04, (byte)0x01, (byte)0x00, 
+						byte[] confirm  = new byte[] { (byte) 0x68, (byte)0x04, (byte)0x01, (byte)0x00, 
 								apdu.getApci().getField3(), apdu.getApci().getField4()};
-						outbound.write(conf);
+						outbound.write(confirm);
 					}
 					bytesAPDU = null;
 				}
