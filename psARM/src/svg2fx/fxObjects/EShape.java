@@ -1,8 +1,7 @@
 package svg2fx.fxObjects;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -46,8 +45,6 @@ public class EShape extends AShape {
 	private final DecimalFormat decimalFormat = new DecimalFormat("", decimalFormatSymbols);
 	
 	private final G svgGroup;
-	
-	private SignalState value = new SignalState();
 
 	private Map<String, Integer> signals = new HashMap<>();
 	private int id = -1;
@@ -115,6 +112,14 @@ public class EShape extends AShape {
 	    });
 	}
 	
+	public String getCustomPropertyByName(String propertyName) {
+		return custProps != null ? custProps.get(propertyName) : null;
+	}
+	
+	public void getCustomPropertiesKeys() {
+		if (custProps != null) custProps.keySet().forEach(System.out::println);
+	}
+	
 	@Override
 	public void onDoubleClick() {
 		runScriptByName("onDoubleClick");
@@ -159,7 +164,7 @@ public class EShape extends AShape {
 	
 	private void setContextMenu() {
 		try {
-			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/ShapeContextMenu.xml")));
+			FXMLLoader loader = new FXMLLoader(new File(Utils.getFullPath("./ui/ShapeContextMenu.xml")).toURI().toURL());
 			contextMenu = loader.load();
 			ShapeController shapeController = loader.getController();
 			contextMenu.setId(contextMenu.getId() + "_" + getId());
@@ -186,38 +191,25 @@ public class EShape extends AShape {
 	}
 	
 	public void setTS(int idSignal, int val) {
-		try {
-			SingleFromDB.psClient.setTS(idSignal, val, 107, -1, SingleObject.mainScheme.getIdScheme());
-		} catch (RemoteException | NumberFormatException e) {
-			LogFiles.log.log(Level.SEVERE, "void setTS(...)", e);
-		}
+		SingleFromDB.psClient.setTS(idSignal, val, 107, -1, SingleObject.mainScheme.getIdScheme());
 	}
 	
 	public void setTU(int idSignal, double val) {
-		try {
-			switch (getStatus()) {
-			case 1:
-				SingleFromDB.psClient.setTU(idSignal, val, 0, -1, SingleObject.mainScheme.getIdScheme());
-				break;
-			case 3:
-				SingleFromDB.psClient.setTU(idSignal, val, 107, -1, SingleObject.mainScheme.getIdScheme());
-				break;
-			}
-			
-		} catch (RemoteException | NumberFormatException e) {
-			LogFiles.log.log(Level.SEVERE, "void setTU(...)", e);
+		switch (getStatus()) {
+		case 1:
+			SingleFromDB.psClient.setTU(idSignal, val, 0, -1, SingleObject.mainScheme.getIdScheme());
+			break;
+		case 3:
+			SingleFromDB.psClient.setTU(idSignal, val, 107, -1, SingleObject.mainScheme.getIdScheme());
+			break;
 		}
 	}
 
-	public SignalState getValue() {
-		return value;
-	}
-
 	public void setValue(int idSignal, double val, String typeSignal) {
-		if (typeSignal.toLowerCase().equals("id")) {
-			value.setIdValue(val);
-		} else if (typeSignal.toLowerCase().equals("idts")) {
-			value.setIdTSValue(val);
+		try {
+			custProps.replace(typeSignal, val + "");
+		} catch (Exception e) {
+			LogFiles.log.log(Level.SEVERE, "setValue(int idSignal, double val, String typeSignal) ...", e);
 		}
 		
 		if (isTextShape()) {
@@ -404,9 +396,9 @@ public class EShape extends AShape {
 	
 	public void setShapeFill(Shape sh, String colorName1, String colorName2) {
 		if (getStatus() == 1) {
-			sh.setFill(getColorByName(getValue().getIdTSValue() == getStateIdTS("ON") ? colorName1 : colorName2));
+			sh.setFill(getColorByName(Double.parseDouble(getCustomPropertyByName("idTS")) == getStateIdTS("ON") ? colorName1 : colorName2));
 		} else {
-			sh.setFill(getColorByName("yellow", getValue().getIdTSValue() == getStateIdTS("ON") ? colorName1 : colorName2));
+			sh.setFill(getColorByName("yellow", Double.parseDouble(getCustomPropertyByName("idTS")) == getStateIdTS("ON") ? colorName1 : colorName2));
 		}
 	}
 

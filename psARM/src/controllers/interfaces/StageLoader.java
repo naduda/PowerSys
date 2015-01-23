@@ -1,8 +1,8 @@
 package controllers.interfaces;
 
 import java.awt.Point;
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.logging.Level;
 
 import javafx.fxml.FXMLLoader;
@@ -22,7 +22,7 @@ public class StageLoader extends Stage {
 	
 	public StageLoader(String xmlPath, boolean isMainStageOwner) {
 		try {
-			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/" + xmlPath)));
+			FXMLLoader loader = new FXMLLoader(new File(Utils.getFullPath("./ui/" + xmlPath)).toURI().toURL());
 			Parent root = loader.load();
 			controller = loader.getController();
 			

@@ -122,13 +122,11 @@ public class DataController implements Initializable, IControllerInit {
 	
 	private List<LinkedValue> getDataFromDB(int idSignal) {
 		List<LinkedValue> data = new ArrayList<>();
-		try {
-			int period = Integer.parseInt(cbIntegration.getSelectionModel().getSelectedItem().getDt().toString());
-			data.addAll(SingleFromDB.psClient.getDataIntegrArc(idSignal, Timestamp.valueOf(dpBegin.getValue().atTime(cbHourBegin.getValue(), 0)), 
-					Timestamp.valueOf(dpEnd.getValue().atTime(cbHourEnd.getValue(), 0)), period));
-		} catch (Exception e) {
-			LogFiles.log.log(Level.SEVERE, "List<LinkedValue> getDataFromDB(...)", e);
-		}
+		int period = Integer.parseInt(cbIntegration.getSelectionModel().getSelectedItem().getDt().toString());
+		List<LinkedValue> newData = SingleFromDB.psClient.getDataIntegrArc(idSignal, 
+				Timestamp.valueOf(dpBegin.getValue().atTime(cbHourBegin.getValue(), 0)), 
+				Timestamp.valueOf(dpEnd.getValue().atTime(cbHourEnd.getValue(), 0)), period);
+		if (newData != null) data.addAll(newData);
 		return data;
 	}
 	

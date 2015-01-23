@@ -4,7 +4,6 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.io.File;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -34,6 +33,7 @@ import pr.model.NormalModeJournalItem;
 import controllers.interfaces.IControllerInit;
 import controllers.interfaces.StageLoader;
 import controllers.journals.JAlarmsController;
+import single.ProgramProperty;
 import single.SingleFromDB;
 import single.SingleObject;
 import svg2fx.fxObjects.EShape;
@@ -124,27 +124,23 @@ public class ToolBarController implements Initializable, IControllerInit {
 		
 		showNormalMode.addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
-				try {
-					Timestamp dtBeg = Timestamp.valueOf(LocalDate.now().atTime(0, 0, 0));
-					Timestamp dtEnd = Timestamp.valueOf(LocalDate.now().plusDays(1).atTime(0, 0));
-					
-					List<NormalModeJournalItem> items = SingleFromDB.psClient.getListNormalModeItems(dtBeg, dtEnd, SingleObject.activeSchemeSignals);
-					items.forEach(it -> {
-						if (it.getDt_new() == null) {
-							SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getId() == it.getIdsignal()).forEach(s -> {
-								try {
-									EShape tt = SingleObject.mainScheme.getDeviceById(s.getVal().toString());
-									tt.setNormalMode();
-									normalModeShapes.add(s.getVal().toString());
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							});
-						}
-					});
-				} catch (RemoteException e) {
-					LogFiles.log.log(Level.SEVERE, "void initialize(...)", e);
-				}
+				Timestamp dtBeg = Timestamp.valueOf(LocalDate.now().atTime(0, 0, 0));
+				Timestamp dtEnd = Timestamp.valueOf(LocalDate.now().plusDays(1).atTime(0, 0));
+				
+				List<NormalModeJournalItem> items = SingleFromDB.psClient.getListNormalModeItems(dtBeg, dtEnd, SingleObject.activeSchemeSignals);
+				items.forEach(it -> {
+					if (it.getDt_new() == null) {
+						SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getId() == it.getIdsignal()).forEach(s -> {
+							try {
+								EShape tt = SingleObject.mainScheme.getDeviceById(s.getVal().toString());
+								tt.setNormalMode();
+								normalModeShapes.add(s.getVal().toString());
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						});
+					}
+				});
 				normalMode.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)));
 			} else {
 				normalModeShapes.forEach(s -> {
@@ -238,19 +234,56 @@ public class ToolBarController implements Initializable, IControllerInit {
 		activeDevices = "{";
 		devices.forEach(d -> activeDevices = activeDevices + d + ",");
 		activeDevices = activeDevices.substring(0, activeDevices.length() - 1) + "}";
-		SingleFromDB.psClient.setDevicesState(activeDevices, 4);
-		ProgressReading pr = new ProgressReading(stateReading1, 120);
+		//SingleFromDB.psClient.setDevicesState(activeDevices, 4);
+//		Error in 9.4 do not work without timeout -> Thread.sleep(1000);
+		devices.forEach(d -> {
+			SingleFromDB.psClient.setDevicesState(String.format("{%d}",  d), 4);
+			try {
+				Thread.sleep(1000);
+			} catch (Exception e) {
+				LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
+			}
+		});
+		
+		ProgressReading pr = new ProgressReading(stateReading1);
 		pr.show();
 	}
 	
 	private class ProgressReading extends Stage {
 		final StringProperty pr = new SimpleStringProperty("0");
+		final StringProperty tDeviceProperty = new SimpleStringProperty();
 		private boolean isRun = true;
 		private List<LinkedValue> states = new ArrayList<>();
 		final private Map<Integer, ProgressIndicator> pins = new HashMap<>();
 		final private Map<Integer, Label> lStates = new HashMap<>();
 		
-		public ProgressReading(String title, int timeout) {
+		public ProgressReading(String title) {
+			tDeviceProperty.bind(ProgramProperty.tDeviceProperty);
+			tDeviceProperty.addListener((observ, oldValue, newValue) -> {
+				String[] pars = newValue.split(";");
+				int idDevice = Integer.parseInt(pars[0]);
+				int state = Integer.parseInt(pars[1]);
+				switch (state) {
+					case 1:
+						lStates.get(idDevice).setText(stateReading1);
+						break;
+					case 2:
+						lStates.get(idDevice).setText(stateReading2 + "  -> " + pr.get());
+						pins.get(idDevice).setProgress(1);
+						pins.get(idDevice).setPrefSize(50, 50);
+						pr.set("0");
+						activeDevices = activeDevices.replace(idDevice + "", "").replace(",,",",").replace(",}","}");
+						break;
+					case 3:
+						lStates.get(idDevice).setText(stateReading3 + "  -> " + pr.get());
+						pins.get(idDevice).setProgress(1);
+						pins.get(idDevice).setPrefSize(50, 50);
+						pr.set("0");
+						activeDevices = activeDevices.replace(idDevice + "", "").replace(",,",",").replace(",}","}");
+						break;
+				}
+			});
+			
 			Group root = new Group();
 	        Scene scene = new Scene(root);
 	        setScene(scene);
@@ -258,14 +291,14 @@ public class ToolBarController implements Initializable, IControllerInit {
 	        initModality(Modality.NONE);
 			initOwner(SingleObject.mainStage.getScene().getWindow());
 	        
-			states = SingleFromDB.psClient.getDevicesState(activeDevices);;
+			states = SingleFromDB.psClient.getDevicesState(activeDevices);
 	        
 			final VBox vb = new VBox();
 			vb.setPadding(new Insets(5, 5, 5, 5));
 			vb.setSpacing(5);
 			
 			states.forEach(d -> {
-		        final ProgressIndicator pin = new ProgressIndicator();
+				final ProgressIndicator pin = new ProgressIndicator();
 		        pin.setPrefSize(25, 25);
 		        pins.put(d.getId(), pin);
 		        pin.setProgress(-1);
@@ -282,46 +315,23 @@ public class ToolBarController implements Initializable, IControllerInit {
 		        vb.getChildren().add(hb);
 			});
 			scene.setRoot(vb);
-						
+			
 	        new Thread(() -> {
 	        	while(isRun) {
 	        		try {
 						Thread.sleep(1000);
 					} catch (Exception e) {
-						e.printStackTrace();
+						LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 					}
+	        		
+	        		int t = Integer.parseInt(pr.get()) + 1;
+	        		
 		        	Platform.runLater(() -> {
-		        		int t = Integer.parseInt(pr.get()) + 1;
 		        		pr.set("" + t);
 		        		setTitle(title + " -> " + t);
-		        		if (getWidth() < 300) setWidth(300);
+						if (getWidth() < 300) setWidth(300);
 		        		
-		        		if (t >= timeout) {
-		        			isRun = false;
-		        		}
-		        		
-		        		isRun = false;
-		        		states.forEach(s -> {
-		        			if (!isRun && !(Integer.parseInt(s.getVal().toString()) == 2 || Integer.parseInt(s.getVal().toString()) == 3)) isRun = true;
-		        			
-		        			switch (Integer.parseInt(s.getVal().toString())) {
-		        				case 1:
-		        					lStates.get(s.getId()).setText(stateReading1);
-		        					break;
-		        				case 2:
-		        					lStates.get(s.getId()).setText(stateReading2);
-		        					pins.get(s.getId()).setProgress(1);
-		        					pr.set("0");
-		        					break;
-		        				case 3:
-		        					lStates.get(s.getId()).setText(stateReading3);
-		        					pins.get(s.getId()).setProgress(1);
-		        					pr.set("0");
-		        					break;
-		        			}
-		        		});
-		        		
-		        		states = SingleFromDB.psClient.getDevicesState(activeDevices);
+		        		isRun = activeDevices.length() > 3;
 		        	});
 	        	}
 	        }).start();
@@ -466,10 +476,14 @@ public class ToolBarController implements Initializable, IControllerInit {
 				((Button)it).setTooltip(new Tooltip(rb.getString("keyTooltip_" + it.getId())));
 				File icon = new File(Utils.getFullPath("./Icon/" + it.getId() + ".png"));
 				if (icon.exists()) {
-					ImageView iw = new ImageView("file:/" + icon.getAbsolutePath());
-					iw.setFitHeight(SingleObject.getProgramSettings().getIconWidth());
-					iw.setPreserveRatio(true);
-					((Button)it).setGraphic(iw);
+					try {
+						ImageView iw = new ImageView(new File(icon.getAbsolutePath()).toURI().toURL().toString());
+						iw.setFitHeight(SingleObject.getProgramSettings().getIconWidth());
+						iw.setPreserveRatio(true);
+						((Button)it).setGraphic(iw);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});

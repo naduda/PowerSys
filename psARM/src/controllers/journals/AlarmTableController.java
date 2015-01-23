@@ -3,7 +3,6 @@ package controllers.journals;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -108,7 +107,7 @@ public class AlarmTableController extends TableController {
 		Stage stage = new Stage();
 		
 		try {
-			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/TransparantComment.xml")));
+			FXMLLoader loader = new FXMLLoader(new File(Utils.getFullPath("./ui/TransparantComment.xml")).toURI().toURL());
 			Parent root = loader.load();
 			TrCommentController trController = loader.getController();
 			
@@ -135,24 +134,16 @@ public class AlarmTableController extends TableController {
 				}
 			}));
 		
-		try {
-			SingleFromDB.psClient.getNotConfirmedSignals(SingleObject.activeSchemeSignals)
-				.forEach(s -> MainStage.controller.setNotConfirmed(s, false));
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "... getNotConfirmedSignals", e);
-		}
+		SingleFromDB.psClient.getNotConfirmedSignals(SingleObject.activeSchemeSignals)
+			.forEach(s -> MainStage.controller.setNotConfirmed(s, false));
 	}
 	
 	@FXML
 	private void kvitAll() {
-		try {
-			SingleFromDB.psClient.confirmAlarmAll("", -1);
-			SingleObject.getActiveSchemeSignals().forEach(s -> MainStage.controller.setNotConfirmed(s, true));
-			SingleFromDB.psClient.getNotConfirmedSignals(SingleObject.activeSchemeSignals)
-				.forEach(s -> MainStage.controller.setNotConfirmed(s, false));
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "void kvitAll(...)", e);
-		}
+		SingleFromDB.psClient.confirmAlarmAll("", -1);
+		SingleObject.getActiveSchemeSignals().forEach(s -> MainStage.controller.setNotConfirmed(s, true));
+		SingleFromDB.psClient.getNotConfirmedSignals(SingleObject.activeSchemeSignals)
+			.forEach(s -> MainStage.controller.setNotConfirmed(s, false));
 	}
 	
 	@FXML
@@ -170,12 +161,8 @@ public class AlarmTableController extends TableController {
             int count = sequentialClickCount.get();
             if (count == 2) {
             	confirmAlarm((AlarmTableItem)tvTable.getSelectionModel().getSelectedItem(), "");
-            	try {
-        			SingleFromDB.psClient.getNotConfirmedSignals(SingleObject.activeSchemeSignals)
-        				.forEach(s -> MainStage.controller.setNotConfirmed(s, false));
-        		} catch (RemoteException e) {
-        			LogFiles.log.log(Level.SEVERE, "... getNotConfirmedSignals", e);
-        		}
+            	SingleFromDB.psClient.getNotConfirmedSignals(SingleObject.activeSchemeSignals)
+				.forEach(s -> MainStage.controller.setNotConfirmed(s, false));
             }
             sequentialClickCount.set(0);
         });
@@ -187,13 +174,9 @@ public class AlarmTableController extends TableController {
 	}
 	
 	private void setChoiceBoxes() {
-		try {
-			sysParamsPriority = SingleFromDB.psClient.getTSysParam("ALARM_PRIORITY");
-			sysParamsEvent = SingleFromDB.psClient.getTSysParam("ALARM_EVENT");
-			viewParams = SingleFromDB.psClient.getTViewParam("LOG_STATE", "COLOR", -1);
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "setChoiceBoxes()", e);
-		}
+		sysParamsPriority = SingleFromDB.psClient.getTSysParam("ALARM_PRIORITY");
+		sysParamsEvent = SingleFromDB.psClient.getTSysParam("ALARM_EVENT");
+		viewParams = SingleFromDB.psClient.getTViewParam("LOG_STATE", "COLOR", -1);
 		
 		cbPriority = setChoiceBoxItems(sysParamsPriority, cbPriority);
 		cbEvent = setChoiceBoxItems(sysParamsEvent, cbEvent);
@@ -233,11 +216,7 @@ public class AlarmTableController extends TableController {
 	}
 	
 	private void setCurrentDayItems() {
-		try {
-			SingleFromDB.psClient.getAlarmsCurrentDay().forEach(it -> addItem(new AlarmTableItem(it)));
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "void setCurrentDayItems()", e);
-		}
+		SingleFromDB.psClient.getAlarmsCurrentDay().forEach(it -> addItem(new AlarmTableItem(it)));
 	}
 	
 	private void setVisibleAlarmColumns() {
@@ -299,10 +278,15 @@ public class AlarmTableController extends TableController {
 				((Button)it).setTooltip(new Tooltip(rb.getString("keyTooltip_" + it.getId())));
 				File icon = new File(Utils.getFullPath("./Icon/" + it.getId() + ".png"));
 				if (icon.exists()) {
-					ImageView iw = new ImageView("file:/" + icon.getAbsolutePath());
-					iw.setFitHeight(SingleObject.getProgramSettings().getIconWidth());
-					iw.setPreserveRatio(true);
-					((Button)it).setGraphic(iw);
+					try {
+						ImageView iw = new ImageView(new File(icon.getAbsolutePath()).toURI().toURL().toString());
+						iw.setFitHeight(SingleObject.getProgramSettings().getIconWidth());
+						iw.setPreserveRatio(true);
+						((Button)it).setGraphic(iw);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					
 				}
 			}
 		});
@@ -343,14 +327,10 @@ public class AlarmTableController extends TableController {
 	
 	public static void confirmAlarm(AlarmTableItem ati, String comment) {		
 		if (ati != null) {
-			try {
-				SingleFromDB.psClient.confirmAlarm(ati.getAlarm().getRecorddt(), ati.getAlarm().getEventdt(), 
-						ati.getAlarm().getObjref(), new Timestamp(System.currentTimeMillis()), comment,
-						ati.getAlarm().getUserref() == 0 ? -1 : ati.getAlarm().getUserref());
-				MainStage.controller.setNotConfirmed(ati.getAlarm().getObjref(), true);
-			} catch (RemoteException e) {
-				LogFiles.log.log(Level.SEVERE, "void confirmAlarm(...)", e);
-			}
+			SingleFromDB.psClient.confirmAlarm(ati.getAlarm().getRecorddt(), ati.getAlarm().getEventdt(), 
+					ati.getAlarm().getObjref(), new Timestamp(System.currentTimeMillis()), comment,
+					ati.getAlarm().getUserref() == 0 ? -1 : ati.getAlarm().getUserref());
+			MainStage.controller.setNotConfirmed(ati.getAlarm().getObjref(), true);
 		}
 	}
 	
@@ -398,7 +378,6 @@ public class AlarmTableController extends TableController {
 				addItem(new AlarmTableItem(a));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			LogFiles.log.log(Level.SEVERE, "void updateAlarm(...)", e);
 		}
 	}
@@ -417,6 +396,5 @@ public class AlarmTableController extends TableController {
 	    		updateAlarm(newValue);
 	    	}
 		}
-		
 	}
 }

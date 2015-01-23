@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import pr.common.MakeSound;
 import pr.log.LogFiles;
+import pr.model.Alarm;
 
 public class AlarmActivities {
 	boolean isPlay;
@@ -17,6 +18,7 @@ public class AlarmActivities {
 	}
 	
 	public void clearActivities() {
+		Alarm hpa = SingleFromDB.psClient.getHightPriorityAlarm();
 		ProgramProperty.hightPriorityAlarmProperty.set(null);
 		isPlay = false;
 		while (Thread.getAllStackTraces().keySet().stream()
@@ -29,6 +31,7 @@ public class AlarmActivities {
 				LogFiles.log.log(Level.SEVERE, "void clearActivities()", e);
 			}
 		}
+		ProgramProperty.hightPriorityAlarmProperty.set(hpa);
 	}
 	
 	private class PlaySound extends Thread {

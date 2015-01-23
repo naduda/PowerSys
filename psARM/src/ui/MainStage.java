@@ -1,9 +1,8 @@
 package ui;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URL;
-import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,23 +44,17 @@ public class MainStage extends Stage implements Serializable {
 			ProgramProperty.hightPriorityAlarmProperty.addListener(a -> {
 				Alarm hpa = ProgramProperty.hightPriorityAlarmProperty.get();
 				if (hpa != null) {
-					if (hpa != null) {
-						List<TalarmParam> params;
-						try {
-							params = SingleFromDB.psClient.getTalarmParams(hpa.getAlarmid());
-							params.forEach(p -> {
-								if ("ALARM_PARAM_SOUND".equals(p.getParamdenom())) {
-									SingleObject.alarmActivities.play(p.getParamval());
-								}
-							});
-						} catch (RemoteException e) {
-							LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
+					List<TalarmParam> params;
+					params = SingleFromDB.psClient.getTalarmParams(hpa.getAlarmid());
+					params.forEach(p -> {
+						if ("ALARM_PARAM_SOUND".equals(p.getParamdenom())) {
+							SingleObject.alarmActivities.play(p.getParamval());
 						}
-					}
+					});
 				}
 			});
 			
-			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/Main.xml")));
+			FXMLLoader loader = new FXMLLoader(new File(Utils.getFullPath("./ui/Main.xml")).toURI().toURL());
 			Parent root = loader.load();
 			controller = loader.getController();
 			controller.getToolBarController().updateLabel(null);

@@ -61,7 +61,7 @@ public interface IMapper {
 	@Select("select sendok from d_valtu where signalref = #{idsignal} order by dt desc limit 1")
 	Integer getSendOK(@Param("idsignal") int idsignal);
 	
-	@Update("update t_device set state = #{state} where iddevice = ANY(#{iddevices}::int[])")
+	@Update("update t_device set state = #{state}, laststate = now() where iddevice = ANY(#{iddevices}::int[])")
 	void setDevicesState(@Param("iddevices")String iddevices, @Param("state")int state);
 	
 	@Select("select iddevice, namedevice, state from t_device where iddevice = ANY(#{iddevices}::int[]) order by state")

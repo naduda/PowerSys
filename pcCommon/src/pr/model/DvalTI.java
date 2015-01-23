@@ -12,6 +12,7 @@ public class DvalTI implements Serializable {
 	private Timestamp servdt;
 	private int rcode;
 	private boolean actualData = true;
+	private String typeSignal;
 	
 	public DvalTI() {
 
@@ -63,5 +64,13 @@ public class DvalTI implements Serializable {
 
 	public void setActualData(boolean actualData) {
 		this.actualData = actualData;
+	}
+
+	public String getTypeSignal() {
+		return typeSignal;
+	}
+
+	public void setTypeSignal(String typeSignal) {
+		this.typeSignal = typeSignal;
 	}
 }

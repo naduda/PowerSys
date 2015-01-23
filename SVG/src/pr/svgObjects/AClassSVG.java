@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Paint;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Shape;
@@ -185,8 +186,13 @@ public abstract class AClassSVG {
 							gradName = gradName.substring(5, gradName.length() - 1);
 							
 							pr.svgObjects.LinearGradient lg = defs.getLinearGradientById(gradName);
+							pr.svgObjects.RadialGradient rg = defs.getRadialGradientById(gradName);
 							if (lg != null) {
 								setGradientFill(sh, lg);
+								isFiled = true;
+								break;
+							} else if (rg != null) {
+								setGradientFill(sh, rg);
 								isFiled = true;
 								break;
 							} else {
@@ -215,6 +221,7 @@ public abstract class AClassSVG {
 						sh.setFill(Color.web(command[1]));
 					} catch (Exception e) {
 						LogFiles.log.log(Level.WARNING, "Color " + command[1] + " cannot be setting ...");
+						e.printStackTrace();
 					}
 				}
 				isFiled = true;
@@ -225,22 +232,44 @@ public abstract class AClassSVG {
 		return sh;
 	}
 	
-	private void setGradientFill(Shape sh, pr.svgObjects.LinearGradient lg) {
-		Stop[] stops = new Stop[lg.getStops().size()];
+	private void setGradientFill(Shape sh, Object obj) {
+		if (obj instanceof pr.svgObjects.LinearGradient) {
+			pr.svgObjects.LinearGradient lg = (pr.svgObjects.LinearGradient) obj;
 		
-		for (int i = 0; i < lg.getStops().size(); i++) {
-			String styleStop = lg.getStops().get(i).getStyle();
-			String stopColor = styleStop.substring(styleStop.indexOf("stop-color:") + 11);
-			stopColor = stopColor.substring(0, stopColor.indexOf(";"));
-			String stopOpacity = styleStop.substring(styleStop.indexOf("stop-opacity:") + 13);
-			double opacity = Double.parseDouble(stopOpacity);
-			stops[i] = new Stop(lg.getStops().get(i).getOffset(), Color.web(stopColor, opacity));
+			Stop[] stops = new Stop[lg.getStops().size()];
+			
+			for (int i = 0; i < lg.getStops().size(); i++) {
+				String styleStop = lg.getStops().get(i).getStyle();
+				String stopColor = styleStop.substring(styleStop.indexOf("stop-color:") + 11);
+				stopColor = stopColor.substring(0, stopColor.indexOf(";"));
+				String stopOpacity = styleStop.substring(styleStop.indexOf("stop-opacity:") + 13);
+				double opacity = Double.parseDouble(stopOpacity);
+				stops[i] = new Stop(lg.getStops().get(i).getOffset(), Color.web(stopColor, opacity));
+			}
+			
+			LinearGradient lGrad = new LinearGradient(lg.getX1(), lg.getY1(), lg.getX2(), lg.getY2(), 
+					true, CycleMethod.NO_CYCLE, stops);
+			
+			sh.setFill(lGrad);
+		} else if (obj instanceof pr.svgObjects.RadialGradient) {
+			pr.svgObjects.RadialGradient rg = (pr.svgObjects.RadialGradient) obj;
+			
+			Stop[] stops = new Stop[rg.getStops().size()];
+			
+			for (int i = 0; i < rg.getStops().size(); i++) {
+				String styleStop = rg.getStops().get(i).getStyle();
+				String stopColor = styleStop.substring(styleStop.indexOf("stop-color:") + 11);
+				stopColor = stopColor.substring(0, stopColor.indexOf(";"));
+				String stopOpacity = styleStop.substring(styleStop.indexOf("stop-opacity:") + 13);
+				double opacity = Double.parseDouble(stopOpacity);
+				stops[i] = new Stop(rg.getStops().get(i).getOffset(), Color.web(stopColor, opacity));
+			}
+			
+			RadialGradient rGrad = new RadialGradient(0, 0.1, rg.getCx(), rg.getCy(), rg.getR(),
+					true, CycleMethod.NO_CYCLE, stops);
+			
+			sh.setFill(rGrad);
 		}
-		
-		LinearGradient lGrad = new LinearGradient(lg.getX1(), lg.getY1(), lg.getX2(), lg.getY2(), 
-				true, CycleMethod.NO_CYCLE, stops);
-		
-		sh.setFill(lGrad);
 	}
 	
 	public Node transformed(Node n, String str) {

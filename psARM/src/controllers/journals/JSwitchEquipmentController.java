@@ -1,12 +1,9 @@
 package controllers.journals;
 
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 
-import pr.log.LogFiles;
 import pr.model.SwitchEquipmentJournalItem;
 import single.SingleFromDB;
 import single.SingleObject;
@@ -24,13 +21,9 @@ public class JSwitchEquipmentController extends TableController {
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);
 		
-		try {
-			List<SwitchEquipmentJournalItem> items = SingleFromDB.psClient.getSwitchJournalItems(SingleObject.activeSchemeSignals);
-			items.forEach(it -> addItem(new SwitchEquipmentTableItem(it)));
-			tCount.setText(items.size() + "");
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "void initialize(...)", e);
-		}
+		List<SwitchEquipmentJournalItem> items = SingleFromDB.psClient.getSwitchJournalItems(SingleObject.activeSchemeSignals);
+		items.forEach(it -> addItem(new SwitchEquipmentTableItem(it)));
+		tCount.setText(items.size() + "");
 	}
 	
 	@Override

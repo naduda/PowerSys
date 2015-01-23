@@ -1,11 +1,15 @@
 package controllers;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCodeCombination;
+import pr.common.Utils;
 import pr.log.LogFiles;
 import single.SingleFromDB;
 import single.SingleObject;
@@ -56,6 +60,11 @@ public class LoginController implements IControllerInit, Initializable {
 		new SingleFromDB(new ClientPowerSys());
 		
 		MainStage stage = new MainStage("./ui/Main.xml");
+		try {
+			stage.getIcons().add(new Image(new File(Utils.getFullPath("./Icon/PowerSyS_ARM.png")).toURI().toURL().toString()));
+		} catch (MalformedURLException e) {
+			LogFiles.log.log(Level.SEVERE, "Application Icon set ...", e);
+		}
 		SingleObject.mainStage = stage;
 		
         new Thread(new ReceiveTopic(SingleObject.ipAddress + ":7676"), "ReceiveTopic").start();

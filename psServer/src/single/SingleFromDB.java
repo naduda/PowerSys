@@ -1,5 +1,9 @@
 package single;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,6 +23,7 @@ import jdbc.BatisJDBC;
 import jdbc.PostgresDB;
 import jdbc.mappers.IMapper;
 import jdbc.mappers.IMapperT;
+import pr.common.WMF2PNG;
 import pr.log.LogFiles;
 import pr.model.Alarm;
 import pr.model.Report;
@@ -78,12 +83,35 @@ public class SingleFromDB {
 			tsysparmams.addAll((Collection<? extends TSysParam>) results.get("tsysparmams"));
 			tviewparams.addAll((Collection<? extends TViewParam>) results.get("tviewparams"));
 			transparants.putAll((Map<? extends Integer, ? extends Transparant>) results.get("transparants"));
+			transparants.values().forEach(t -> {
+				byte[] bytes = (byte[]) t.getImg();
+				InputStream is = WMF2PNG.convert(new ByteArrayInputStream(bytes), 250);
+				t.setImageByteArray(InputStream2ByteArray(is));
+			});
 			signals.putAll((Map<? extends Integer, ? extends Tsignal>) results.get("signals"));
 		} catch (InterruptedException | ExecutionException e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		} finally {
 			service.shutdown();
 		}
+	}
+	
+	private byte[] InputStream2ByteArray(InputStream is) {
+		int nRead;
+		byte[] data = new byte[1024];
+		
+		try (ByteArrayOutputStream buffer = new ByteArrayOutputStream();) {
+			while ((nRead = is.read(data, 0, data.length)) != -1) {
+				buffer.write(data, 0, nRead);
+			}
+			buffer.flush();
+			
+			return buffer.toByteArray();
+		} catch (IOException e) {
+			LogFiles.log.log(Level.SEVERE, "InputStream2ByteArray(InputStream is)", e);
+		}
+		
+		return null;
 	}
 	
 	public static List<Alarm> getAlarms() {

@@ -74,7 +74,7 @@ public class PostgresDB {
 	        tds.setDefaultTestWhileIdle(true);
 
 	        dataSource = tds;
-			
+	        
 			setMappers(dataSource);
 		} catch (Exception e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);

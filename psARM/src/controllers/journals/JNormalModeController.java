@@ -1,13 +1,10 @@
 package controllers.journals;
 
-import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 
 import javafx.stage.Stage;
-import pr.log.LogFiles;
 import pr.model.NormalModeJournalItem;
 import single.SingleFromDB;
 import single.SingleObject;
@@ -19,12 +16,8 @@ public class JNormalModeController extends AJournal {
 	public void setItems(Timestamp dtBeg, Timestamp dtEnd) {
 		bpTableController.clearTable();
 		
-		try {
-			List<NormalModeJournalItem> items = SingleFromDB.psClient.getListNormalModeItems(dtBeg, dtEnd, SingleObject.activeSchemeSignals);
-			items.forEach(it -> bpTableController.addItem(new NormalModeTableItem(it)));
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "void setItems(...)", e);
-		}
+		List<NormalModeJournalItem> items = SingleFromDB.psClient.getListNormalModeItems(dtBeg, dtEnd, SingleObject.activeSchemeSignals);
+		items.forEach(it -> bpTableController.addItem(new NormalModeTableItem(it)));
 	}
 	
 	@Override

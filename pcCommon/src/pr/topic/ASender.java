@@ -1,9 +1,11 @@
 package pr.topic;
 
 import pr.inter.IJMSConnection;
+import pr.log.LogFiles;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.logging.Level;
 
 import javax.jms.JMSContext;
 import javax.jms.JMSProducer;
@@ -20,6 +22,8 @@ public abstract class ASender implements Runnable {
 	private ConnectionFactory factory;
 	private IJMSConnection jConn;
 	private String topicName;
+	
+	private long sleepTimeout = 100;
 	
 	public ObjectMessage msgObject;
 	public Topic topic;
@@ -43,13 +47,13 @@ public abstract class ASender implements Runnable {
 			while (isRun) {
 				try {
 					dt = senderMessage(dt);
-					Thread.sleep(100);
+					Thread.sleep(sleepTimeout);
 				} catch (Exception e) {
-					System.err.println("ASender()");
+					LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 				}
 			}
 	   } catch (JMSRuntimeException ex) {
-	      System.out.println("ASender(ConnectionFactory factory, String topicName) ...");
+	      LogFiles.log.log(Level.SEVERE, "ASender(ConnectionFactory factory, String topicName) ...", ex);
 	   }
 	}
 	
@@ -62,5 +66,12 @@ public abstract class ASender implements Runnable {
 	public void setRun(boolean isRun) {
 		this.isRun = isRun;
 	}
-	
+
+	public long getSleepTimeout() {
+		return sleepTimeout;
+	}
+
+	public void setSleepTimeout(long sleepTimeout) {
+		this.sleepTimeout = sleepTimeout;
+	}
 }

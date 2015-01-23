@@ -1,11 +1,8 @@
 package ui.tables;
 
-import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Map;
-import java.util.logging.Level;
 
-import pr.log.LogFiles;
 import single.SingleFromDB;
 import pr.model.Alarm;
 import pr.model.TSysParam;
@@ -34,13 +31,9 @@ public class AlarmTableItem {
 	private Alarm alarm;
 	
 	public AlarmTableItem(Alarm a) {
-		try {
-			sysParamsEvent = SingleFromDB.psClient.getTSysParam("ALARM_EVENT");
-			sysParamsPriority = SingleFromDB.psClient.getTSysParam("ALARM_PRIORITY");
-			sysParamsLogState = SingleFromDB.psClient.getTSysParam("LOG_STATE");
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
-		}
+		sysParamsEvent = SingleFromDB.psClient.getTSysParam("ALARM_EVENT");
+		sysParamsPriority = SingleFromDB.psClient.getTSysParam("ALARM_PRIORITY");
+		sysParamsLogState = SingleFromDB.psClient.getTSysParam("LOG_STATE");
 		
 		a.setpObject(SingleFromDB.signals.get(a.getObjref()).getNamesignal());
 		a.setpLocation(SingleFromDB.signals.get(a.getObjref()).getSignalpath());

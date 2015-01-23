@@ -40,420 +40,327 @@ import pr.powersys.IPowersys;
 import pr.powersys.MySocketFactory;
 import single.SingleObject;
 
+@SuppressWarnings("unchecked")
 public class ClientPowerSys implements IPowersys {	
 	private IPowersys myServer;
 	
 	public ClientPowerSys() {
-		try {
-			MySocketFactory.setServer(SingleObject.ipAddress);
-			myServer = (IPowersys) Naming.lookup(String.format("rmi://%s:%s/PowerSysService", SingleObject.ipAddress, IPowersys.RMI_PORT));
-		} catch (NotBoundException | RemoteException | MalformedURLException e) {
-			LogFiles.log.log(Level.WARNING, "PowerSysService is stoped");
-			LogFiles.log.log(Level.INFO, "Exit ...");
-			System.exit(0);
-		}
+		myServer = getMyServer();
 	}
 	
+	public IPowersys getMyServer() {
+		if (myServer == null) {
+			try {
+				MySocketFactory.setServer(SingleObject.ipAddress);
+				myServer = (IPowersys) Naming.lookup(String.format("rmi://%s:%s/PowerSysService", SingleObject.ipAddress, IPowersys.RMI_PORT));
+			} catch (NotBoundException | RemoteException | MalformedURLException e) {
+				LogFiles.log.log(Level.WARNING, "PowerSysService is stoped");
+				LogFiles.log.log(Level.INFO, "Exit ...");
+				System.exit(0);
+			}
+		}
+		return myServer;
+	}
+	
+	public void setMyServer(IPowersys myServer) {
+		this.myServer = myServer;
+	}
 //	==============================================================================
 	@Override
 	public void sendChatMessage(ChatMessage message) {
-		try {
-			myServer.sendChatMessage(message);
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "void sendChatMessage(...)", e);
-		}
+		new ClientRMI(c -> {c.sendChatMessage(message); return 0;}).get();
 	}
 //	==============================================================================
 	@Override
 	public void update(String query) {
-		try {
-			myServer.update(query);
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "void update(...)", e);
-		}
+		new ClientRMI(c -> {c.update(query); return 0;}).get();
 	}
 	
 	@Override
-	public List<NormalModeJournalItem> getListNormalModeItems(Timestamp dtBeg, Timestamp dtEnd, String idSignals) throws RemoteException {
-		return myServer.getListNormalModeItems(dtBeg, dtEnd, idSignals);
+	public List<NormalModeJournalItem> getListNormalModeItems(Timestamp dtBeg, Timestamp dtEnd, String idSignals) {
+		return (List<NormalModeJournalItem>) new ClientRMI(c -> c.getListNormalModeItems(dtBeg, dtEnd, idSignals)).get();
 	}
 	
 	@Override
-	public List<SwitchEquipmentJournalItem> getSwitchJournalItems(String query) throws RemoteException {
-		return myServer.getSwitchJournalItems(query);
+	public List<SwitchEquipmentJournalItem> getSwitchJournalItems(String query) {
+		return (List<SwitchEquipmentJournalItem>) new ClientRMI(c -> c.getSwitchJournalItems(query)).get();
 	}
 	
 	@Override
 	public Map<Integer, String> getReports() {
-		long st = System.currentTimeMillis();
-		try {
-			LogFiles.log.log(Level.INFO, "Get Reports ==> " + (System.currentTimeMillis() - st)  + " ms");
-			return myServer.getReports();
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "List<Report> getReports()", e);
-		}
-		return null;
+		return (Map<Integer, String>) new ClientRMI(c -> c.getReports()).get();
 	}
 	
 	@Override
-	public String getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd) throws RemoteException {
-		return myServer.getReportById(idReport, dtBeg, dtEnd);
+	public String getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd) {
+		return (String) new ClientRMI(c -> c.getReportById(idReport, dtBeg, dtEnd)).get();
 	}
 //	==============================================================================
 	public Map<Integer, Tsignal> getTsignalsMap() {
-		try {
-			return myServer.getTsignalsMap();
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "Map<Integer, Tsignal> getTsignalsMap()", e);
-		}
-		return null;
+		return (Map<Integer, Tsignal>) new ClientRMI(c -> c.getTsignalsMap()).get();
 	}
 	
 	public Map<Integer, Tconftree> getTconftreeMap() {
-		try {
-			return myServer.getTconftreeMap();
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "Map<Integer, Tconftree> getTconftreeMap()", e);
-		}
-		return null;
+		return (Map<Integer, Tconftree>) new ClientRMI(c -> c.getTconftreeMap()).get();
 	}
 
 	@Override
-	public Map<Integer, ConfTree> getConfTreeMap() throws RemoteException {
-		try {
-			return myServer.getConfTreeMap();
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "Map<Integer, Tsignal> getConfTreeMap()", e);
-		}
-		return null;
+	public Map<Integer, ConfTree> getConfTreeMap() {
+		return (Map<Integer, ConfTree>) new ClientRMI(c -> c.getConfTreeMap()).get();
 	}
 
 	@Override
-	public List<Alarm> getAlarmsCurrentDay() throws RemoteException {
-		try {
-			return myServer.getAlarmsCurrentDay();
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "List<Alarm> getAlarmsCurrentDay()", e);
-		}
-		return new ArrayList<>();
+	public List<Alarm> getAlarmsCurrentDay() {
+		List<Alarm> curAl = (List<Alarm>) new ClientRMI(c -> c.getAlarmsCurrentDay()).get();
+		return curAl == null ? new ArrayList<>() : curAl;
 	}
 
 	@Override
-	public Map<String, TSysParam> getTSysParam(String paramname) throws RemoteException {
-		try {
-			return myServer.getTSysParam(paramname);
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "Map<String, TSysParam> getTSysParam(String paramname)", e);
-		}
-		return null;
+	public Map<String, TSysParam> getTSysParam(String paramname) {
+		return (Map<String, TSysParam>) new ClientRMI(c -> c.getTSysParam(paramname)).get();
 	}
 
 	@Override
-	public List<TViewParam> getTViewParam(String objdenom, String paramdenom, int userref) throws RemoteException {
-		try {
-			return myServer.getTViewParam(objdenom, paramdenom, userref);
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "List<TViewParam> getTViewParam(...)", e);
-		}
-		return null;
+	public List<TViewParam> getTViewParam(String objdenom, String paramdenom, int userref) {
+		return (List<TViewParam>) new ClientRMI(c -> c.getTViewParam(objdenom, paramdenom, userref)).get();
 	}
 
 	@Override
-	public void setTS(int idsignal, double val, int rCode, int userId, int schemeref) throws RemoteException {
-		myServer.setTS(idsignal, val, rCode, userId, schemeref);
+	public void setTS(int idsignal, double val, int rCode, int userId, int schemeref) {
+		new ClientRMI(c -> {c.setTS(idsignal, val, rCode, userId, schemeref); return 0;}).get();
 	}
 
 	@Override
-	public void setTU(int idsignal, double val, int rCode, int userId, int schemeref) throws RemoteException {
-		myServer.setTU(idsignal, val, rCode, userId, schemeref);
+	public void setTU(int idsignal, double val, int rCode, int userId, int schemeref) {
+		new ClientRMI(c -> {c.setTU(idsignal, val, rCode, userId, schemeref); return 0;}).get();
 	}
 	
 	@Override
 	public int getSendOK(int idsignal) {
-		try {
-			return myServer.getSendOK(idsignal);
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "int getSendOK(int idsignal) ...", e);
-		}
-		return -1;
+		Integer res = (Integer) new ClientRMI(c -> c.getSendOK(idsignal)).get();
+		return res == null ? -1 : res;
 	}
 	
 	@Override
 	public void setDevicesState(String iddevices, int state) {
-		try {
-			myServer.setDevicesState(iddevices, state);
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "void setDevicesState(String iddevices, int state) ...", e);
-		}
+		new ClientRMI(c -> {c.setDevicesState(iddevices, state); return 0;}).get();
 	}
 
 	@Override
 	public List<LinkedValue> getDevicesState(String iddevices) {
-		try {
-			return myServer.getDevicesState(iddevices);
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "List<Integer> getDevicesState(String iddevices) ...", e);
-		}
-		return null;
+		return (List<LinkedValue>) new ClientRMI(c -> c.getDevicesState(iddevices)).get();
 	}
 
 	@Override
 	public List<Integer> getActiveDevices(String idSignals) {
-		try {
-			return myServer.getActiveDevices(idSignals);
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "List<Integer> getActiveDevices(String idSignals) ...", e);
-		}
-		return null;
+		return (List<Integer>) new ClientRMI(c -> c.getActiveDevices(idSignals)).get();
 	}
 
 	@Override
 	public Map<Integer, DvalTI> getOldTI(String idSignals) {
-		long st = System.currentTimeMillis();
-		try {
-			Map<Integer, DvalTI> rez = myServer.getOldTI(idSignals);
-			LogFiles.log.log(Level.INFO, "Get oldTI values ==> " + (System.currentTimeMillis() - st) / 1000 + " s");
-			return rez;
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "Map<Integer, DvalTI> getOldTI()", e);
-		}
-		LogFiles.log.log(Level.INFO, "Get oldTI values ==> " + (System.currentTimeMillis() - st) / 1000);
-		return new HashMap<>();
+		Map<Integer, DvalTI> res = (Map<Integer, DvalTI>) new ClientRMI(c -> c.getOldTI(idSignals)).get();
+		return res == null ? new HashMap<>() : res;
 	}
 
 	@Override
 	public Map<Integer, DvalTI> getOldTS(String idSignals) {
-		long st = System.currentTimeMillis();
-		try {
-			Map<Integer, DvalTI> rez = myServer.getOldTS(idSignals);
-			LogFiles.log.log(Level.INFO, "Get oldTS values ==> " + (System.currentTimeMillis() - st) / 1000 + " s");
-			return rez;
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "Map<Integer, DvalTS> getOldTS()", e);
-		}
-		return new HashMap<>();
+		Map<Integer, DvalTI> res = (Map<Integer, DvalTI>) new ClientRMI(c -> c.getOldTS(idSignals)).get();
+		return res == null ? new HashMap<>() : res;
 	}
 
 	@Override
-	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) throws RemoteException {
-		myServer.confirmAlarm(recorddt, eventdt, objref, confirmdt, lognote, userref);
+	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) {
+		new ClientRMI(c -> {c.confirmAlarm(recorddt, eventdt, objref, confirmdt, lognote, userref); return 0;}).get();
 	}
 	
 	@Override
-	public void confirmAlarmAll(String lognote, int userref) throws RemoteException {
-		myServer.confirmAlarmAll(lognote, userref);
+	public void confirmAlarmAll(String lognote, int userref) {
+		new ClientRMI(c -> {c.confirmAlarmAll(lognote, userref); return 0;}).get();
 	}
 	
 	@Override
-	public List<Integer> getNotConfirmedSignals(String idSignals) throws RemoteException {
-		return myServer.getNotConfirmedSignals(idSignals);
+	public List<Integer> getNotConfirmedSignals(String idSignals) {
+		return (List<Integer>) new ClientRMI(c -> c.getNotConfirmedSignals(idSignals)).get();
 	}
 	
 	@Override
-	public Alarm getHightPriorityAlarm() throws RemoteException {
-		return myServer.getHightPriorityAlarm();
+	public Alarm getHightPriorityAlarm() {
+		return (Alarm) new ClientRMI(c -> c.getHightPriorityAlarm()).get();
 	}
 	
 	@Override
-	public List<TalarmParam> getTalarmParams(int alarmref) throws RemoteException {
-		return myServer.getTalarmParams(alarmref);
+	public List<TalarmParam> getTalarmParams(int alarmref) {
+		return (List<TalarmParam>) new ClientRMI(c -> c.getTalarmParams(alarmref)).get();
 	}
 	
 	@Override
-	public List<LinkedValue> getData(int idSignal) throws RemoteException {
-		return myServer.getData(idSignal);
+	public List<LinkedValue> getData(int idSignal) {
+		return (List<LinkedValue>) new ClientRMI(c -> c.getData(idSignal)).get();
 	}
 
 	@Override
-	public Map<Integer, SPunit> getSPunitMap() throws RemoteException {
-		return myServer.getSPunitMap();
+	public Map<Integer, SPunit> getSPunitMap() {
+		return (Map<Integer, SPunit>) new ClientRMI(c -> c.getSPunitMap()).get();
 	}
 
 	@Override
-	public List<LinkedValue> getDataIntegr(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) throws RemoteException {
-		return myServer.getDataIntegr(idSignal, dtBeg, dtEnd, period);
+	public List<LinkedValue> getDataIntegr(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) {
+		return (List<LinkedValue>) new ClientRMI(c -> c.getDataIntegr(idSignal, dtBeg, dtEnd, period)).get();
 	}
 	
 	@Override
-	public List<LinkedValue> getDataIntegrArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) throws RemoteException {
-		return myServer.getDataIntegrArc(idSignal, dtBeg, dtEnd, period);
+	public List<LinkedValue> getDataIntegrArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd, int period) {
+		return (List<LinkedValue>) new ClientRMI(c -> c.getDataIntegrArc(idSignal, dtBeg, dtEnd, period)).get();
 	}
 
 	@Override
-	public List<LinkedValue> getDataArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
-		return myServer.getDataArc(idSignal, dtBeg, dtEnd);
+	public List<LinkedValue> getDataArc(int idSignal, Timestamp dtBeg, Timestamp dtEnd) {
+		return (List<LinkedValue>) new ClientRMI(c -> c.getDataArc(idSignal, dtBeg, dtEnd)).get();
 	}
 
 	@Override
-	public Object getTransparantById(int idTransparant) throws RemoteException {
-		return myServer.getTransparantById(idTransparant);
+	public Object getTransparantById(int idTransparant) {
+		return new ClientRMI(c -> c.getTransparantById(idTransparant)).get();
 	}
 
 	@Override
 	public Map<Integer, Transparant> getTransparants() {
-		try {
-			return myServer.getTransparants();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			LogFiles.log.log(Level.SEVERE, "Map<Integer, Transparant> getTransparants()", e);
-			return null;
-		}
+		return (Map<Integer, Transparant>) new ClientRMI(c -> c.getTransparants()).get();
 	}
 
 	@Override
-	public List<Ttransparant> getTtransparantsActive(int idScheme) throws RemoteException {
-		return myServer.getTtransparantsActive(idScheme);
+	public List<Ttransparant> getTtransparantsActive(int idScheme) {
+		return (List<Ttransparant>) new ClientRMI(c -> c.getTtransparantsActive(idScheme)).get();
 	}
 
 	@Override
-	public TtranspLocate getTransparantLocate(int trref) throws RemoteException {
-		return myServer.getTransparantLocate(trref);
+	public TtranspLocate getTransparantLocate(int trref) {
+		return (TtranspLocate) new ClientRMI(c -> c.getTransparantLocate(trref)).get();
 	}
 
 	@Override
-	public List<Ttransparant> getTtransparantsNew(Timestamp settime) throws RemoteException {
-		return myServer.getTtransparantsNew(settime);
+	public List<Ttransparant> getTtransparantsNew(Timestamp settime) {
+		return (List<Ttransparant>) new ClientRMI(c -> c.getTtransparantsNew(settime)).get();
 	}
 
 	@Override
-	public List<Ttransparant> getTtransparantsClosed(Timestamp closetime) throws RemoteException {
-		return myServer.getTtransparantsClosed(closetime);
+	public List<Ttransparant> getTtransparantsClosed(Timestamp closetime) {
+		return (List<Ttransparant>) new ClientRMI(c -> c.getTtransparantsClosed(closetime)).get();
 	}
 
 	@Override
-	public List<Ttransparant> getTtransparantsUpdated(Timestamp lastupdate) throws RemoteException {
-		return myServer.getTtransparantsUpdated(lastupdate);
+	public List<Ttransparant> getTtransparantsUpdated(Timestamp lastupdate) {
+		return (List<Ttransparant>) new ClientRMI(c -> c.getTtransparantsUpdated(lastupdate)).get();
 	}
 
 	@Override
-	public void insertTtransparant(int idtr, int signref, String objname, int tp, int schemeref) throws RemoteException {
-		myServer.insertTtransparant(idtr, signref, objname, tp, schemeref);
+	public void insertTtransparant(int idtr, int signref, String objname, int tp, int schemeref) {
+		new ClientRMI(c -> {c.insertTtransparant(idtr, signref, objname, tp, schemeref);return 0;}).get();
 	}
 
 	@Override
-	public void insertTtranspHistory(int trref, int userref, String txt, int trtype) throws RemoteException {
-		myServer.insertTtranspHistory(trref, userref, txt, trtype);
+	public void insertTtranspHistory(int trref, int userref, String txt, int trtype) {
+		new ClientRMI(c -> {c.insertTtranspHistory(trref, userref, txt, trtype);return 0;}).get();
 	}
 
 	@Override
-	public void deleteTtranspLocate(int trref, int scref) throws RemoteException {
-		myServer.deleteTtranspLocate(trref, scref);
+	public void deleteTtranspLocate(int trref, int scref) {
+		new ClientRMI(c -> {c.deleteTtranspLocate(trref, scref);return 0;}).get();
 	}
 
 	@Override
-	public void insertTtranspLocate(int trref, int scref, int x, int y, int h, int w) throws RemoteException {
-		myServer.insertTtranspLocate(trref, scref, x, y, h, w);
+	public void insertTtranspLocate(int trref, int scref, int x, int y, int h, int w) {
+		new ClientRMI(c -> {c.insertTtranspLocate(trref, scref, x, y, h, w);return 0;}).get();
 	}
 
 	@Override
-	public int getMaxTranspID() throws RemoteException {
-		return myServer.getMaxTranspID();
+	public int getMaxTranspID() {
+		Integer res = (Integer) new ClientRMI(c -> c.getMaxTranspID()).get();
+		return res == null ? 0 : res;
 	}
 
 	@Override
-	public void updateTtransparantLastUpdate(int idtr) throws RemoteException {
-		myServer.updateTtransparantLastUpdate(idtr);
+	public void updateTtransparantLastUpdate(int idtr) {
+		new ClientRMI(c -> {c.updateTtransparantLastUpdate(idtr);return 0;}).get();
 	}
 
 	@Override
-	public void updateTtranspLocate(int trref, int scref, int x, int y, int h, int w) throws RemoteException {
-		myServer.updateTtranspLocate(trref, scref, x, y, h, w);
+	public void updateTtranspLocate(int trref, int scref, int x, int y, int h, int w) {
+		new ClientRMI(c -> {c.updateTtranspLocate(trref, scref, x, y, h, w);return 0;}).get();
 	}
 
 	@Override
-	public void updateTtransparantCloseTime(int idtr) throws RemoteException {
-		myServer.updateTtransparantCloseTime(idtr);
+	public void updateTtransparantCloseTime(int idtr) {
+		new ClientRMI(c -> {c.updateTtransparantCloseTime(idtr);return 0;}).get();
 	}
 
 	@Override
-	public TtranspHistory getTtranspHistory(int trref) throws RemoteException {
-		return myServer.getTtranspHistory(trref);
+	public TtranspHistory getTtranspHistory(int trref) {
+		return (TtranspHistory) new ClientRMI(c -> c.getTtranspHistory(trref)).get();
 	}
 
 	@Override
-	public void updateTtranspHistory(int trref, String txt) throws RemoteException {
-		myServer.updateTtranspHistory(trref, txt);
+	public void updateTtranspHistory(int trref, String txt) {
+		new ClientRMI(c -> {c.updateTtranspHistory(trref, txt);return 0;}).get();
 	}
 
 	@Override
-	public Ttransparant getTtransparantById(int idtr) throws RemoteException {
-		return myServer.getTtransparantById(idtr);
+	public Ttransparant getTtransparantById(int idtr) {
+		return (Ttransparant) new ClientRMI(c -> c.getTtransparantById(idtr)).get();
 	}
 
 	@Override
 	public List<SpTuCommand> getSpTuCommand() {
-		try {
-			return myServer.getSpTuCommand();
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "List<SpTuCommand> getSpTuCommand()", e);
-			return null;
-		}
+		return (List<SpTuCommand>) new ClientRMI(c -> c.getSpTuCommand()).get();
 	}
 
 	@Override
 	public Map<Integer, Tuser> getTuserMap() {
-		try {
-			return myServer.getTuserMap();
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "Map<Integer, Tuser> getTuserMap()", e);
-			return null;
-		}
+		return (Map<Integer, Tuser>) new ClientRMI(c -> c.getTuserMap()).get();
 	}
 
 	@Override
-	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
-		return myServer.getAlarmsPeriod(dtBeg, dtEnd);
+	public List<Alarm> getAlarmsPeriod(Timestamp dtBeg, Timestamp dtEnd) {
+		return (List<Alarm>) new ClientRMI(c -> c.getAlarmsPeriod(dtBeg, dtEnd)).get();
 	}
 	
 	@Override
-	public List<Alarm> getAlarmsPeriodById(Timestamp dtBeg, Timestamp dtEnd, int idSignal) throws RemoteException {
-		return myServer.getAlarmsPeriodById(dtBeg, dtEnd, idSignal);
+	public List<Alarm> getAlarmsPeriodById(Timestamp dtBeg, Timestamp dtEnd, int idSignal) {
+		return (List<Alarm>) new ClientRMI(c -> c.getAlarmsPeriodById(dtBeg, dtEnd, idSignal)).get();
 	}
 
 	@Override
-	public List<ControlJournalItem> getJContrlItems(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
-		return myServer.getJContrlItems(dtBeg, dtEnd);
+	public List<ControlJournalItem> getJContrlItems(Timestamp dtBeg, Timestamp dtEnd) {
+		return (List<ControlJournalItem>) new ClientRMI(c -> c.getJContrlItems(dtBeg, dtEnd)).get();
 	}
 
 	@Override
 	public Map<Integer, VsignalView> getVsignalViewMap() {
-		try {
-			return myServer.getVsignalViewMap();
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "Map<Integer, VsignalView> getVsignalViewMap()", e);
-		}
-		return null;
+		return (Map<Integer, VsignalView>) new ClientRMI(c -> c.getVsignalViewMap()).get();
 	}
 
 	@Override
-	public void setBaseVal(int idSignal, double val) throws RemoteException {
-		myServer.setBaseVal(idSignal, val);
+	public void setBaseVal(int idSignal, double val) {
+		new ClientRMI(c -> {c.setBaseVal(idSignal, val); return 0;}).get();
 	}
 
 	@Override
-	public void updateTsignalStatus(int idSignal, int status) throws RemoteException {
-		myServer.updateTsignalStatus(idSignal, status);
+	public void updateTsignalStatus(int idSignal, int status) {
+		new ClientRMI(c -> {c.updateTsignalStatus(idSignal, status); return 0;}).get();
 	}
 
 	@Override
-	public void insertDeventLog(int eventtype, int objref, Timestamp eventdt, double objval, int objstatus, int authorref) throws RemoteException {
-		myServer.insertDeventLog(eventtype, objref, eventdt, objval, objstatus, authorref);
+	public void insertDeventLog(int eventtype, int objref, Timestamp eventdt, double objval, int objstatus, int authorref) {
+		new ClientRMI(c -> {c.insertDeventLog(eventtype, objref, eventdt, objval, objstatus, authorref); return 0;}).get();
 	}
 
 	@Override
-	public List<UserEventJournalItem> getUserEventJournalItems(Timestamp dtBeg, Timestamp dtEnd) throws RemoteException {
-		return myServer.getUserEventJournalItems(dtBeg, dtEnd);
+	public List<UserEventJournalItem> getUserEventJournalItems(Timestamp dtBeg, Timestamp dtEnd) {
+		return (List<UserEventJournalItem>) new ClientRMI(c -> c.getUserEventJournalItems(dtBeg, dtEnd)).get();
 	}
 
 	@Override
 	public Map<Integer, SpTypeSignal> getSpTypeSignalMap() {
-		try {
-			return myServer.getSpTypeSignalMap();
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "Map<Integer, SpTypeSignal> getSpTypeSignalMap()", e);
-			LogFiles.log.log(Level.INFO, "Exit ...");
-			System.exit(0);
-		}
-		return null;
+		return (Map<Integer, SpTypeSignal>) new ClientRMI(c -> c.getSpTypeSignalMap()).get();
 	}
 } 

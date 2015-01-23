@@ -9,6 +9,7 @@ import javax.jms.JMSProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.TopicPublisher;
 
+import notify.NotificationsListener;
 import pr.topic.JMSConnection;
 import pr.log.LogFiles;
 import single.SQLConnect;
@@ -52,6 +53,7 @@ public class SendTopic implements Runnable {
 		new Thread(new TransparantsTopic(factory, jConn, "Transparants", SingleFromDB.getPdb()), "Transparants_Thread").start();
 		SingleObject.chatTopic = new ChatTopic(factory, jConn, "ChatTopic");
 		new Thread(SingleObject.chatTopic, "ChatTopic_Thread").start();
+		new Thread(new NotificationsListener(factory, jConn, "Notifications"), "Notifications_Thread").start();
 		
 		LogFiles.log.log(Level.INFO, "Send... ");
 	}

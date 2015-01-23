@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.collections.*?>
+<?import java.lang.*?>
+
+<BorderPane fx:id="bp" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.config.CustomPropertiesController" styleClass="root">
+	<padding>
+		<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+	</padding>
+
+	<top>
+		<ToolBar>
+			<Button fx:id="add" onAction="#add" text="Add" styleClass="toolBarButton" />
+			<Button fx:id="script" onAction="#script" text="Script" styleClass="toolBarButton" />
+		</ToolBar>
+	</top>
+
+	<center>
+		<GridPane fx:id="gridPane" alignment="center" hgap="10" vgap="5">
+			<padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+		</GridPane>
+	</center>
+
+	<bottom>
+		<HBox spacing="10" alignment="center">
+			<padding>
+				<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+			</padding>
+
+			<Button fx:id="btnOK" onAction="#btnOK"/>
+			<Button fx:id="btnCancel" onAction="#btnCancel"/>
+		</HBox>
+	</bottom>
+</BorderPane>

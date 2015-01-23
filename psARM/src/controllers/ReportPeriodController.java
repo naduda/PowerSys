@@ -1,7 +1,6 @@
 package controllers;
 
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -43,12 +42,8 @@ public class ReportPeriodController implements Initializable, IControllerInit {
 	
 	@FXML public void okAction() {
 		String content = "Error in report";
-		try {
-			content = SingleFromDB.psClient.getReportById(idReport, 
-					tbJournalController.dpBegin.getValue(), tbJournalController.dpEnd.getValue());
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
+		content = SingleFromDB.psClient.getReportById(idReport, 
+				tbJournalController.dpBegin.getValue(), tbJournalController.dpEnd.getValue());
 		
 		StageLoader stage = new StageLoader("Report.xml", 
 				SingleObject.getResourceBundle().getString("keyReports"), true);

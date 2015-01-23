@@ -26,6 +26,7 @@ public class DValTITopic extends ASender {
 	public DValTITopic(ConnectionFactory factory, JMSConnection jConn, String topicName, Map<Integer, Tsignal> signals, PostgresDB pdb) {
 		super(factory, jConn, topicName);
 		this.signals = signals;
+		setSleepTimeout(30000);
 	}
 	
 	@SuppressWarnings("unchecked")

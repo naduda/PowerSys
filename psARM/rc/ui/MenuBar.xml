@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<MenuBar fx:id="menuBar" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.MenuBarController">
+	<menus>
+		<Menu fx:id="menuFile">
+			<items>
+				<MenuItem fx:id="miOpenScheme" text="Відкрити схему" onAction="#openScheme" />
+				<MenuItem fx:id="miOpenProject" />
+				<Menu fx:id="menuTrend">
+					<items>
+						<MenuItem fx:id="miOpenTrend" />
+						<MenuItem fx:id="miCreateTrend" />
+					</items>
+				</Menu>
+				<SeparatorMenuItem />
+				<MenuItem fx:id="miLogin" />
+				<MenuItem fx:id="miExit" onAction="#exit" />
+			</items>
+		</Menu>
+		<Menu fx:id="menuJournals">
+			<items>
+				<MenuItem fx:id="miJAlarms" mnemonicParsing="true" onAction="#openJalarms" />
+				<MenuItem fx:id="miJControl" onAction="#openJControl" />
+				<MenuItem fx:id="miJNormalMode" onAction="#openJNormalMode" />
+				<MenuItem fx:id="miJswitchEq" onAction="#openJswitchEq" />
+				<MenuItem fx:id="miJuserEvents" onAction="#openJuserEvent" />
+			</items>
+		</Menu>
+		<Menu fx:id="menuReports" />
+		<Menu fx:id="menuTools">
+			<items>
+				<MenuItem fx:id="miSetBaseVal" onAction="#setBaseVal" />
+				<MenuItem fx:id="miChat" onAction="#chat" />
+			</items>
+		</Menu>
+		<Menu fx:id="menuSettings">
+			<items>
+				<Menu fx:id="menuLanguage">
+					<items>
+						<MenuItem fx:id="en" text="English" onAction="#changeLocale" />
+						<MenuItem fx:id="ru" text="Русский" onAction="#changeLocale" />
+						<MenuItem fx:id="uk" text="Українська" onAction="#changeLocale" />
+					</items>
+				</Menu>
+				<MenuItem fx:id="miConfig" onAction="#schemeConfig" />
+				<MenuItem fx:id="hotkeys" onAction="#hotKeys" />
+			</items>
+		</Menu>
+		<Menu fx:id="menuExit"/>
+		<Menu fx:id="menuAbout"/>
+	</menus>
+</MenuBar>

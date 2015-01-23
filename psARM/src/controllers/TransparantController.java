@@ -2,7 +2,6 @@ package controllers;
 
 import java.io.ByteArrayInputStream;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -120,15 +119,11 @@ public class TransparantController implements Initializable, IControllerInit {
     	double y = bounds.getMinY() + r;
     	y = y < r ? r : y - r > maxY ? maxY - r : y - r;
     	
-		try {
-			SingleFromDB.psClient.updateTtranspLocate(trref, SingleObject.mainScheme.getIdScheme(), 
-					(int)x, (int)y, (int)r * 2, (int)r * 2);
-			
-			SingleFromDB.psClient.updateTtransparantLastUpdate(trref);
-			SingleFromDB.psClient.updateTtranspHistory(trref, txtArea.getText());
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "void updateTransparant()", e);
-		}
+    	SingleFromDB.psClient.updateTtranspLocate(trref, SingleObject.mainScheme.getIdScheme(), 
+				(int)x, (int)y, (int)r * 2, (int)r * 2);
+		
+		SingleFromDB.psClient.updateTtransparantLastUpdate(trref);
+		SingleFromDB.psClient.updateTtranspHistory(trref, txtArea.getText());
 	}
 	
 	private void addTransparant() {
@@ -145,7 +140,7 @@ public class TransparantController implements Initializable, IControllerInit {
 			
 			SingleFromDB.psClient.deleteTtranspLocate(idtr, SingleObject.mainScheme.getIdScheme());
 			SingleFromDB.psClient.insertTtranspLocate(idtr, SingleObject.mainScheme.getIdScheme(), (int)shBounds.getMaxX(), (int)mp.getY(), 43, 43);
-		} catch (RemoteException | InterruptedException e) {
+		} catch (InterruptedException e) {
 			LogFiles.log.log(Level.SEVERE, "void addTransparant()", e);
 		}
 	}

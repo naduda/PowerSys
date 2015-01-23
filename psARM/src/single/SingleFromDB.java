@@ -1,6 +1,5 @@
 package single;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -77,12 +76,8 @@ public class SingleFromDB {
 		spTuCommands = (List<SpTuCommand>) results.get("spTuCommands");
 		spTypeSignals = (Map<Integer, SpTypeSignal>) results.get("spTypeSignals");
 		
-		try {
-			validTimeOutTI = Integer.parseInt(psClient.getTSysParam("OBJ_TI_TIMEOUT").values().iterator().next().getVal());
-			validTimeOutTS = Integer.parseInt(psClient.getTSysParam("OBJ_TS_TIMEOUT").values().iterator().next().getVal());
-		} catch (NumberFormatException | RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "Error getting validTimeOut", e);
-		}
+		validTimeOutTI = Integer.parseInt(psClient.getTSysParam("OBJ_TI_TIMEOUT").values().iterator().next().getVal());
+		validTimeOutTS = Integer.parseInt(psClient.getTSysParam("OBJ_TS_TIMEOUT").values().iterator().next().getVal());
 //				Map<String, TSysParam> modes = SingleFromDB.psClient.getTSysParam("SIGNAL_STATUS");
 		
 		LogFiles.log.log(Level.INFO, "Finish reading DB - " + (System.currentTimeMillis() - start) / 1000 + " s");

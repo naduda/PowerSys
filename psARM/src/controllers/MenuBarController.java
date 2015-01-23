@@ -168,6 +168,7 @@ public class MenuBarController implements Initializable, IControllerInit {
 	}
 	
 	@FXML protected void schemeConfig() {
+		if (SingleObject.selectedShape == null) return;
 		StageLoader cpStage = new StageLoader("config/CustomProperties.xml", 
 				SingleObject.getResourceBundle().getString("keyCustPropTitle"), true);
 		CustomPropertiesController controller = (CustomPropertiesController) cpStage.getController();
@@ -203,10 +204,15 @@ public class MenuBarController implements Initializable, IControllerInit {
 				if (rb.containsKey("key_" + it.getId())) it.setText(rb.getString("key_" + it.getId()));
 				File icon = new File(Utils.getFullPath("./Icon/" + it.getId() + ".png"));
 				if (icon.exists()) {
-					ImageView iw = new ImageView("file:/" + icon.getAbsolutePath());
-					iw.setFitHeight(SingleObject.getProgramSettings().getIconWidth());
-					iw.setPreserveRatio(true);
-					it.setGraphic(iw);
+					try {
+						ImageView iw = new ImageView(new File(icon.getAbsolutePath()).toURI().toURL().toString());
+						iw.setFitHeight(SingleObject.getProgramSettings().getIconWidth());
+						iw.setPreserveRatio(true);
+						it.setGraphic(iw);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					
 				}
 				
 				if (it instanceof Menu) updateMenuItem(rb, (Menu) it);

@@ -5,13 +5,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
+
 
 import controllers.Controller;
 import controllers.ShapeController;
@@ -27,6 +27,7 @@ import single.SingleFromDB;
 import single.SingleObject;
 import svg2fx.Convert;
 import svg2fx.fxObjects.EShape;
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -178,13 +179,15 @@ public class Scheme extends ScrollPane {
 		List<Ttransparant> tTransparants = SingleFromDB.psClient.getTtransparantsActive(getIdScheme());
 		if (tTransparants != null) {
 			tTransparants.forEach(t -> {
-				try {
-					TtranspLocate transpLocate = SingleFromDB.psClient.getTransparantLocate(t.getIdtr());
-					addTransparant(t.getTp(), transpLocate.getX(), transpLocate.getY(), transpLocate.getH(), 
-							t.getIdtr());
-				} catch (Exception e) {
-					LogFiles.log.log(Level.SEVERE, "void setTransparants()", e);
-				}
+				Platform.runLater(() -> {
+					try {
+						TtranspLocate transpLocate = SingleFromDB.psClient.getTransparantLocate(t.getIdtr());
+						addTransparant(t.getTp(), transpLocate.getX(), transpLocate.getY(), transpLocate.getH(), 
+								t.getIdtr());
+					} catch (Exception e) {
+						LogFiles.log.log(Level.SEVERE, "void setTransparants()", e);
+					}
+				});
 			});
 		}
 	}
@@ -215,7 +218,7 @@ public class Scheme extends ScrollPane {
 	
 	private void addContextMenu(Shape sh) {
 		try {
-			FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/TransparantContextMenu.xml")));
+			FXMLLoader loader = new FXMLLoader(new File(Utils.getFullPath("./ui/TransparantContextMenu.xml")).toURI().toURL());
 			ContextMenu contextMenu = loader.load();
 			ShapeController shapeController = loader.getController();
 			contextMenu.setId(sh.getId());

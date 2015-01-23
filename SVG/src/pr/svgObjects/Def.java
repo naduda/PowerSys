@@ -20,10 +20,14 @@ public class Def {
 	private List<Marker> markers;
 	@XmlElement(name="linearGradient")
 	private List<LinearGradient> linearGradients;
+	@XmlElement(name="radialGradient")
+	private List<RadialGradient> radialGradients;
 	@XmlElement(name="pattern")
 	private List<Pattern> patterns;
 	@XmlTransient
 	private Map<String, LinearGradient> linearGradientsMap;
+	@XmlTransient
+	private Map<String, RadialGradient> radialGradientsMap;
 	@XmlTransient
 	private Map<String, Pattern> patternsMap;
 	
@@ -79,6 +83,18 @@ public class Def {
 		return getLinearGradientsMap().get(id);
 	}
 	
+	private Map<String, RadialGradient> getRadialGradientsMap() {
+		if (radialGradientsMap == null) {
+			radialGradientsMap = new HashMap<>();
+			radialGradients.forEach(g -> radialGradientsMap.put(g.getId(), g));
+		}
+		return radialGradientsMap;
+	}
+	
+	public RadialGradient getRadialGradientById(String id) {
+		return getRadialGradientsMap().get(id);
+	}
+	
 	private Map<String, Pattern> getPatternsMap() {
 		if (patternsMap == null) {
 			patternsMap = new HashMap<>();
@@ -89,5 +105,13 @@ public class Def {
 	
 	public Pattern getPatternById(String id) {
 		return getPatternsMap().get(id);
+	}
+
+	public List<RadialGradient> getRadialGradients() {
+		return radialGradients;
+	}
+
+	public void setRadialGradients(List<RadialGradient> radialGradients) {
+		this.radialGradients = radialGradients;
 	}
 }

@@ -14,4 +14,5 @@ public class ProgramProperty {
 	public static final StringProperty localeName = new SimpleStringProperty();
 	public static final ObjectProperty<Alarm> hightPriorityAlarmProperty = new SimpleObjectProperty<>();
 	public static final StringProperty chatMessageProperty = new SimpleStringProperty();
+	public static final StringProperty tDeviceProperty = new SimpleStringProperty();
 }

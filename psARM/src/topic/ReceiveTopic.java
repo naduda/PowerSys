@@ -7,8 +7,8 @@ import javax.jms.TopicSubscriber;
 import pr.log.LogFiles;
 import topic.messagelisteners.AlarmMessageListener;
 import topic.messagelisteners.ChatMessageListener;
+import topic.messagelisteners.NotificationsMessageListener;
 import topic.messagelisteners.TIMessageListener;
-import topic.messagelisteners.TSMessageListener;
 import topic.messagelisteners.TransparantMessageListener;
 
 import com.sun.messaging.ConnectionConfiguration;
@@ -51,7 +51,7 @@ public class ReceiveTopic extends javafx.concurrent.Task<Void> {
 			
 			Topic tDvalTS = session.createTopic("DvalTS");
 			TopicSubscriber subscriberDvalTS = session.createSubscriber(tDvalTS);						
-			subscriberDvalTS.setMessageListener(new TSMessageListener());
+			subscriberDvalTS.setMessageListener(new TIMessageListener());
 			
 			Topic tAlarms = session.createTopic("Alarms");
 			TopicSubscriber subscribertAlarms = session.createSubscriber(tAlarms);						
@@ -64,6 +64,10 @@ public class ReceiveTopic extends javafx.concurrent.Task<Void> {
 			Topic tChat = session.createTopic("ChatTopic");
 			TopicSubscriber subscribertChat = session.createSubscriber(tChat);						
 			subscribertChat.setMessageListener(new ChatMessageListener());
+			
+			Topic tNotifications = session.createTopic("Notifications");
+			TopicSubscriber subscribertNotifications = session.createSubscriber(tNotifications);						
+			subscribertNotifications.setMessageListener(new NotificationsMessageListener());
 			
 			int k = 0;
 			while (isRun) {

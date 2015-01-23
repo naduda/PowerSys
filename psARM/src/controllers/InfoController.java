@@ -1,15 +1,12 @@
 package controllers;
 
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 
-import pr.log.LogFiles;
 import pr.model.Tsignal;
 import single.Constants;
 import single.ProgramProperty;
@@ -95,15 +92,11 @@ public class InfoController extends AController implements Initializable {
 			tName.setText(tID.getNamesignal());
 			tCode.setText(tID.getIdsignal() + "");
 			
-			try {
-				tType.setText(SingleFromDB.spTypeSignals.get(tID.getTypesignalref()).getNametypesignal());
-				if (tIdTS != null) {
-					tMode.setText(SingleFromDB.psClient.getTSysParam("SIGNAL_STATUS").get(tIdTS.getStatus() + "").getParamdescr());
-				} else {
-					tMode.setText(SingleFromDB.psClient.getTSysParam("SIGNAL_STATUS").get(tID.getStatus() + "").getParamdescr());
-				}
-			} catch (RemoteException e) {
-				LogFiles.log.log(Level.INFO, "void updateStage()", e);
+			tType.setText(SingleFromDB.spTypeSignals.get(tID.getTypesignalref()).getNametypesignal());
+			if (tIdTS != null) {
+				tMode.setText(SingleFromDB.psClient.getTSysParam("SIGNAL_STATUS").get(tIdTS.getStatus() + "").getParamdescr());
+			} else {
+				tMode.setText(SingleFromDB.psClient.getTSysParam("SIGNAL_STATUS").get(tID.getStatus() + "").getParamdescr());
 			}
 			tUnit.setText(SingleFromDB.signals.get(tID.getIdsignal()).getNameunit());
 			tQuality.setText(Constants.getQuality(SingleObject.selectedShape.getRcode()));
@@ -116,8 +109,8 @@ public class InfoController extends AController implements Initializable {
 	
 	private void updateDateValue() {
 		if (SingleObject.selectedShape != null) {
-			String s1 = SingleObject.selectedShape.getValue().getIdValue() + "";
-			String s2 = SingleObject.selectedShape.getValue().getIdTSValue() + "";
+			String s1 = SingleObject.selectedShape.getCustomPropertyByName("id");
+			String s2 = SingleObject.selectedShape.getCustomPropertyByName("idTS");
 			tValue.setText(s1 + (SingleObject.selectedShape.getIdTS() <= 0 ? "" : String.format(" (TS = %s)", s2)));
 			Timestamp dt = SingleObject.selectedShape.getDt();
 			tDate.setText(dt == null ? "" : dFormat.format(SingleObject.selectedShape.getDt()));

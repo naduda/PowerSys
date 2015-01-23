@@ -1,8 +1,7 @@
 package controllers;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -37,15 +36,15 @@ public class ShapeController implements IControllerInit {
 	
 	@FXML
 	protected void addTransparant(ActionEvent event) {
-		getTransparantStage("Add transparant").show();
+		getTransparantStage().show();
 	}
 	
 	private final Stage transparantStage = new Stage();
 	private TransparantController controller;
-	private Stage getTransparantStage(String title) {
+	private Stage getTransparantStage() {
 		if (transparantStage.getScene() == null) {
 			try {
-				FXMLLoader loader = new FXMLLoader(new URL("file:/" + Utils.getFullPath("./ui/Transparants.xml")));
+				FXMLLoader loader = new FXMLLoader(new File(Utils.getFullPath("./ui/Transparants.xml")).toURI().toURL());
 				Parent root = loader.load();
 				controller = loader.getController();
 				
@@ -68,14 +67,10 @@ public class ShapeController implements IControllerInit {
 		Shape transp = getSelectedTransparant(event);
 		int trref = getTranspID(transp);
 
-		try {
-			SingleFromDB.psClient.updateTtransparantCloseTime(trref);
-			SingleFromDB.psClient.deleteTtranspLocate(trref, SingleObject.mainScheme.getIdScheme());
-			
-			SingleObject.mainScheme.getRoot().getChildren().remove(transp);
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "void deleteTransparant(...)", e);
-		}
+		SingleFromDB.psClient.updateTtransparantCloseTime(trref);
+		SingleFromDB.psClient.deleteTtranspLocate(trref, SingleObject.mainScheme.getIdScheme());
+		
+		SingleObject.mainScheme.getRoot().getChildren().remove(transp);
 	}
 	
 	private Shape getSelectedTransparant(ActionEvent event) {
@@ -93,22 +88,18 @@ public class ShapeController implements IControllerInit {
 	protected void editTransparant(ActionEvent event) {
 		Shape transp = getSelectedTransparant(event);		
 		int trref = getTranspID(transp);
-		try {
-			TtranspHistory transpHistory = SingleFromDB.psClient.getTtranspHistory(trref);
-			Stage stage = getTransparantStage("Edit transparant");
-			controller.setTxtArea(transpHistory.getTxt());
-			controller.setTrref(trref);
-			controller.setTransparant(transp);
-			controller.setEdit(true);
-			ResourceBundle rb = Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName()));
-			controller.setOKtext(rb.getString("keyEdit"));
-			Ttransparant tTransparant = SingleFromDB.psClient.getTtransparantById(trref);
-			controller.selectTransparantById(tTransparant.getTp() - 1);
-			controller.disableListView();
-			stage.show();
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, "void editTransparant(...)", e);
-		}
+		TtranspHistory transpHistory = SingleFromDB.psClient.getTtranspHistory(trref);
+		Stage stage = getTransparantStage();
+		controller.setTxtArea(transpHistory.getTxt());
+		controller.setTrref(trref);
+		controller.setTransparant(transp);
+		controller.setEdit(true);
+		ResourceBundle rb = Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName()));
+		controller.setOKtext(rb.getString("keyEdit"));
+		Ttransparant tTransparant = SingleFromDB.psClient.getTtransparantById(trref);
+		controller.selectTransparantById(tTransparant.getTp() - 1);
+		controller.disableListView();
+		stage.show();
 	}
 	
 	@Override
@@ -130,15 +121,11 @@ public class ShapeController implements IControllerInit {
 		EShape sh = (EShape) SingleObject.mainScheme.getRoot().lookup("#" + id);
 		int newStatus = Integer.parseInt(mi.getId().substring(mi.getId().indexOf("_") + 1));
 		if (newStatus != sh.getStatus()) {
-			try {
-				SingleFromDB.psClient.updateTsignalStatus(sh.gettSignalIDTS().getIdsignal(), newStatus);
-				SingleFromDB.tsignals.get(sh.gettSignalIDTS().getIdsignal()).setStatus(newStatus);
-				
-				SingleFromDB.psClient.insertDeventLog(5, sh.gettSignalIDTS().getIdsignal(), 
-						new Timestamp(System.currentTimeMillis()), newStatus, sh.getStatus(), -1);		
-			} catch (RemoteException e) {
-				LogFiles.log.log(Level.SEVERE, "void changeMode(...)", e);
-			}
+			SingleFromDB.psClient.updateTsignalStatus(sh.gettSignalIDTS().getIdsignal(), newStatus);
+			SingleFromDB.tsignals.get(sh.gettSignalIDTS().getIdsignal()).setStatus(newStatus);
+			
+			SingleFromDB.psClient.insertDeventLog(5, sh.gettSignalIDTS().getIdsignal(), 
+					new Timestamp(System.currentTimeMillis()), newStatus, sh.getStatus(), -1);
 		}
 		sh.getTsignalProp().set(true);
 	}

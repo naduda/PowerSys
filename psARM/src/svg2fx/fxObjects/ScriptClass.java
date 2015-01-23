@@ -39,8 +39,8 @@ public class ScriptClass {
 						func = s;
 						funcName = s.substring(s.indexOf(" ") + 1, s.indexOf("("));
 					} else {
-						s = s.replace("[id]", "sh.getValue().getIdValue()");
-						s = s.replace("[idTS]", "sh.getValue().getIdTSValue()");
+						s = s.replace("[id]", "sh.getCustomPropertyByName('id')");
+						s = s.replace("[idTS]", "sh.getCustomPropertyByName('idTS')");
 						s = s.replace("[ON]", "sh.getStateIdTS('on')");
 						s = s.replace("[OFF]", "sh.getStateIdTS('off')");
 						func = func + "\n" + s;

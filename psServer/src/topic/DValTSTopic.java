@@ -20,6 +20,7 @@ public class DValTSTopic extends ASender {
 	
 	public DValTSTopic(ConnectionFactory factory, JMSConnection jConn, String topicName, PostgresDB pdb) {
 		super(factory, jConn, topicName);
+		setSleepTimeout(30000);
 	}
 
 	@SuppressWarnings("unchecked")

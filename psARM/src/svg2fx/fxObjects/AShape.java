@@ -74,13 +74,11 @@ public abstract class AShape extends Group {
         
 	    setOnMouseClicked(event -> {
 	    	if (event.getButton().equals(MouseButton.PRIMARY)) {
-		    	setSelection(true);
 		    	sequentialClickCount.set(sequentialClickCount.get() + 1);
 	            clickTimer.playFromStart();
 	    	}
+	    	setSelection(true);
 		});
-	    
-	    //setOnMouseReleased(e -> Platform.runLater(() -> onMouseReleased()));
 	    
 	    valueProp.set(-888888.888888);
 	    valueProp.addListener((observable, oldValue, newValue) -> {

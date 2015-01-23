@@ -10,13 +10,17 @@ import org.apache.ibatis.annotations.Update;
 public interface IMapperAction {
 
 	@Update("update d_eventlog set logstate = 2, confirmdt = #{confirmdt}, lognote = #{lognote}, userref = #{userref} "
-			+ "where recorddt = #{recorddt} and  eventdt = #{eventdt} and objref = #{objref}")
+			+ "where recorddt = #{recorddt} and  eventdt = #{eventdt} and objref = #{objref};"
+			+ "delete from t_sysparam where paramname = 'LAST_USR_ACK';"
+			+ "insert into t_sysparam values ( 3, 'LAST_USR_ACK', extract(epoch FROM now()), 'Время последнего квитирования');")
 	void confirmAlarm(@Param("recorddt")Timestamp recorddt, @Param("eventdt")Timestamp eventdt, 
 					  @Param("objref")int objref, @Param("confirmdt")Timestamp confirmdt, 
 					  @Param("lognote")String lognote, @Param("userref")int userref);
 	
 	@Update("update d_eventlog set logstate = 2, confirmdt = now(), lognote = #{lognote}, userref = #{userref} "
-			+ "where logstate = 1")
+			+ "where logstate = 1;"
+			+ "delete from t_sysparam where paramname = 'LAST_USR_ACK';"
+			+ "insert into t_sysparam values ( 3, 'LAST_USR_ACK', extract(epoch FROM now()), 'Время последнего квитирования');")
 	void confirmAlarmAll(@Param("lognote")String lognote, @Param("userref")int userref);
 	
 	@Insert("insert into d_eventlog (eventtype, objref, eventdt, objval, objstatus, authorref) values "

@@ -1,7 +1,6 @@
 package jdbc;
 
 import java.rmi.RemoteException;
-
 import org.apache.ibatis.session.SqlSession;
 
 public interface IBatisJDBC {

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane fx:id="bp" prefHeight="400" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.Controller" styleClass="root">
+	<top>
+		<BorderPane fx:id="bpTop">
+			<top>
+				<fx:include fx:id="menuBar" source="MenuBar.xml"/>
+			</top>
+			<bottom>
+				<fx:include fx:id="toolBar" source="ToolBar.xml"/>
+			</bottom>
+		</BorderPane>
+	</top>
+	
+	<center>
+		<SplitPane fx:id="vSplitPane" orientation="VERTICAL">
+			<items>
+				<SplitPane fx:id="hSplitPane" orientation="HORIZONTAL">
+					<items>
+						<fx:include fx:id="spTree" source="Tree.xml" minWidth="${bp.width*0.1}" maxWidth="${bp.width*0.3}"/>
+						<BorderPane fx:id="bpScheme"/>
+					</items>
+				</SplitPane>
+				<fx:include fx:id="bpAlarms" source="journals/AlarmsTable.xml" maxHeight="${vSplitPane.height/2}" />
+			</items>
+		</SplitPane>
+	</center>
+		
+	<bottom>
+		<ToolBar fx:id="status">
+	   		<Label fx:id="statusLabel" text="Status bar" />
+	   		<Button fx:id="showAlarm" onAction="#showAlarm"/>
+	   </ToolBar>
+	</bottom>
+
+	<stylesheets>
+		<URL value="@Main.css" />
+	</stylesheets>
+</BorderPane>
