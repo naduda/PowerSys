@@ -23,6 +23,8 @@ import ui.UpdateTimeOut;
 import controllers.interfaces.IControllerInit;
 import controllers.interfaces.StageLoader;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -114,6 +116,7 @@ public class LoginController implements IControllerInit, Initializable {
 	}
 	
 	private void setStageParams(Stage stage) {
+		Controller ctrlr = MainStage.controller;
 		ProgramSettings ps = SingleObject.getProgramSettings();
 		WindowState ws = ps.getWinState();
 		Window w = stage.getScene().getWindow();
@@ -121,18 +124,142 @@ public class LoginController implements IControllerInit, Initializable {
 		w.setY(ws.getY());
 		w.setWidth(ws.getWidth());
 		w.setHeight(ws.getHeight());
+		stage.setMaximized(ws.isMaximized());
 		
-		MainStage.controller.getAlarmSplitPane().getDividers().get(0).positionProperty().addListener((observ, old, value) ->
-			Platform.runLater(() -> MainStage.controller.getTreeSplitPane().setDividerPositions(ws.getTreeDividerPositions()))
-		);
+		Platform.runLater(() -> {
+			StatusListener mainSL = new StatusListener(ctrlr, ws, 1);
+			ctrlr.getMainPane().getStatus().addListener(mainSL);
+			
+			StatusListener alarmSL = new StatusListener(ctrlr, ws, 2);
+			ctrlr.getAlarmSplitPane().getStatus().addListener(alarmSL);
+					
+			if (ws.isFullScreen()) {
+				ctrlr.getMainPane().showHideSide();
+			} else {
+				ctrlr.getMainPane().getStatus().set(true);
+			}
+			
+			ctrlr.getAlarmSplitPane().setExpandedSize(ws.getAlarmDividerPositions());
+			ctrlr.getTreeSplitPane().setExpandedSize(ws.getTreeDividerPositions());
+		});
 		
-		Platform.runLater(() -> MainStage.controller.getAlarmSplitPane().setDividerPositions(ws.getAlarmDividerPositions()));
+		SingleObject.mainStage.fullScreenProperty().addListener((observ, old, newValue) -> {
+			if (newValue) {
+				if (ctrlr.getMainPane().getSideBar().isVisible()) {
+					if (ctrlr.getMainPane().getUserData() == null) return;
+					String[] oldState = ctrlr.getMainPane().getUserData().toString().split(";");
+					boolean tVisible = Boolean.parseBoolean(oldState[0]);
+					boolean aVisible = Boolean.parseBoolean(oldState[1]);
+					
+					SingleObject.mainStage.setFullScreen(false);
+					if (tVisible) ctrlr.getTreeSplitPane().showSide();
+					if (aVisible) ctrlr.getAlarmSplitPane().showSide();
+				} else {
+					String oldState = ctrlr.getTreeSplitPane().getSideBar().isVisible() + ";" +
+							ctrlr.getAlarmSplitPane().getSideBar().isVisible();
+					
+					SingleObject.mainStage.setFullScreen(true);
+					ctrlr.getMainPane().setUserData(oldState);
+					if (ctrlr.getTreeSplitPane().getSideBar().isVisible()) ctrlr.getTreeSplitPane().hideSide();
+					if (ctrlr.getAlarmSplitPane().getSideBar().isVisible()) ctrlr.getAlarmSplitPane().hideSide();
+				}
+			}
+		});
+		
+		SingleObject.mainStage.fullScreenProperty().addListener((observ, old, newValue) -> {
+			if (!newValue) {
+				if (ctrlr.getMainPane().getUserData() == null) return;
+				String[] oldState = ctrlr.getMainPane().getUserData().toString().split(";");
+				boolean tVisible = Boolean.parseBoolean(oldState[0]);
+				boolean aVisible = Boolean.parseBoolean(oldState[1]);
+				
+				ctrlr.getMainPane().showSide();
+				if (tVisible) ctrlr.getTreeSplitPane().showSide();
+				if (aVisible) ctrlr.getAlarmSplitPane().showSide();
+			}
+		});
+		
+		ctrlr.getMainPane().getStatus().addListener((observ, old, newValue) -> {
+			if (newValue) {
+				if (ctrlr.getMainPane().getSideBar().isVisible()) {
+					SingleObject.mainStage.setFullScreen(false);
+				} else {
+					String oldState = ctrlr.getTreeSplitPane().getSideBar().isVisible() + ";" +
+							ctrlr.getAlarmSplitPane().getSideBar().isVisible();
+					
+					SingleObject.mainStage.setFullScreen(true);
+					ctrlr.getMainPane().setUserData(oldState);
+					if (ctrlr.getTreeSplitPane().getSideBar().isVisible()) ctrlr.getTreeSplitPane().hideSide();
+					if (ctrlr.getAlarmSplitPane().getSideBar().isVisible()) ctrlr.getAlarmSplitPane().hideSide();
+				}
+			}
+		});
+		
+		ctrlr.getTreeSplitPane().getStatus().addListener((observ, old, newValue) -> MainStage.fitToPage());
+		ctrlr.getAlarmSplitPane().getStatus().addListener((observ, old, newValue) -> MainStage.fitToPage());
+		
+		ctrlr.getToolBarController().getHideLeft().setGraphic(null);
+		ctrlr.getTreeSplitPane().getSideBar().visibleProperty().addListener((observ, old, newValue) -> {
+			if (newValue) {
+				ctrlr.getToolBarController().getHideLeft().getStyleClass().add("hide-left");
+				ctrlr.getToolBarController().getHideLeft().getStyleClass().remove("show-right");
+			} else {
+				ctrlr.getToolBarController().getHideLeft().getStyleClass().remove("hide-left");
+				ctrlr.getToolBarController().getHideLeft().getStyleClass().add("show-right");
+			}
+		});
 		
 		SchemeSettings ss = ps.getSchemeSettings();
 		SingleObject.mainScheme.getRoot().setScaleX(ss.getSchemeScale());
 		SingleObject.mainScheme.getRoot().setScaleY(ss.getSchemeScale());
-		MainStage.controller.getMenuBarController().setLocaleName(ps.getLocaleName());
+		ctrlr.getMenuBarController().setLocaleName(ps.getLocaleName());
 		
 		ps.getHotkeys().forEach(e -> SingleObject.hotkeys.put(e.getIdCode(), e));
+	}
+	
+	private class StatusListener implements ChangeListener<Boolean> {
+		private Controller ctrlr;
+		private WindowState ws;
+		private int number;
+		
+		public StatusListener(Controller ctrlr, WindowState ws, int number) {
+			this.ctrlr = ctrlr;
+			this.ws = ws;
+			this.number = number;
+		}
+		
+		@Override
+		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+			if (newValue) {
+				switch (number) {
+					case 1:
+						double oldDuration = ctrlr.getAlarmSplitPane().getDuration();
+						ctrlr.getAlarmSplitPane().setDuration(0);
+						if (ws.isAlarmsShowing()) {
+							ctrlr.getAlarmSplitPane().setExpandedSize(ws.getAlarmDividerPositions());
+							ctrlr.getAlarmSplitPane().showSide();
+						} else {
+							ctrlr.getAlarmSplitPane().hideSide();
+						}
+						ctrlr.getAlarmSplitPane().setDuration(oldDuration);
+						ctrlr.getMainPane().getStatus().removeListener(this);
+						break;
+	
+					case 2:
+						oldDuration = ctrlr.getTreeSplitPane().getDuration();
+						ctrlr.getTreeSplitPane().setDuration(0);
+						if (ws.isTreeShowing()) {
+							ctrlr.getTreeSplitPane().setExpandedSize(ws.getTreeDividerPositions());
+							ctrlr.getTreeSplitPane().showSide();
+						} else {
+							ctrlr.getTreeSplitPane().hideSide();
+						}
+						ctrlr.getTreeSplitPane().setDuration(oldDuration);
+						ctrlr.getAlarmSplitPane().getStatus().removeListener(this);
+						break;
+				}
+				
+			}
+		}
 	}
 }

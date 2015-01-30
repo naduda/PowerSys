@@ -117,17 +117,7 @@ public class MainStage extends Stage implements Serializable {
 		
 		controller.getBpScheme().setCenter(SingleObject.mainScheme);
 		
-		Group root = SingleObject.mainScheme.getRoot();
-		
-		if (controller.getBpScheme().getWidth() > 0) {
-			double kx = controller.getBpScheme().getWidth() * 0.99 / root.getBoundsInLocal().getWidth();
-			double ky = controller.getBpScheme().getHeight() * 0.99 / root.getBoundsInLocal().getHeight();
-			
-			root.setScaleX(kx < ky ? kx : ky);
-			root.setScaleY(kx < ky ? kx : ky);
-			
-			ToolBarController.zoomProperty.set(root.getScaleX());
-		}
+		fitToPage();
 		
 		LogFiles.log.log(Level.INFO, "Start update values");
 		
@@ -160,5 +150,18 @@ public class MainStage extends Stage implements Serializable {
 			LogFiles.log.log(Level.SEVERE, "void setScheme(...) Futures ...", e);
 		}
 		LogFiles.log.log(Level.INFO, "Finish update values");
+	}
+	
+	public static void fitToPage() {
+		Group root = SingleObject.mainScheme.getRoot();
+		if (controller.getBpScheme().getWidth() > 0) {
+			double kx = controller.getBpScheme().getWidth() * 0.99 / root.getBoundsInLocal().getWidth();
+			double ky = controller.getBpScheme().getHeight() * 0.99 / root.getBoundsInLocal().getHeight();
+			
+			root.setScaleX(kx < ky ? kx : ky);
+			root.setScaleY(kx < ky ? kx : ky);
+			
+			ToolBarController.zoomProperty.set(root.getScaleX());
+		}
 	}
 }

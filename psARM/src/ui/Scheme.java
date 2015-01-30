@@ -55,6 +55,7 @@ public class Scheme extends ScrollPane {
 	
 	private int idScheme = 0;
 	private String schemeName;
+	private String schemeFileName;
 	
 	public Scheme() {
 		LogFiles.log.log(Level.INFO, "Start building scheme");
@@ -75,6 +76,7 @@ public class Scheme extends ScrollPane {
 	public Scheme(String fileName) {
 		this();
 		
+		schemeFileName = fileName;
 		setSchemeName(fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf(".")));
 		
 		File f = new File(fileName);
@@ -272,6 +274,10 @@ public class Scheme extends ScrollPane {
 	
 	public List<Integer> getIdSignals() {
 		return idSignals;
+	}
+	
+	public String getSchemeFileName() {
+		return schemeFileName;
 	}
 //	--------------------------------------------------------------
 	private final class Events {

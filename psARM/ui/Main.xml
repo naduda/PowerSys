@@ -5,41 +5,62 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.*?>
+<?import pr.javafx.*?>
 
-<BorderPane fx:id="bp" prefHeight="400" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.Controller" styleClass="root">
-	<top>
-		<BorderPane fx:id="bpTop">
-			<top>
+<SidePane fx:id="mainPane" resize="false" position="top" prefHeight="400" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.Controller" styleClass="root">
+
+	<sideBar>
+		<SideBar aligment="TOP_CENTER">
+			<content>
 				<fx:include fx:id="menuBar" source="MenuBar.xml"/>
-			</top>
-			<bottom>
+			</content>
+		</SideBar>
+	</sideBar>
+
+	<content>
+		<BorderPane>
+			<top>
 				<fx:include fx:id="toolBar" source="ToolBar.xml"/>
+			</top>
+
+			<center>
+				<SidePane fx:id="vSplitPane" resize="true" position="bottom">
+					<content>
+						<SidePane fx:id="hSplitPane" resize="true" position="left" duration="250">
+							<content>
+								<BorderPane fx:id="bpScheme"/>
+							</content>
+
+							<sideBar>
+								<SideBar expandedSize="50" aligment="TOP_CENTER">
+									<content>
+										<fx:include fx:id="spTree" source="Tree.xml" minWidth="${mainPane.width*0.1}" maxWidth="${mainPane.width*0.3}"/>
+									</content>
+								</SideBar>
+							</sideBar>
+						</SidePane>
+					</content>
+
+					<sideBar>
+						<SideBar expandedSize="50" aligment="CENTER">
+							<content>
+								<fx:include fx:id="bpAlarms" source="journals/AlarmsTable.xml" maxHeight="${vSplitPane.height/2}"/>
+							</content>
+						</SideBar>
+					</sideBar>
+				</SidePane>
+			</center>
+
+			<bottom>
+				<ToolBar fx:id="status">
+					<Label fx:id="statusLabel" text="Status bar" />
+					<Button fx:id="showAlarm" onAction="#showAlarm"/>
+				</ToolBar>
 			</bottom>
 		</BorderPane>
-	</top>
-	
-	<center>
-		<SplitPane fx:id="vSplitPane" orientation="VERTICAL">
-			<items>
-				<SplitPane fx:id="hSplitPane" orientation="HORIZONTAL">
-					<items>
-						<fx:include fx:id="spTree" source="Tree.xml" minWidth="${bp.width*0.1}" maxWidth="${bp.width*0.3}"/>
-						<BorderPane fx:id="bpScheme"/>
-					</items>
-				</SplitPane>
-				<fx:include fx:id="bpAlarms" source="journals/AlarmsTable.xml" maxHeight="${vSplitPane.height/2}" />
-			</items>
-		</SplitPane>
-	</center>
-		
-	<bottom>
-		<ToolBar fx:id="status">
-	   		<Label fx:id="statusLabel" text="Status bar" />
-	   		<Button fx:id="showAlarm" onAction="#showAlarm"/>
-	   </ToolBar>
-	</bottom>
+	</content>
 
 	<stylesheets>
 		<URL value="@Main.css" />
 	</stylesheets>
-</BorderPane>
+</SidePane>

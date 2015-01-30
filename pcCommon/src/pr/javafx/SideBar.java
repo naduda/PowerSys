@@ -1,97 +1,59 @@
 package pr.javafx;
 
-import javafx.animation.Animation;
-import javafx.animation.Transition;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
-import javafx.util.Duration;
 
 public class SideBar extends VBox {
-	private final Button controlButton;
-	private double expandedWidth;
-	private double duration = 250;
-	private boolean isButton = false;
+	private double expandedSize;
+	private boolean isSeted = false;
+	private Node content;
+	private Pos aligment;
 	
-	public SideBar(double prefWidth, String collapse, String show, Node... nodes) {
-		expandedWidth = prefWidth;
-		this.setPrefWidth(expandedWidth);
-		this.setMinWidth(0);
-		
-		widthProperty().addListener((observ, old, newValue) -> {
-			setPrefWidth((double)newValue);
-			if (!isButton && (double)newValue != 0) {
-				expandedWidth = (double)newValue;
-			}
-		});
-		
+	public SideBar() {
+		super();
 		setAlignment(Pos.CENTER);
-		getChildren().addAll(nodes);
-		
-		controlButton = new Button(collapse);
-		controlButton.getStyleClass().add("hide-left");
-		
-		controlButton.setOnAction(e -> {
-			isButton = true;
-			controlButton.setDisable(true);
-			final Animation hideSidebar = new Transition() {{
-					setCycleDuration(Duration.millis(duration));
-				}
-				@Override
-	            protected void interpolate(double frac) {
-					final double curWidth = expandedWidth * (1.0 - frac);
-					setPrefWidth(curWidth);
-					setTranslateX(-expandedWidth + curWidth);
-				}
-			};
-		
-			hideSidebar.onFinishedProperty().set(eah -> {
-				setVisible(false);
-				controlButton.setText(show);
-				controlButton.getStyleClass().remove("hide-left");
-				controlButton.getStyleClass().add("show-right");
-				isButton = false;
-				controlButton.setDisable(false);
-			});
-		
-			final Animation showSidebar = new Transition() {{
-					setCycleDuration(Duration.millis(duration));
-				}
-				@Override
-				protected void interpolate(double frac) {
-					final double curWidth = expandedWidth * frac;
-					setPrefWidth(curWidth);
-					setTranslateX(-expandedWidth + curWidth);
-				}
-			};
-			
-			showSidebar.onFinishedProperty().set(eaf -> {
-				controlButton.setText(collapse);
-				controlButton.getStyleClass().add("hide-left");
-				controlButton.getStyleClass().remove("show-right");
-				isButton = false;
-				controlButton.setDisable(false);
-			});
-			
-			if (showSidebar.statusProperty().get() == Animation.Status.STOPPED && 
-					hideSidebar.statusProperty().get() == Animation.Status.STOPPED) {
-				if (isVisible()) {
-					hideSidebar.play();
-				} else {
-					setVisible(true);
-					showSidebar.play();
-				}
-			}
-		});
-		
+		setPadding(new Insets(0, 0, 0, 0));
 	}
 	
-	public Button getControlButton() { 
-		return controlButton; 
+	public SideBar(double prefSize, Node content) {
+		this();
+		expandedSize = prefSize;
+		getChildren().addAll(content);
 	}
 
-	public void setDuration(double duration) {
-		this.duration = duration;
+	public double getExpandedSize() {
+		return expandedSize;
+	}
+
+	public void setExpandedSize(double expandedSize) {
+		this.expandedSize = expandedSize;
+	}
+
+	public void setSeted(boolean isSeted) {
+		this.isSeted = isSeted;
+	}
+
+	public boolean isSeted() {
+		return isSeted;
+	}
+
+	public Node getContent() {
+		return content;
+	}
+
+	public void setContent(Node content) {
+		this.content = content;
+		getChildren().addAll(content);
+	}
+
+	public Pos getAligment() {
+		return aligment;
+	}
+
+	public void setAligment(Pos aligment) {
+		this.aligment = aligment;
+		setAlignment(aligment);
 	}
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import pr.javafx.*?>
+
+<SidePane fx:id="sp" resize="true" position="top" xmlns:fx="http://javafx.com/fxml" fx:controller="pr.javafx.Controller">
+	<content>
+		<VBox>
+			<children>
+				<Label text="LABEL" />
+				<Button onAction="#showHide" />
+			</children>
+		</VBox>
+	</content>
+
+	<sideBar>
+		<SideBar expandedSize="50">
+			<content>
+				<Label text="SideBar" />
+			</content>
+		</SideBar>
+	</sideBar>
+</SidePane>

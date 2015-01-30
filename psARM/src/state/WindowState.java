@@ -16,6 +16,14 @@ public class WindowState {
 	private double width;
 	@XmlAttribute(name="height")
 	private double height;
+	@XmlAttribute(name="fullScreen")
+	private boolean fullScreen;
+	@XmlAttribute(name="treeShowing")
+	private boolean treeShowing;
+	@XmlAttribute(name="alarmsShowing")
+	private boolean alarmsShowing;
+	@XmlAttribute(name="isMaximized")
+	private boolean isMaximized;
 	
 	private double alarmDividerPositions;
 	private double treeDividerPositions;
@@ -77,5 +85,37 @@ public class WindowState {
 
 	public void setTreeDividerPositions(double treeDividerPositions) {
 		this.treeDividerPositions = treeDividerPositions;
+	}
+
+	public boolean isFullScreen() {
+		return fullScreen;
+	}
+
+	public void setFullScreen(boolean fullScreen) {
+		this.fullScreen = fullScreen;
+	}
+
+	public boolean isTreeShowing() {
+		return treeShowing;
+	}
+
+	public void setTreeShowing(boolean treeShowing) {
+		this.treeShowing = treeShowing;
+	}
+
+	public boolean isAlarmsShowing() {
+		return alarmsShowing;
+	}
+
+	public void setAlarmsShowing(boolean alarmsShowing) {
+		this.alarmsShowing = alarmsShowing;
+	}
+
+	public boolean isMaximized() {
+		return isMaximized;
+	}
+
+	public void setMaximized(boolean isMaximized) {
+		this.isMaximized = isMaximized;
 	}
 } 

@@ -15,7 +15,28 @@
     -fx-border: none;
 }
 
-.toolBarButton:hover{
+.hide-left {
+  -fx-text-fill: green;
+  -fx-background-radius: 1 1 1 1;
+  -fx-background-color: Transparent;
+  -fx-background-repeat: no-repeat;
+  -fx-border: none;
+  -fx-background-image: url('../Icon/hideLeft.png');
+  -fx-background-size: 16, 16;
+  -fx-background-position: center;
+}
+.show-right {
+  -fx-text-fill: green;
+  -fx-background-radius: 1 1 1 1;
+  -fx-background-color: Transparent;
+  -fx-background-repeat: no-repeat;
+  -fx-border: none;
+  -fx-background-image: url('../Icon/hideRight.png');
+  -fx-background-size: 16, 16;
+  -fx-background-position: center;
+}
+
+.toolBarButton:hover, .hide-left:hover, .show-right:hover {
     -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), transparent;
 }
 
@@ -25,4 +46,8 @@
 
 .chat *.content {
     -fx-background-color: silver;
+}
+
+.split-pane *.split-pane-divider {
+    -fx-padding: 0 1 0 1; /* 0 3 0 3 */
 }

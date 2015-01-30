@@ -18,6 +18,7 @@ import javax.xml.bind.JAXBException;
 import controllers.interfaces.IControllerInit;
 import controllers.journals.AlarmTableController;
 import controllers.tree.TreeController;
+import pr.javafx.SidePane;
 import pr.log.LogFiles;
 import single.SingleFromDB;
 import single.SingleObject;
@@ -29,11 +30,9 @@ import ui.MainStage;
 import ui.Scheme;
 import pr.model.DvalTI;
 import pr.model.LinkedValue;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Window;
@@ -47,8 +46,9 @@ public class Controller implements IControllerInit, Initializable {
 	@FXML private AlarmTableController bpAlarmsController;
 	@FXML private Pane bpAlarms;
 	@FXML private BorderPane bpScheme;
-	@FXML private SplitPane vSplitPane;
-	@FXML private SplitPane hSplitPane;
+	@FXML private SidePane mainPane;
+	@FXML private SidePane vSplitPane;
+	@FXML private SidePane hSplitPane;
 	@FXML private Button showAlarm;
 	
 	public static ResourceBundle getResourceBundle(Locale locale) {
@@ -57,8 +57,12 @@ public class Controller implements IControllerInit, Initializable {
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		showAlarm.setText(isHide ? SingleObject.getResourceBundle().getString("keyShowAlarms") : 
+		showAlarm.setText(vSplitPane.getSideBar().isVisible() ? SingleObject.getResourceBundle().getString("keyHideAlarms") : 
 			SingleObject.getResourceBundle().getString("keyHideAlarms"));
+		vSplitPane.getSideBar().visibleProperty().addListener((observ, old, newValue) -> {
+			showAlarm.setText(!newValue ? SingleObject.getResourceBundle().getString("keyShowAlarms") : 
+				SingleObject.getResourceBundle().getString("keyHideAlarms"));
+		});
 	}
 	
 	@Override
@@ -67,18 +71,25 @@ public class Controller implements IControllerInit, Initializable {
 		toolBarController.setElementText(rb);
 		spTreeController.setElementText(rb);
 		
-		showAlarm.setText(isHide ? rb.getString("keyShowAlarms") : rb.getString("keyHideAlarms"));
+		showAlarm.setText(vSplitPane.getSideBar().isVisible() ? rb.getString("keyShowAlarms") : rb.getString("keyHideAlarms"));
 	}
 	
 	public static void exitProgram() {
 		if (SingleObject.mainScheme == null) return;
+		boolean isMaximized = SingleObject.mainStage.isMaximized();
+		
+		if (isMaximized) SingleObject.mainStage.setMaximized(false);
 		Window w = SingleObject.mainScheme.getScene().getWindow();
 		WindowState ws = new WindowState(w.getX() < 0 ? 0 : w.getX(), w.getY() < 0 ? 0 : w.getY(), 
 				w.getX() < 0 ? w.getX() + w.getWidth(): w.getWidth(), 
 				w.getY() < 0 ? w.getY() + w.getHeight() : w.getHeight());
 		
-		ws.setAlarmDividerPositions(MainStage.controller.getAlarmSplitPane().getDividers().get(0).getPosition());
-		ws.setTreeDividerPositions(MainStage.controller.getTreeSplitPane().getDividers().get(0).getPosition());
+		ws.setAlarmDividerPositions(MainStage.controller.getAlarmSplitPane().getExpandedSize());
+		ws.setTreeDividerPositions(MainStage.controller.getTreeSplitPane().getExpandedSize());
+		ws.setFullScreen(!MainStage.controller.getMainPane().getSideBar().isVisible());
+		ws.setAlarmsShowing(MainStage.controller.getAlarmSplitPane().getSideBar().isVisible());
+		ws.setTreeShowing(MainStage.controller.getTreeSplitPane().getSideBar().isVisible());
+		ws.setMaximized(isMaximized);
 		
 		ProgramSettings ps = new ProgramSettings(ws);
 		ps.setLocaleName(MainStage.controller.menuBarController.getLocaleName());
@@ -106,34 +117,24 @@ public class Controller implements IControllerInit, Initializable {
 		System.exit(0);
 	}
 	
-	private double oldAlarmsHeight;
-	private boolean isHide = false;
-	
-	public void showHideAlarmPanel() {
-		SplitPane sp = getAlarmSplitPane();
-		if (isHide) {
-			sp.setDividerPositions(oldAlarmsHeight);
-		} else {
-			oldAlarmsHeight = sp.getDividerPositions()[0];
-			MainStage.controller.getTreeSplitPane().setDividerPositions(0.1);
-			sp.setDividerPositions(1);
-		}
-		isHide = !isHide;
+	public SidePane getMainPane() {
+		return mainPane;
 	}
 	
-	public SplitPane getAlarmSplitPane() {
+	public SidePane getAlarmSplitPane() {
 		return vSplitPane;
 	}
 	
-	public SplitPane getTreeSplitPane() {
+	public SidePane getTreeSplitPane() {
 		return hSplitPane;
 	}
 	
-	@FXML
-	private void showAlarm(ActionEvent event) {
-		showHideAlarmPanel();
-		showAlarm.setText(isHide ? SingleObject.getResourceBundle().getString("keyShowAlarms") : 
-			SingleObject.getResourceBundle().getString("keyHideAlarms"));
+	@FXML protected void showAlarm() {
+//		System.out.println(SingleObject.getProgramSettings().getWinState().getAlarmDividerPositions());
+//		System.out.println(vSplitPane.getExpandedSize());
+//		System.out.println(vSplitPane.getSideBar().getPrefWidth());
+		vSplitPane.showHideSide();
+//		SingleObject.getProgramSettings().getWinState().setAlarmDividerPositions(vSplitPane.getExpandedSize());
 	}
 	
 	public void updateTI(DvalTI ti) {

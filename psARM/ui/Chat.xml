@@ -4,7 +4,6 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.image.*?>
 
 <BorderPane fx:id="bp" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ChatController" prefWidth="400" styleClass="root">
 	<top>

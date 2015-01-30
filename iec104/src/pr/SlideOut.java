@@ -123,7 +123,7 @@ public class SlideOut extends Application {
                 controlButton.setDisable(false);
             });
     
-            if (showSidebar.statusProperty().get() == Animation.Status.STOPPED && hideSidebar.statusProperty().get() == Animation.Status.STOPPED) {
+            //if (showSidebar.statusProperty().get() == Animation.Status.STOPPED && hideSidebar.statusProperty().get() == Animation.Status.STOPPED) {
             	if (isVisible()) {
 	                hideSidebar.play();
               } else {
@@ -131,7 +131,7 @@ public class SlideOut extends Application {
                 showSidebar.play();
               }
               
-            }
+           // }
       });
       
     }

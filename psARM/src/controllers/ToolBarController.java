@@ -36,11 +36,13 @@ import controllers.journals.JAlarmsController;
 import single.ProgramProperty;
 import single.SingleFromDB;
 import single.SingleObject;
+import svg2fx.Convert;
 import svg2fx.fxObjects.EShape;
 import ui.MainStage;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -64,6 +66,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.CornerRadii;
@@ -89,11 +92,12 @@ public class ToolBarController implements Initializable, IControllerInit {
 	private final List<String> normalModeShapes = new ArrayList<>();
 	
 	@FXML private ToolBar tbMain;
-	@FXML private Slider zoomSlider; 
+	@FXML private Slider zoomSlider;
 	@FXML private Label lDataOn;
 	@FXML private Label lLastDate;
 	@FXML private Button info;
 	@FXML private Button normalMode;
+	@FXML private Button hideLeft;
 	
 	@Override
 	public void initialize(URL url, ResourceBundle boundle) {
@@ -102,9 +106,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 		zoomSlider.setMin(ZOOM_FACTOR);
 		zoomSlider.setMax(ZOOM_MAX);
 		zoomSlider.setBlockIncrement(ZOOM_FACTOR);
-		zoomSlider.valueProperty().addListener((observ, oldValue, newValue) ->
-				zoomSlider.setTooltip(new Tooltip(newValue + ""))
-		);
+		zoomSlider.valueProperty().addListener((observ, oldValue, newValue) -> zoomSlider.setTooltip(new Tooltip(newValue + "")));
 		zoomProperty.addListener((observ, oldValue, newValue) -> changeZoom((double)newValue));
 		
 		showInfoProperty.addListener((observable, oldValue, newValue) -> {
@@ -158,6 +160,8 @@ public class ToolBarController implements Initializable, IControllerInit {
 	
 	@FXML 
 	protected void zoomMinus() {
+		System.out.println(MainStage.controller.getTreeSplitPane().getSideBar().getPrefWidth());
+		System.out.println(MainStage.controller.getTreeSplitPane().getSideBar().getMinWidth());
 		changeZoom(false);
 	}
 	
@@ -201,17 +205,51 @@ public class ToolBarController implements Initializable, IControllerInit {
 		}
 		
 		showInfoProperty.set(!showInfoProperty.get());
-		
-//		StageLoader tu = new StageLoader("FormTU.xml", SingleObject.getResourceBundle().getString("keyTooltip_info"), true);
-//		tu.show();
+	}
+	
+	@FXML protected void hideTree() {
+		MainStage.controller.getTreeSplitPane().showHideSide();
 	}
 	
 	@FXML protected void previous() {
+		System.out.println("previous");
+//		DoubleProperty widthProp = new SimpleDoubleProperty();
 		
+		Stage navigator = new Stage();
+		navigator.initModality(Modality.NONE);
+		navigator.initOwner(SingleObject.mainStage.getScene().getWindow());
+		Group root = (Group) Convert.getNodeBySVG(SingleObject.mainScheme.getSchemeFileName());
+		root.setDisable(true);
+		Group root2 = new Group(root);
+		BorderPane pane = new BorderPane(root2);
+		Scene scene = new Scene(pane, 200, 100);
+		navigator.setScene(scene);
+		
+		root.scaleXProperty().bind(navigator.widthProperty().divide(root.getBoundsInLocal().getWidth()));
+		root.scaleYProperty().bind(root.scaleXProperty());
+		root.scaleYProperty().addListener((observ, old, newValue) -> {
+			System.out.println(root.getBoundsInLocal().getWidth());
+		});
+		
+		navigator.widthProperty().addListener((observ, old, newValue) -> {
+			navigator.setHeight((double)newValue * 0.7);
+		});
+		
+//		root.getChildren().add(SingleObject.mainScheme.getContent());
+		
+		if (Convert.backgroundColor != null) {
+			String bgColor = String.format("-fx-background: %s;", Convert.backgroundColor.toString().replace("0x", "#"));
+			pane.setStyle(bgColor);
+		}
+		navigator.show();
 	}
 	
 	@FXML protected void next() {
-		SingleObject.chat.show();
+		System.out.println("next");
+	}
+	
+	@FXML protected void fullScreen() {
+		Platform.runLater(() -> MainStage.controller.getMainPane().showHideSide());
 	}
 
 	@FXML protected void save() {
@@ -235,7 +273,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 		devices.forEach(d -> activeDevices = activeDevices + d + ",");
 		activeDevices = activeDevices.substring(0, activeDevices.length() - 1) + "}";
 		//SingleFromDB.psClient.setDevicesState(activeDevices, 4);
-//		Error in 9.4 do not work without timeout -> Thread.sleep(1000);
+//		Error in 9.4 does not work without timeout -> Thread.sleep(1000);
 		devices.forEach(d -> {
 			SingleFromDB.psClient.setDevicesState(String.format("{%d}",  d), 4);
 			try {
@@ -491,5 +529,9 @@ public class ToolBarController implements Initializable, IControllerInit {
 
 	public ToolBar getTbMain() {
 		return tbMain;
+	}
+
+	public Button getHideLeft() {
+		return hideLeft;
 	}
 }

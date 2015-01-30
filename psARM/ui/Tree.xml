@@ -10,7 +10,7 @@
 	</padding>
 	<Accordion fx:id="accordTree">
 		<panes>
-			<TitledPane fx:id="tpSchemes" prefWidth="${spTree.width-spTree.padding.left-spTree.padding.right-5}" >
+			<TitledPane fx:id="tpSchemes" prefWidth="${spTree.width-spTree.padding.left-spTree.padding.right}" >
 				<graphic>
 					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
 						<Image url="@../Icon/schemes.png"/>
