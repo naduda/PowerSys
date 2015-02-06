@@ -37,6 +37,7 @@ $RECYCLE.BIN/
 #Eclipse
 bin/
 logs/
+*.class
 
 #Idea
 .idea
