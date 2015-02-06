@@ -62,6 +62,7 @@ public interface IPowersys extends Remote {
 	List<Integer> getActiveDevices(String idSignals) throws RemoteException;
 	Map<Integer, DvalTI> getOldTI(String idSignals) throws RemoteException;
 	Map<Integer, DvalTI> getOldTS(String idSignals) throws RemoteException;
+	Map<Integer, DvalTI> getValuesOnDate(String idSignals, Timestamp dtValue) throws RemoteException;
 	void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) throws RemoteException;
 	void confirmAlarmAll(String lognote, int userref) throws RemoteException;
 	List<Integer> getNotConfirmedSignals(String idSignals) throws RemoteException;

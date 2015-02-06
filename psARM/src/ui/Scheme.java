@@ -2,16 +2,13 @@ package ui;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-
 
 import controllers.Controller;
 import controllers.ShapeController;
@@ -78,17 +75,7 @@ public class Scheme extends ScrollPane {
 		
 		schemeFileName = fileName;
 		setSchemeName(fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf(".")));
-		
-		File f = new File(fileName);
-		byte[] buf = null;
-		try (InputStream in = new FileInputStream(f)) {
-			buf = new byte[in.available()];
-			while (in.read(buf) != -1) {}
-		} catch (Exception e) {
-			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
-		}
-		SingleObject.schemeInputStream = new ByteArrayInputStream(buf != null ? buf : new byte[0]);
-		
+				
 		LogFiles.log.log(Level.INFO, "Start convert scheme");
 		long start = System.currentTimeMillis();
 		root = (Group) Convert.getNodeBySVG(fileName);
@@ -296,8 +283,7 @@ public class Scheme extends ScrollPane {
                 double lX = sceneToLocal(event.getSceneX(), 0).getX() + getHvalue() * (startW - getWidth());
                 double lY = sceneToLocal(0, event.getSceneY()).getY() + getVvalue() * (startH - getHeight());
                 
-                root.setScaleX(root.getScaleX() * zoomFactor);
-                root.setScaleY(root.getScaleY() * zoomFactor);
+				ToolBarController.changeZoom(root.getScaleX() * zoomFactor);
                 event.consume();
 
                 double newW = root.getBoundsInParent().getWidth();

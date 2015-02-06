@@ -3,6 +3,7 @@ package controllers;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -17,16 +18,20 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
-import javafx.print.*;
-import javafx.scene.Node;
+import javax.imageio.ImageIO;
+
+import javafx.print.PageLayout;
+import javafx.print.PageOrientation;
+import javafx.print.Paper;
+import javafx.print.Printer;
+import javafx.print.PrinterJob;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.transform.Scale;
-import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import pr.common.Utils;
-import pr.common.WMF2PNG;
 import pr.log.LogFiles;
 import pr.model.LinkedValue;
 import pr.model.NormalModeJournalItem;
@@ -42,11 +47,13 @@ import ui.MainStage;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -60,13 +67,14 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.CornerRadii;
@@ -77,14 +85,16 @@ import javafx.scene.paint.Color;
 public class ToolBarController implements Initializable, IControllerInit {
 	private final DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	
-	private static final BooleanProperty showInfoProperty = new SimpleBooleanProperty();
-	private static final BooleanProperty showNormalMode = new SimpleBooleanProperty();
+	private final BooleanProperty showInfoProperty = new SimpleBooleanProperty();
+	public static BooleanProperty showHistoryProperty = new SimpleBooleanProperty(false);
+	private final BooleanProperty showNavigatorProperty = new SimpleBooleanProperty();
+	private final BooleanProperty showNormalMode = new SimpleBooleanProperty();
 	public static final DoubleProperty zoomProperty = new SimpleDoubleProperty();
 	
 	private static final double ZOOM_FACTOR = 0.1;
 	private static final double ZOOM_MAX = 5;
 	private static StageLoader infoStage;
-	private Point2D infoStagePos;
+	private static Stage navigatorStage;
 	private String stateReading1;
 	private String stateReading2;
 	private String stateReading3;
@@ -96,6 +106,8 @@ public class ToolBarController implements Initializable, IControllerInit {
 	@FXML private Label lDataOn;
 	@FXML private Label lLastDate;
 	@FXML private Button info;
+	@FXML private Button fit;
+	@FXML private Button navigator;
 	@FXML private Button normalMode;
 	@FXML private Button hideLeft;
 	
@@ -109,18 +121,11 @@ public class ToolBarController implements Initializable, IControllerInit {
 		zoomSlider.valueProperty().addListener((observ, oldValue, newValue) -> zoomSlider.setTooltip(new Tooltip(newValue + "")));
 		zoomProperty.addListener((observ, oldValue, newValue) -> changeZoom((double)newValue));
 		
-		showInfoProperty.addListener((observable, oldValue, newValue) -> {
+		showHistoryProperty.addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
-				info.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)));
-				if (infoStagePos != null) {
-					infoStage.setX(infoStagePos.getX());
-					infoStage.setY(infoStagePos.getY());
-				}
-				infoStage.show();
+				MainStage.controller.getHistoryPane().showSide();
 			} else {
-				infoStagePos = new Point2D(infoStage.getX(), infoStage.getY());
-				infoStage.hide();
-				info.setBorder(new Border(new BorderStroke(Color.TRANSPARENT, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)));
+				MainStage.controller.getHistoryPane().hideSide();
 			}
 		});
 		
@@ -138,7 +143,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 								tt.setNormalMode();
 								normalModeShapes.add(s.getVal().toString());
 							} catch (Exception e) {
-								e.printStackTrace();
+								LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 							}
 						});
 					}
@@ -160,8 +165,6 @@ public class ToolBarController implements Initializable, IControllerInit {
 	
 	@FXML 
 	protected void zoomMinus() {
-		System.out.println(MainStage.controller.getTreeSplitPane().getSideBar().getPrefWidth());
-		System.out.println(MainStage.controller.getTreeSplitPane().getSideBar().getMinWidth());
 		changeZoom(false);
 	}
 	
@@ -182,10 +185,10 @@ public class ToolBarController implements Initializable, IControllerInit {
         zoomProperty.set(k);
 	}
 	
-	private void changeZoom(double zoom) {
+	public static void changeZoom(double zoom) {
 		Group root = SingleObject.mainScheme.getRoot();
 		root.setScaleX(zoom);
-        root.setScaleY(zoom);
+        root.scaleYProperty().bind(root.scaleXProperty());
 	}
 	
 	@FXML 
@@ -199,9 +202,9 @@ public class ToolBarController implements Initializable, IControllerInit {
 		if (infoStage == null) {
 			infoStage = new StageLoader("Info.xml", SingleObject.getResourceBundle().getString("keyTooltip_info"), true);
 			infoStage.setOnCloseRequest(e -> {
-				infoStagePos = new Point2D(infoStage.getX(), infoStage.getY());
 				showInfoProperty.set(false);
 			});
+			showInfoProperty.addListener(new ShowChangeListener(info, infoStage));
 		}
 		
 		showInfoProperty.set(!showInfoProperty.get());
@@ -213,35 +216,23 @@ public class ToolBarController implements Initializable, IControllerInit {
 	
 	@FXML protected void previous() {
 		System.out.println("previous");
-//		DoubleProperty widthProp = new SimpleDoubleProperty();
-		
-		Stage navigator = new Stage();
-		navigator.initModality(Modality.NONE);
-		navigator.initOwner(SingleObject.mainStage.getScene().getWindow());
-		Group root = (Group) Convert.getNodeBySVG(SingleObject.mainScheme.getSchemeFileName());
-		root.setDisable(true);
-		Group root2 = new Group(root);
-		BorderPane pane = new BorderPane(root2);
-		Scene scene = new Scene(pane, 200, 100);
-		navigator.setScene(scene);
-		
-		root.scaleXProperty().bind(navigator.widthProperty().divide(root.getBoundsInLocal().getWidth()));
-		root.scaleYProperty().bind(root.scaleXProperty());
-		root.scaleYProperty().addListener((observ, old, newValue) -> {
-			System.out.println(root.getBoundsInLocal().getWidth());
-		});
-		
-		navigator.widthProperty().addListener((observ, old, newValue) -> {
-			navigator.setHeight((double)newValue * 0.7);
-		});
-		
-//		root.getChildren().add(SingleObject.mainScheme.getContent());
-		
-		if (Convert.backgroundColor != null) {
-			String bgColor = String.format("-fx-background: %s;", Convert.backgroundColor.toString().replace("0x", "#"));
-			pane.setStyle(bgColor);
+	}
+	
+	@FXML protected void navigator() {	
+		if (navigatorStage == null) {
+			navigatorStage = SingleObject.getNavigator();
+			navigatorStage.setTitle(SingleObject.getResourceBundle().getString("keyTooltip_navigator"));
+			navigatorStage.setOnCloseRequest(e -> {
+				showNavigatorProperty.set(false);
+			});
+			showNavigatorProperty.addListener(new ShowChangeListener(navigator, navigatorStage));
 		}
-		navigator.show();
+		
+		showNavigatorProperty.set(!showNavigatorProperty.get());
+	}
+	
+	@FXML protected void retro() {
+		showHistoryProperty.set(!showHistoryProperty.get());
 	}
 	
 	@FXML protected void next() {
@@ -249,9 +240,9 @@ public class ToolBarController implements Initializable, IControllerInit {
 	}
 	
 	@FXML protected void fullScreen() {
-		Platform.runLater(() -> MainStage.controller.getMainPane().showHideSide());
+		SingleObject.mainStage.setFullScreen(!SingleObject.mainStage.isFullScreen());
 	}
-
+	
 	@FXML protected void save() {
 		FileChooser fileChooser = new FileChooser();
 		FileChooser.ExtensionFilter extentionFilter = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.png");
@@ -259,9 +250,23 @@ public class ToolBarController implements Initializable, IControllerInit {
 		fileChooser.setTitle(SingleObject.getResourceBundle().getString("keyTooltip_save"));
 		File file = fileChooser.showSaveDialog(SingleObject.mainStage);
 		if (file != null) {
-			WMF2PNG.svg2png(SingleObject.schemeInputStream,
-					Math.max(Float.parseFloat(SingleObject.svg.getHeight()), Float.parseFloat(SingleObject.svg.getWidth())),
-					file.getAbsolutePath());
+			SnapshotParameters parameters = new SnapshotParameters();
+	        parameters.setFill(Convert.backgroundColor);
+	        
+	        double oldScale = SingleObject.mainScheme.getRoot().getScaleX();
+	        double oldX = SingleObject.mainScheme.getHvalue();
+	        double oldY = SingleObject.mainScheme.getVvalue();
+	        SingleObject.mainScheme.getRoot().setScaleX(1);
+			WritableImage writableImage = SingleObject.mainScheme.getContent().snapshot(parameters, null);
+			
+			try {
+				ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
+			} catch (IOException e) {
+				LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
+			}
+			SingleObject.mainScheme.getRoot().setScaleX(oldScale);
+			SingleObject.mainScheme.setHvalue(oldX);
+			SingleObject.mainScheme.setVvalue(oldY);
 		}
 	}
 
@@ -387,32 +392,29 @@ public class ToolBarController implements Initializable, IControllerInit {
 //	==============================================================================================================
 	
 	@FXML protected void print() {
-		Node node = SingleObject.mainScheme.getContent();
-		System.out.println("============================");
-		Printer.getAllPrinters().forEach(System.out::println);
+		ImageView node = SingleObject.getSchemeImage(1000);
+		Image image = node.getImage();
+		image = SingleObject.invertImage(image);
+		node = new ImageView(image);
+		
 		Printer printer = Printer.getDefaultPrinter();
-		System.out.println("***********************");
-		PageLayout pageLayout = printer.createPageLayout(Paper.A4, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
-		double scaleX = pageLayout.getPrintableWidth() / node.getBoundsInLocal().getWidth();
-		double scaleY = pageLayout.getPrintableHeight() / node.getBoundsInLocal().getHeight();
-		System.out.println(node.getBoundsInParent());
-		System.out.println(node.getBoundsInLocal());
+		
+		PageLayout pageLayout = printer.createPageLayout(Paper.A4, 
+				image.getWidth() > image.getHeight() ? PageOrientation.LANDSCAPE : PageOrientation.PORTRAIT, 
+				Printer.MarginType.DEFAULT);
+		
+		double scaleX = pageLayout.getPrintableWidth() / node.getBoundsInParent().getWidth();
+		double scaleY = pageLayout.getPrintableHeight() / node.getBoundsInParent().getHeight();
+		
 		scaleX = scaleX < scaleY ? scaleX : scaleY;
-//		scaleY = node.getScaleX();
 		node.getTransforms().add(new Scale(scaleX, scaleX));
-		node.getTransforms().add(new Translate(-node.getBoundsInParent().getMinX(), -node.getBoundsInParent().getMinY()));
-		System.out.println(node.getBoundsInParent());
-		System.out.println(node.getBoundsInLocal());
+		
 		PrinterJob job = PrinterJob.createPrinterJob();
+		job.getJobSettings().setPageLayout(pageLayout);
 		if (job.showPrintDialog(SingleObject.mainStage)) {
 			boolean success = job.printPage(node);
-			if (success) {
-				job.endJob();
-			}
+			if (success) job.endJob();
 		}
-//		node.setScaleX(scaleY);
-//		node.setScaleY(scaleY);
-		node.getTransforms().clear();
 	}
 	
 	@FXML 
@@ -454,18 +456,14 @@ public class ToolBarController implements Initializable, IControllerInit {
 	protected void fitVertical(ActionEvent event) {
 		Group root = SingleObject.mainScheme.getRoot();
 		double k = MainStage.controller.getBpScheme().getHeight() * 0.99 / root.getBoundsInLocal().getHeight();
-		root.setScaleY(k);
-		root.setScaleX(k);
-		zoomProperty.set(k);
+		changeZoom(k);
 	}
 	
 	@FXML 
 	protected void fitHorizontal(ActionEvent event) {
 		Group root = SingleObject.mainScheme.getRoot();
 		double k = MainStage.controller.getBpScheme().getWidth() * 0.99 / root.getBoundsInLocal().getWidth();
-		root.setScaleY(k);
-		root.setScaleX(k);
-		zoomProperty.set(k);
+		changeZoom(k);
 	}
 	
 	@FXML 
@@ -525,6 +523,8 @@ public class ToolBarController implements Initializable, IControllerInit {
 				}
 			}
 		});
+		
+		if (navigatorStage != null) navigatorStage.setTitle(rb.getString("keyTooltip_navigator"));
 	}
 
 	public ToolBar getTbMain() {
@@ -533,5 +533,36 @@ public class ToolBarController implements Initializable, IControllerInit {
 
 	public Button getHideLeft() {
 		return hideLeft;
+	}
+	
+	public Button getFit() {
+		return fit;
+	}
+	
+	private class ShowChangeListener implements ChangeListener<Boolean> {
+		private Button btn;
+		private Stage stage;
+		private Point2D statePoint;
+		
+		public ShowChangeListener(Button btn, Stage stage) {
+			this.stage = stage;
+			this.btn = btn;
+		}
+
+		@Override
+		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+			if (newValue) {
+				btn.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)));
+				if (statePoint != null) {
+					stage.setX(statePoint.getX());
+					stage.setY(statePoint.getY());
+				}
+				stage.show();
+			} else {
+				statePoint = new Point2D(stage.getX(), stage.getY());
+				stage.hide();
+				btn.setBorder(new Border(new BorderStroke(Color.TRANSPARENT, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN)));
+			}
+		}
 	}
 }

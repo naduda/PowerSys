@@ -51,7 +51,7 @@ public class TreeController implements Initializable, IControllerInit {
 				
 				ReportPeriodController controller = (ReportPeriodController) stage.getController();
 				controller.setIdReport(item.getValue().getId());
-			    stage.show();		
+			    stage.show();
 			}
 		});
 		

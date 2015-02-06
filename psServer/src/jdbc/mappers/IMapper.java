@@ -50,6 +50,17 @@ public interface IMapper {
 	})
 	List<DvalTS> getOldTS(@Param("idsignals") String idSignals);
 	
+	@Select("select (getlast_ti(idsignal, #{dtValue}, 1)).* from t_signal where idsignal = ANY(#{idsignals}::int[]) union all "
+			+ "select (getlast_ts(idsignal, #{dtValue}, 1)).* from t_signal where idsignal = ANY(#{idsignals}::int[])")
+	@Results(value = {
+			@Result(property="signalref", column="id"),
+			@Result(property="val", column="val"),
+			@Result(property="dt", column="dt"),
+			@Result(property="rcode", column="rcode"),
+			@Result(property="servdt", column="servdt")
+	})
+	List<DvalTI> getValuesOnDate(@Param("idsignals") String idSignals, @Param("dtValue") Timestamp dtValue);
+	
 	@Select("select set_ts(#{idsignal}, #{val}, now()::timestamp without time zone, #{rCode}, #{userId}, #{schemeref})")
 	Integer setTS(@Param("idsignal") int idsignal, @Param("val") double val, @Param("rCode") int rCode,
 			@Param("userId") int userId, @Param("schemeref") int schemeref);

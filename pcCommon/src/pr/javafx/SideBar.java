@@ -20,7 +20,7 @@ public class SideBar extends VBox {
 	public SideBar(double prefSize, Node content) {
 		this();
 		expandedSize = prefSize;
-		getChildren().addAll(content);
+		setContent(content);
 	}
 
 	public double getExpandedSize() {

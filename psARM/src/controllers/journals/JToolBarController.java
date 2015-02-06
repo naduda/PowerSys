@@ -34,8 +34,9 @@ public class JToolBarController implements Initializable, IControllerInit {
 		dpEnd.setValue(LocalDate.now().plusDays(1));
 		dpBegin.setValue(LocalDate.now());
 		
-		ResourceBundle rb = Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName()));
-		setElementText(rb);
+//		ResourceBundle rb = Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName()));
+//		setElementText(rb);
+		setElementText(SingleObject.getResourceBundle());
 	}
 	
 	@Override

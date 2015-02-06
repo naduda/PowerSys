@@ -14,7 +14,7 @@ public class MyFormatter extends Formatter {
 	private static final int LEVEL_NAME_LENGTH = 10;
 	private static final int INFO_LENGTH = 70;
 	
-	public static boolean isDetailsLog = true;
+	public static boolean isDetailsLog = false;
 	
     public String format(LogRecord record) {
     	if (record.getParameters() == null) {

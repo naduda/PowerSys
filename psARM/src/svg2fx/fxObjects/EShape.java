@@ -220,6 +220,7 @@ public class EShape extends AShape {
 		
 		setLastDataDate(dt);
 		if (idSignal > 0) {
+			if (gettSignalID() == null) System.out.println(id);
 			int status = idSignal == id ? gettSignalID().getStatus() : gettSignalIDTS().getStatus();
 			int typeSignalRef = idSignal == id ? tSignalID.getTypesignalref() : tSignalIDTS.getTypesignalref();
 			if (typeSignalRef == Constants.TI_SIGNAL && status == WORK_STATUS) {

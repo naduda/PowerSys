@@ -23,6 +23,7 @@ import ui.UpdateTimeOut;
 import controllers.interfaces.IControllerInit;
 import controllers.interfaces.StageLoader;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -132,9 +133,9 @@ public class LoginController implements IControllerInit, Initializable {
 			
 			StatusListener alarmSL = new StatusListener(ctrlr, ws, 2);
 			ctrlr.getAlarmSplitPane().getStatus().addListener(alarmSL);
-					
+			
 			if (ws.isFullScreen()) {
-				ctrlr.getMainPane().showHideSide();
+				ctrlr.getMainPane().showSide();
 			} else {
 				ctrlr.getMainPane().getStatus().set(true);
 			}
@@ -143,60 +144,17 @@ public class LoginController implements IControllerInit, Initializable {
 			ctrlr.getTreeSplitPane().setExpandedSize(ws.getTreeDividerPositions());
 		});
 		
-		SingleObject.mainStage.fullScreenProperty().addListener((observ, old, newValue) -> {
+		ctrlr.getMainPane().isShowingProperty()
+			.bind(SingleObject.mainStage.fullScreenProperty().isNotEqualTo(new SimpleBooleanProperty(true)));
+		ctrlr.getvToolBarPane().isShowingProperty().bind(ctrlr.getMainPane().isShowingProperty());
+		ctrlr.getMainPane().getSideBar().visibleProperty().addListener((observ, old, newValue) -> {
 			if (newValue) {
-				if (ctrlr.getMainPane().getSideBar().isVisible()) {
-					if (ctrlr.getMainPane().getUserData() == null) return;
-					String[] oldState = ctrlr.getMainPane().getUserData().toString().split(";");
-					boolean tVisible = Boolean.parseBoolean(oldState[0]);
-					boolean aVisible = Boolean.parseBoolean(oldState[1]);
-					
-					SingleObject.mainStage.setFullScreen(false);
-					if (tVisible) ctrlr.getTreeSplitPane().showSide();
-					if (aVisible) ctrlr.getAlarmSplitPane().showSide();
-				} else {
-					String oldState = ctrlr.getTreeSplitPane().getSideBar().isVisible() + ";" +
-							ctrlr.getAlarmSplitPane().getSideBar().isVisible();
-					
-					SingleObject.mainStage.setFullScreen(true);
-					ctrlr.getMainPane().setUserData(oldState);
-					if (ctrlr.getTreeSplitPane().getSideBar().isVisible()) ctrlr.getTreeSplitPane().hideSide();
-					if (ctrlr.getAlarmSplitPane().getSideBar().isVisible()) ctrlr.getAlarmSplitPane().hideSide();
-				}
+				Platform.runLater(() -> ctrlr.getTreeSplitPane().showSide());
+			} else {
+				ctrlr.getTreeSplitPane().hideSide();
+				MainStage.fitToPage();
 			}
 		});
-		
-		SingleObject.mainStage.fullScreenProperty().addListener((observ, old, newValue) -> {
-			if (!newValue) {
-				if (ctrlr.getMainPane().getUserData() == null) return;
-				String[] oldState = ctrlr.getMainPane().getUserData().toString().split(";");
-				boolean tVisible = Boolean.parseBoolean(oldState[0]);
-				boolean aVisible = Boolean.parseBoolean(oldState[1]);
-				
-				ctrlr.getMainPane().showSide();
-				if (tVisible) ctrlr.getTreeSplitPane().showSide();
-				if (aVisible) ctrlr.getAlarmSplitPane().showSide();
-			}
-		});
-		
-		ctrlr.getMainPane().getStatus().addListener((observ, old, newValue) -> {
-			if (newValue) {
-				if (ctrlr.getMainPane().getSideBar().isVisible()) {
-					SingleObject.mainStage.setFullScreen(false);
-				} else {
-					String oldState = ctrlr.getTreeSplitPane().getSideBar().isVisible() + ";" +
-							ctrlr.getAlarmSplitPane().getSideBar().isVisible();
-					
-					SingleObject.mainStage.setFullScreen(true);
-					ctrlr.getMainPane().setUserData(oldState);
-					if (ctrlr.getTreeSplitPane().getSideBar().isVisible()) ctrlr.getTreeSplitPane().hideSide();
-					if (ctrlr.getAlarmSplitPane().getSideBar().isVisible()) ctrlr.getAlarmSplitPane().hideSide();
-				}
-			}
-		});
-		
-		ctrlr.getTreeSplitPane().getStatus().addListener((observ, old, newValue) -> MainStage.fitToPage());
-		ctrlr.getAlarmSplitPane().getStatus().addListener((observ, old, newValue) -> MainStage.fitToPage());
 		
 		ctrlr.getToolBarController().getHideLeft().setGraphic(null);
 		ctrlr.getTreeSplitPane().getSideBar().visibleProperty().addListener((observ, old, newValue) -> {
@@ -206,6 +164,18 @@ public class LoginController implements IControllerInit, Initializable {
 			} else {
 				ctrlr.getToolBarController().getHideLeft().getStyleClass().remove("hide-left");
 				ctrlr.getToolBarController().getHideLeft().getStyleClass().add("show-right");
+			}
+		});
+		
+		ctrlr.getToolBarController().getFit().setGraphic(null);
+		ctrlr.getToolBarController().getFit().getStyleClass().add("full-screen-off");
+		SingleObject.mainStage.fullScreenProperty().addListener((observ, old, newValue) -> {
+			if (newValue) {
+				ctrlr.getToolBarController().getFit().getStyleClass().add("full-screen-on");
+				ctrlr.getToolBarController().getFit().getStyleClass().remove("full-screen-off");
+			} else {
+				ctrlr.getToolBarController().getFit().getStyleClass().remove("full-screen-on");
+				ctrlr.getToolBarController().getFit().getStyleClass().add("full-screen-off");
 			}
 		});
 		

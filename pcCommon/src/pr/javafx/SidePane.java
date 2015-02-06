@@ -5,6 +5,7 @@ import javafx.animation.Transition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -16,6 +17,7 @@ import javafx.util.Duration;
 
 public class SidePane extends Pane {
 	private final BooleanProperty status = new SimpleBooleanProperty(false);
+	private final BooleanProperty isShowingProperty = new SimpleBooleanProperty(true);
 	private final Button controlButton = new Button();
 	private boolean isButton = false;
 	private double duration = 250;
@@ -25,8 +27,10 @@ public class SidePane extends Pane {
 	private double expandedWidthOld;
 	private boolean isHorizontal;
 	private SideBar sideBar;
+	private Pos aligment;
 	private String position;
 	private Node content;
+	private Node sideBarContent;
 	private boolean isResize;
 	private boolean isNotInitYet = false;
 	
@@ -165,6 +169,24 @@ public class SidePane extends Pane {
 		}
 		
 		getChildren().add(main);
+		
+		isShowingProperty.bind(sideBar.visibleProperty());
+		isShowingProperty.addListener((observ, old, newValue) -> {
+			
+			if (newValue) {
+				if (!sideBar.isVisible()) showSide();
+			} else {
+				if (sideBar.isVisible()) {
+					hideSide();
+				}
+			}
+		});
+		
+		sideBar.visibleProperty().addListener((observ, old, newValue) -> {
+			if (!newValue) {
+				expandedWidthOld = expandedSize;
+			}
+		});
 	}
 	
 	private void disableEnableDividers(SplitPane split, boolean isDisable) {
@@ -181,15 +203,8 @@ public class SidePane extends Pane {
 		}
 	}
 	
-	public void showHideSide(double expandedSize) {
-		if (controlButton.isDisable()) return;
-		this.expandedSize = expandedSize;
-		showHideSide();
-	}
-	
 	public void showSide() {
 		status.set(false);
-		expandedWidthOld = expandedSize;
 		controlButton.setDisable(true);
 		sideBar.setVisible(true);
 		if (expandedWidthOld < 10) expandedWidthOld = 10;
@@ -278,6 +293,16 @@ public class SidePane extends Pane {
 		this.sideBar = sideBar;
 		if (sideBar != null && content != null && position != null) init();
 	}
+	
+	public Node getSideBarContent() {
+		return sideBarContent;
+	}
+	
+	public void setSideBarContent(Node content) {
+		this.sideBarContent = content;
+		this.sideBar = new SideBar(expandedSize, content);
+		if (sideBar != null && content != null && position != null) init();
+	}
 
 	public Node getContent() {
 		return content;
@@ -311,6 +336,7 @@ public class SidePane extends Pane {
 	}
 
 	public void setExpandedSize(double expandedWidth) {
+		this.expandedWidthOld = expandedWidth;
 		if (isHorizontal) {
 			sideBar.setMinWidth(expandedWidth);
 			sideBar.setPrefWidth(expandedWidth);
@@ -333,5 +359,18 @@ public class SidePane extends Pane {
 
 	public void setDuration(double duration) {
 		this.duration = duration == 0 ? 10 : duration;
+	}
+
+	public Pos getAligment() {
+		return aligment;
+	}
+
+	public void setAligment(Pos aligment) {
+		this.aligment = aligment;
+		sideBar.setAlignment(aligment);
+	}
+
+	public BooleanProperty isShowingProperty() {
+		return isShowingProperty;
 	}
 }

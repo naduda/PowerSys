@@ -158,10 +158,7 @@ public class MainStage extends Stage implements Serializable {
 			double kx = controller.getBpScheme().getWidth() * 0.99 / root.getBoundsInLocal().getWidth();
 			double ky = controller.getBpScheme().getHeight() * 0.99 / root.getBoundsInLocal().getHeight();
 			
-			root.setScaleX(kx < ky ? kx : ky);
-			root.setScaleY(kx < ky ? kx : ky);
-			
-			ToolBarController.zoomProperty.set(root.getScaleX());
+			ToolBarController.changeZoom(kx < ky ? kx : ky);
 		}
 	}
 }

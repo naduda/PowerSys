@@ -167,6 +167,12 @@ public class ClientPowerSys implements IPowersys {
 		Map<Integer, DvalTI> res = (Map<Integer, DvalTI>) new ClientRMI(c -> c.getOldTS(idSignals)).get();
 		return res == null ? new HashMap<>() : res;
 	}
+	
+	@Override
+	public Map<Integer, DvalTI> getValuesOnDate(String idSignals, Timestamp dtValue) {
+		Map<Integer, DvalTI> res = (Map<Integer, DvalTI>) new ClientRMI(c -> c.getValuesOnDate(idSignals, dtValue)).get();
+		return res == null ? new HashMap<>() : res;
+	}
 
 	@Override
 	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) {

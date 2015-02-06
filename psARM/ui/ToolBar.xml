@@ -19,13 +19,13 @@
 	<Button fx:id="fitVertical" onAction="#fitVertical" styleClass="toolBarButton" />
 	<Button fx:id="fitHorizontal" onAction="#fitHorizontal" styleClass="toolBarButton" />
 	<Separator/>
-	<Button fx:id="fit" onAction="#fullScreen" styleClass="toolBarButton" />
+	<Button fx:id="fit" onAction="#fullScreen" styleClass="full-screen-on" />
 	<Button fx:id="info" onAction="#info" styleClass="toolBarButton" />
 	<Button fx:id="findAlarms" onAction="#showAlarms" styleClass="toolBarButton" />
 	<Button fx:id="showChart" onAction="#showChart" styleClass="toolBarButton" />
 	<Separator/>
-	<Button fx:id="navigator" styleClass="toolBarButton" />
-	<Button fx:id="retro" styleClass="toolBarButton" />
+	<Button fx:id="navigator" onAction="#navigator" styleClass="toolBarButton" />
+	<Button fx:id="retro" onAction="#retro" styleClass="toolBarButton" />
 	<Button fx:id="normalMode" onAction="#showNormalMode" styleClass="toolBarButton" />
 	<Separator/>
 	<Button fx:id="server" onAction="#server" styleClass="toolBarButton" />

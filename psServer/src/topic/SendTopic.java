@@ -80,12 +80,12 @@ public class SendTopic implements Runnable {
 		}
 		if (dbServer.equals("3")) {
 			dbServer = "vik-soft.com.ua";
-			//dbServer = "localhost";
+			dbServer = "localhost";
 			dbPort = "5432";
 			dbName = "PowerSys_Kazahstan";
 			dbUser = "postgres";
 			dbPassword = "314159265";
-			//dbPassword = "12345678";
+			dbPassword = "12345678";
 			SingleFromDB.setSqlConnect(new SQLConnect(dbServer, dbPort, dbName, dbUser, dbPassword));
 			return;
 		}

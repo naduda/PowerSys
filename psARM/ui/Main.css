@@ -36,7 +36,28 @@
   -fx-background-position: center;
 }
 
-.toolBarButton:hover, .hide-left:hover, .show-right:hover {
+.full-screen-on {
+  -fx-text-fill: green;
+  -fx-background-radius: 1 1 1 1;
+  -fx-background-color: Transparent;
+  -fx-background-repeat: no-repeat;
+  -fx-border: none;
+  -fx-background-image: url('../Icon/fitOff.png');
+  -fx-background-size: 16, 16;
+  -fx-background-position: center;
+}
+.full-screen-off {
+  -fx-text-fill: green;
+  -fx-background-radius: 1 1 1 1;
+  -fx-background-color: Transparent;
+  -fx-background-repeat: no-repeat;
+  -fx-border: none;
+  -fx-background-image: url('../Icon/fit.png');
+  -fx-background-size: 16, 16;
+  -fx-background-position: center;
+}
+
+.toolBarButton:hover, .hide-left:hover, .show-right:hover, .full-screen-on:hover, .full-screen-off:hover {
     -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), transparent;
 }
 

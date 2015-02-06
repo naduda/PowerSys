@@ -16,6 +16,10 @@ public class Controller implements Initializable {
 	
 	@FXML protected void showHide() {
 		System.out.println("showHide");
-		sp.showHideSide();
+		if (sp.getSideBar().isVisible()) {
+			sp.hideSide();
+		} else {
+			sp.showSide();
+		}
 	}
 }

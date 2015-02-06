@@ -49,6 +49,8 @@ public class Controller implements IControllerInit, Initializable {
 	@FXML private SidePane mainPane;
 	@FXML private SidePane vSplitPane;
 	@FXML private SidePane hSplitPane;
+	@FXML private SidePane vToolBarPane;
+	@FXML private SidePane historyPane;
 	@FXML private Button showAlarm;
 	
 	public static ResourceBundle getResourceBundle(Locale locale) {
@@ -63,6 +65,7 @@ public class Controller implements IControllerInit, Initializable {
 			showAlarm.setText(!newValue ? SingleObject.getResourceBundle().getString("keyShowAlarms") : 
 				SingleObject.getResourceBundle().getString("keyHideAlarms"));
 		});
+		historyPane.hideSide();
 	}
 	
 	@Override
@@ -86,7 +89,8 @@ public class Controller implements IControllerInit, Initializable {
 		
 		ws.setAlarmDividerPositions(MainStage.controller.getAlarmSplitPane().getExpandedSize());
 		ws.setTreeDividerPositions(MainStage.controller.getTreeSplitPane().getExpandedSize());
-		ws.setFullScreen(!MainStage.controller.getMainPane().getSideBar().isVisible());
+		ws.setFullScreen(false);
+//		ws.setFullScreen(!MainStage.controller.getMainPane().getSideBar().isVisible());
 		ws.setAlarmsShowing(MainStage.controller.getAlarmSplitPane().getSideBar().isVisible());
 		ws.setTreeShowing(MainStage.controller.getTreeSplitPane().getSideBar().isVisible());
 		ws.setMaximized(isMaximized);
@@ -129,12 +133,16 @@ public class Controller implements IControllerInit, Initializable {
 		return hSplitPane;
 	}
 	
+	public SidePane getvToolBarPane() {
+		return vToolBarPane;
+	}
+	
+	public SidePane getHistoryPane() {
+		return historyPane;
+	}
+	
 	@FXML protected void showAlarm() {
-//		System.out.println(SingleObject.getProgramSettings().getWinState().getAlarmDividerPositions());
-//		System.out.println(vSplitPane.getExpandedSize());
-//		System.out.println(vSplitPane.getSideBar().getPrefWidth());
 		vSplitPane.showHideSide();
-//		SingleObject.getProgramSettings().getWinState().setAlarmDividerPositions(vSplitPane.getExpandedSize());
 	}
 	
 	public void updateTI(DvalTI ti) {
@@ -148,6 +156,23 @@ public class Controller implements IControllerInit, Initializable {
 				if (tt == null) return;
 				
 				if(tt.getDt() != null && tt.getDt().compareTo(ti.getDt()) > 0) return;
+				
+				tt.setDt(ti.getDt());
+				tt.setValue(ti.getSignalref(), ti.getVal(), s.getDt().toString());
+				tt.setRcode(ti.getRcode());
+								
+				toolBarController.updateLabel(ti.getServdt());
+			} catch (Exception e) {
+				LogFiles.log.log(Level.SEVERE, "void updateTI(...)", e);
+			}
+		});	
+	}
+	
+	public void updateTI(DvalTI ti, boolean isCompareDate) {
+		SingleObject.mainScheme.getListSignals().stream().filter(f -> f.getId() == ti.getSignalref()).forEach(s -> {
+			try {
+				EShape tt = SingleObject.mainScheme.getDeviceById(s.getVal().toString());
+				if (tt == null) return;
 				
 				tt.setDt(ti.getDt());
 				tt.setValue(ti.getSignalref(), ti.getVal(), s.getDt().toString());

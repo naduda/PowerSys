@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.*?>
+<?import javafx.scene.control.DatePicker?>
+
+<ToolBar xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ToolBarHistoryController">
+	<Button fx:id="showSlides" onAction="#showSlides" styleClass="toolBarButton" />
+	<DatePicker fx:id="dpBegin" prefWidth="110"/>
+	<ChoiceBox fx:id="cbHour" />
+	<ChoiceBox fx:id="cbMinute" />
+	<ChoiceBox fx:id="cbSecond" />
+
+	<Separator/>
+	<TextField fx:id="step" text="3600" prefWidth="40" />
+	<Separator/>
+
+	<Button fx:id="previus" onAction="#previous" styleClass="toolBarButton" />
+	<Label fx:id="curDateTime" />
+	<Button fx:id="next" onAction="#next" styleClass="toolBarButton" />
+</ToolBar>

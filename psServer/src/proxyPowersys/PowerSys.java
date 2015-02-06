@@ -221,6 +221,13 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 				.getOldTS(idSignals).stream().filter(f -> f != null).collect(Collectors.toList()))).get();
 		return listTS.stream().collect(Collectors.toMap(DvalTS::getSignalref, obj -> obj));
 	}
+	
+	@Override
+	public Map<Integer, DvalTI> getValuesOnDate(String idSignals, Timestamp dtValue) {
+		List<DvalTI> list = (List<DvalTI>)(new BatisJDBC(s -> s.getMapper(IMapper.class)
+				.getValuesOnDate(idSignals, dtValue).stream().filter(f -> f != null).collect(Collectors.toList()))).get();
+		return list.stream().collect(Collectors.toMap(DvalTI::getSignalref, obj -> obj));
+	}
 
 	@Override
 	public void confirmAlarm(Timestamp recorddt, Timestamp eventdt, int objref, Timestamp confirmdt, String lognote, int userref) {

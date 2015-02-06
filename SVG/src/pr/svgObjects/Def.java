@@ -74,7 +74,7 @@ public class Def {
 	private Map<String, LinearGradient> getLinearGradientsMap() {
 		if (linearGradientsMap == null) {
 			linearGradientsMap = new HashMap<>();
-			linearGradients.forEach(g -> linearGradientsMap.put(g.getId(), g));
+			if (linearGradients != null) linearGradients.forEach(g -> linearGradientsMap.put(g.getId(), g));
 		}
 		return linearGradientsMap;
 	}
@@ -86,7 +86,7 @@ public class Def {
 	private Map<String, RadialGradient> getRadialGradientsMap() {
 		if (radialGradientsMap == null) {
 			radialGradientsMap = new HashMap<>();
-			radialGradients.forEach(g -> radialGradientsMap.put(g.getId(), g));
+			if (radialGradients != null) radialGradients.forEach(g -> radialGradientsMap.put(g.getId(), g));
 		}
 		return radialGradientsMap;
 	}
