@@ -38,6 +38,7 @@ import pr.model.NormalModeJournalItem;
 import controllers.interfaces.IControllerInit;
 import controllers.interfaces.StageLoader;
 import controllers.journals.JAlarmsController;
+import controllers.tree.TreeController;
 import single.ProgramProperty;
 import single.SingleFromDB;
 import single.SingleObject;
@@ -67,6 +68,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -110,10 +112,31 @@ public class ToolBarController implements Initializable, IControllerInit {
 	@FXML private Button navigator;
 	@FXML private Button normalMode;
 	@FXML private Button hideLeft;
+	@FXML private Button next;
+	@FXML private Button previous;
 	
 	@Override
 	public void initialize(URL url, ResourceBundle boundle) {
+		tbMain.getItems().filtered(f -> f.getClass().equals(Button.class)).forEach(it -> {
+			if (it.getId() != null) {
+				File icon = new File(Utils.getFullPath("./Icon/" + it.getId() + ".png"));
+				if (icon.exists()) {
+					try {
+						ImageView iw = new ImageView(new File(icon.getAbsolutePath()).toURI().toURL().toString());
+						iw.setFitHeight(SingleObject.getProgramSettings().getIconWidth());
+						iw.setPreserveRatio(true);
+						((Button)it).setGraphic(iw);
+					} catch (Exception e) {
+						LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
+					}
+				}
+			}
+		});
+		
 		setElementText(SingleObject.getResourceBundle());
+		next.setGraphic(null);
+		previous.setGraphic(null);
+		
 		zoomSlider.valueProperty().bindBidirectional(zoomProperty);
 		zoomSlider.setMin(ZOOM_FACTOR);
 		zoomSlider.setMax(ZOOM_MAX);
@@ -189,6 +212,7 @@ public class ToolBarController implements Initializable, IControllerInit {
 		Group root = SingleObject.mainScheme.getRoot();
 		root.setScaleX(zoom);
         root.scaleYProperty().bind(root.scaleXProperty());
+        zoomProperty.set(zoom);
 	}
 	
 	@FXML 
@@ -212,10 +236,47 @@ public class ToolBarController implements Initializable, IControllerInit {
 	
 	@FXML protected void hideTree() {
 		MainStage.controller.getTreeSplitPane().showHideSide();
+		
 	}
 	
 	@FXML protected void previous() {
 		System.out.println("previous");
+		TreeController treeController = MainStage.controller.getSpTreeController();
+		treeController.setPreviusNextButton(true);
+		int curIndex = treeController.getSchemeHistory().indexOf(treeController.getTvSchemes().getSelectionModel().getSelectedItem());
+		if (curIndex < 1) return;
+		TreeItem<LinkedValue> prevItem = treeController.getSchemeHistory().get(curIndex - 1);
+		treeController.getTvSchemes().getSelectionModel().select(prevItem);
+		
+		String curClass = curIndex == 1 ? "previous_gray" : "previous";
+		if (!next.getStyleClass().get(0).equalsIgnoreCase("next")) {
+			next.getStyleClass().clear();
+			next.getStyleClass().add("next");
+		}
+		if (!previous.getStyleClass().get(0).equalsIgnoreCase(curClass)) {
+			previous.getStyleClass().clear();
+			previous.getStyleClass().add(curClass);
+		}
+	}
+	
+	@FXML protected void next() {
+		System.out.println("next");
+		TreeController treeController = MainStage.controller.getSpTreeController();
+		treeController.setPreviusNextButton(true);
+		int curIndex = treeController.getSchemeHistory().indexOf(treeController.getTvSchemes().getSelectionModel().getSelectedItem());
+		if (curIndex == treeController.getSchemeHistory().size() - 1) return;
+		TreeItem<LinkedValue> prevItem = treeController.getSchemeHistory().get(curIndex + 1);
+		treeController.getTvSchemes().getSelectionModel().select(prevItem);
+		
+		String curClass = curIndex == treeController.getSchemeHistory().size() - 2 ? "next_gray" : "next";
+		if (!previous.getStyleClass().get(0).equalsIgnoreCase("previous")) {
+			previous.getStyleClass().clear();
+			previous.getStyleClass().add("previous");
+		}
+		if (!next.getStyleClass().get(0).equalsIgnoreCase(curClass)) {
+			next.getStyleClass().clear();
+			next.getStyleClass().add(curClass);
+		}
 	}
 	
 	@FXML protected void navigator() {	
@@ -233,10 +294,6 @@ public class ToolBarController implements Initializable, IControllerInit {
 	
 	@FXML protected void retro() {
 		showHistoryProperty.set(!showHistoryProperty.get());
-	}
-	
-	@FXML protected void next() {
-		System.out.println("next");
 	}
 	
 	@FXML protected void fullScreen() {
@@ -507,22 +564,8 @@ public class ToolBarController implements Initializable, IControllerInit {
 		stateReading2 = rb.getString("key_stateReading2");
 		stateReading3 = rb.getString("key_stateReading3");
 		
-		tbMain.getItems().filtered(f -> f.getClass().equals(Button.class)).forEach(it -> {
-			if (it.getId() != null) {
-				((Button)it).setTooltip(new Tooltip(rb.getString("keyTooltip_" + it.getId())));
-				File icon = new File(Utils.getFullPath("./Icon/" + it.getId() + ".png"));
-				if (icon.exists()) {
-					try {
-						ImageView iw = new ImageView(new File(icon.getAbsolutePath()).toURI().toURL().toString());
-						iw.setFitHeight(SingleObject.getProgramSettings().getIconWidth());
-						iw.setPreserveRatio(true);
-						((Button)it).setGraphic(iw);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
+		tbMain.getItems().filtered(f -> f.getClass().equals(Button.class) && f.getId() != null)
+			.forEach(it -> ((Button)it).setTooltip(new Tooltip(rb.getString("keyTooltip_" + it.getId()))));
 		
 		if (navigatorStage != null) navigatorStage.setTitle(rb.getString("keyTooltip_navigator"));
 	}
@@ -537,6 +580,14 @@ public class ToolBarController implements Initializable, IControllerInit {
 	
 	public Button getFit() {
 		return fit;
+	}
+	
+	public Button getNext() {
+		return next;
+	}
+
+	public Button getPrevious() {
+		return previous;
 	}
 	
 	private class ShowChangeListener implements ChangeListener<Boolean> {

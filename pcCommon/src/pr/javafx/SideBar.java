@@ -7,7 +7,6 @@ import javafx.scene.layout.VBox;
 
 public class SideBar extends VBox {
 	private double expandedSize;
-	private boolean isSeted = false;
 	private Node content;
 	private Pos aligment;
 	
@@ -29,14 +28,6 @@ public class SideBar extends VBox {
 
 	public void setExpandedSize(double expandedSize) {
 		this.expandedSize = expandedSize;
-	}
-
-	public void setSeted(boolean isSeted) {
-		this.isSeted = isSeted;
-	}
-
-	public boolean isSeted() {
-		return isSeted;
 	}
 
 	public Node getContent() {

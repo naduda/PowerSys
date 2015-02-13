@@ -8,19 +8,36 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 
 public interface IMapperAction {
-
-	@Update("update d_eventlog set logstate = 2, confirmdt = #{confirmdt}, lognote = #{lognote}, userref = #{userref} "
-			+ "where recorddt = #{recorddt} and  eventdt = #{eventdt} and objref = #{objref};"
-			+ "delete from t_sysparam where paramname = 'LAST_USR_ACK';"
-			+ "insert into t_sysparam values ( 3, 'LAST_USR_ACK', extract(epoch FROM now()), 'Время последнего квитирования');")
+	@Update("update t_scheme set schemedenom = #{schemedenom}, schemename = #{schemename}, schemedescr = #{schemedescr}, "
+			+ "parentref = #{parentref}, schemefile = #{schemefile}, userid = #{userid} "
+			+ "where idscheme = #{idscheme}")
+	void updateTScheme(@Param("idscheme")int idscheme, @Param("schemedenom")String schemedenom, 
+			@Param("schemename")String schemename, @Param("schemedescr")String schemedescr, 
+			@Param("parentref") int parentref, @Param("schemefile")Object schemefile, @Param("userid")int userid);
+	
+	@Delete("delete from t_scheme where idscheme = #{idscheme}")
+	void deleteScheme(@Param("idscheme")int idscheme);
+	
+	@Insert("insert into t_scheme " +
+			"(idscheme, schemedenom, schemename, schemedescr, parentref, schemefile, userid, lastupdatedt, savehistory) " + 
+			"values ((select max(idscheme) + 1 from t_scheme), #{schemedenom}, #{schemename}, #{schemedescr}, " + 
+			"#{parentref}, #{schemefile}, #{userid}, now(), 0)")
+	void addScheme(@Param("schemedenom")String schemedenom, @Param("schemename")String schemename, 
+			@Param("schemedescr")String schemedescr, @Param("parentref") int parentref, 
+			@Param("schemefile")Object schemefile, @Param("userid")int userid);
+	
+	@Update("update d_eventlog set logstate = 2, confirmdt = #{confirmdt}, lognote = #{lognote}, userref = #{userref} " + 
+			"where recorddt = #{recorddt} and  eventdt = #{eventdt} and objref = #{objref};" +
+			"delete from t_sysparam where paramname = 'LAST_USR_ACK';" +
+			"insert into t_sysparam values ( 3, 'LAST_USR_ACK', extract(epoch FROM now()), 'Время последнего квитирования');")
 	void confirmAlarm(@Param("recorddt")Timestamp recorddt, @Param("eventdt")Timestamp eventdt, 
 					  @Param("objref")int objref, @Param("confirmdt")Timestamp confirmdt, 
 					  @Param("lognote")String lognote, @Param("userref")int userref);
 	
-	@Update("update d_eventlog set logstate = 2, confirmdt = now(), lognote = #{lognote}, userref = #{userref} "
-			+ "where logstate = 1;"
-			+ "delete from t_sysparam where paramname = 'LAST_USR_ACK';"
-			+ "insert into t_sysparam values ( 3, 'LAST_USR_ACK', extract(epoch FROM now()), 'Время последнего квитирования');")
+	@Update("update d_eventlog set logstate = 2, confirmdt = now(), lognote = #{lognote}, userref = #{userref} " +
+			"where logstate = 1;" + 
+			"delete from t_sysparam where paramname = 'LAST_USR_ACK';" + 
+			"insert into t_sysparam values ( 3, 'LAST_USR_ACK', extract(epoch FROM now()), 'Время последнего квитирования');")
 	void confirmAlarmAll(@Param("lognote")String lognote, @Param("userref")int userref);
 	
 	@Insert("insert into d_eventlog (eventtype, objref, eventdt, objval, objstatus, authorref) values "
@@ -28,8 +45,6 @@ public interface IMapperAction {
 	void insertDeventLog(@Param("eventtype")int eventtype, @Param("objref")int objref, @Param("eventdt")Timestamp eventdt, 
 			@Param("objval")double objval, @Param("objstatus")int objstatus, @Param("authorref")int authorref);
 	
-//	@Select("insert into t_transparant(idtr, signRef, objName, tp, SchemeRef) "
-//	+ "values (#{idtr}, #{signref}, #{objname}, #{tp}, #{schemeref})")
 	@Insert("insert into t_transparant(idtr, signRef, objName, tp, SchemeRef, settime, lastupdate) "
 		+ "values (#{idtr}, #{signref}, #{objname}, #{tp}, #{schemeref}, now(), now())")
 	void insertTtransparant(@Param("idtr")int idtr, @Param("signref")int signref, @Param("objname")String objname, 

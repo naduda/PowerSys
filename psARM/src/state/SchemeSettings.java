@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SchemeSettings {
 	private String schemeName;
+	private int idScheme;
 	private double schemeScale;
 	
 	public String getSchemeName() {
@@ -24,5 +25,13 @@ public class SchemeSettings {
 
 	public void setSchemeScale(double schemeScale) {
 		this.schemeScale = schemeScale;
+	}
+
+	public int getIdScheme() {
+		return idScheme;
+	}
+
+	public void setIdScheme(int idScheme) {
+		this.idScheme = idScheme;
 	}
 }

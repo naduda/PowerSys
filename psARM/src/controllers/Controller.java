@@ -33,6 +33,7 @@ import pr.model.LinkedValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Window;
@@ -52,6 +53,10 @@ public class Controller implements IControllerInit, Initializable {
 	@FXML private SidePane vToolBarPane;
 	@FXML private SidePane historyPane;
 	@FXML private Button showAlarm;
+	@FXML private Label statusLabel;
+	
+	private final String[] sqlArray = SingleFromDB.sqlConnectParameters.split(";");
+	private String sqlConnectParameters;
 	
 	public static ResourceBundle getResourceBundle(Locale locale) {
 		return ResourceBundle.getBundle("Language", locale, SingleObject.getClassLoader(), new UTF8Control());
@@ -59,13 +64,17 @@ public class Controller implements IControllerInit, Initializable {
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		showAlarm.setText(vSplitPane.getSideBar().isVisible() ? SingleObject.getResourceBundle().getString("keyHideAlarms") : 
-			SingleObject.getResourceBundle().getString("keyHideAlarms"));
+		ResourceBundle rb = SingleObject.getResourceBundle();
+		showAlarm.setText(vSplitPane.getSideBar().isVisible() ? rb.getString("keyHideAlarms") : 
+			rb.getString("keyHideAlarms"));
 		vSplitPane.getSideBar().visibleProperty().addListener((observ, old, newValue) -> {
-			showAlarm.setText(!newValue ? SingleObject.getResourceBundle().getString("keyShowAlarms") : 
-				SingleObject.getResourceBundle().getString("keyHideAlarms"));
+			showAlarm.setText(!newValue ? rb.getString("keyShowAlarms") : rb.getString("keyHideAlarms"));
 		});
 		historyPane.hideSide();
+		
+		sqlConnectParameters = rb.getString("keyUser") + " - %s; " + rb.getString("keyServer") + " - %s; " + 
+				rb.getString("keyDB") + " - %s;";
+		statusLabel.setText(String.format(sqlConnectParameters, sqlArray[0], sqlArray[1], sqlArray[2]));
 	}
 	
 	@Override
@@ -75,50 +84,55 @@ public class Controller implements IControllerInit, Initializable {
 		spTreeController.setElementText(rb);
 		
 		showAlarm.setText(vSplitPane.getSideBar().isVisible() ? rb.getString("keyShowAlarms") : rb.getString("keyHideAlarms"));
+		sqlConnectParameters = rb.getString("keyUser") + " - %s; " + rb.getString("keyServer") + " - %s; " + 
+				rb.getString("keyDB") + " - %s;";
+		statusLabel.setText(String.format(sqlConnectParameters, sqlArray[0], sqlArray[1], sqlArray[2]));
 	}
 	
 	public static void exitProgram() {
-		if (SingleObject.mainScheme == null) return;
-		boolean isMaximized = SingleObject.mainStage.isMaximized();
-		
-		if (isMaximized) SingleObject.mainStage.setMaximized(false);
-		Window w = SingleObject.mainScheme.getScene().getWindow();
-		WindowState ws = new WindowState(w.getX() < 0 ? 0 : w.getX(), w.getY() < 0 ? 0 : w.getY(), 
-				w.getX() < 0 ? w.getX() + w.getWidth(): w.getWidth(), 
-				w.getY() < 0 ? w.getY() + w.getHeight() : w.getHeight());
-		
-		ws.setAlarmDividerPositions(MainStage.controller.getAlarmSplitPane().getExpandedSize());
-		ws.setTreeDividerPositions(MainStage.controller.getTreeSplitPane().getExpandedSize());
-		ws.setFullScreen(false);
-//		ws.setFullScreen(!MainStage.controller.getMainPane().getSideBar().isVisible());
-		ws.setAlarmsShowing(MainStage.controller.getAlarmSplitPane().getSideBar().isVisible());
-		ws.setTreeShowing(MainStage.controller.getTreeSplitPane().getSideBar().isVisible());
-		ws.setMaximized(isMaximized);
-		
-		ProgramSettings ps = new ProgramSettings(ws);
-		ps.setLocaleName(MainStage.controller.menuBarController.getLocaleName());
-		SchemeSettings ss = new SchemeSettings();
-		ps.setSchemeSettings(ss);
-		ss.setSchemeName(SingleObject.mainScheme.getSchemeName());
-		ss.setSchemeScale(SingleObject.mainScheme.getRoot().getScaleX());
-		
-		final LinkedValue lv = new LinkedValue("", "");
-		MainStage.controller.getAlarmsController().getTvTable().getColumns().forEach(c ->
-			lv.setVal(lv.getVal().toString() + (c.isVisible() ? 1 : 0) + ":")
-		);
-		ps.setShowAlarmColumns(lv.getVal().toString());
-		
-		ps.setIconWidth(ps.getIconWidth() == 0 ? 16 : ps.getIconWidth());
-		ps.setHotkeys(SingleObject.hotkeys.values().stream().collect(Collectors.toList()));
-		
 		try {
-			ps.saveToFile(SingleObject.FILE_SETTINGS);
-		} catch (JAXBException e) {
-			LogFiles.log.log(Level.SEVERE, "void exitProgram()", e);
+			boolean isMaximized = SingleObject.mainStage.isMaximized();
+			
+			if (isMaximized) SingleObject.mainStage.setMaximized(false);
+			Window w = SingleObject.mainScheme.getScene().getWindow();
+			WindowState ws = new WindowState(w.getX() < 0 ? 0 : w.getX(), w.getY() < 0 ? 0 : w.getY(), 
+					w.getX() < 0 ? w.getX() + w.getWidth(): w.getWidth(), 
+					w.getY() < 0 ? w.getY() + w.getHeight() : w.getHeight());
+			
+			ws.setAlarmDividerPositions(MainStage.controller.getAlarmSplitPane().getExpandedSize());
+			ws.setTreeDividerPositions(MainStage.controller.getTreeSplitPane().getExpandedSize());
+			ws.setFullScreen(false);
+	//		ws.setFullScreen(!MainStage.controller.getMainPane().getSideBar().isVisible());
+			ws.setAlarmsShowing(MainStage.controller.getAlarmSplitPane().getSideBar().isVisible());
+			ws.setTreeShowing(MainStage.controller.getTreeSplitPane().getSideBar().isVisible());
+			ws.setMaximized(isMaximized);
+			
+			ProgramSettings ps = new ProgramSettings(ws);
+			ps.setLocaleName(MainStage.controller.menuBarController.getLocaleName());
+			SchemeSettings ss = new SchemeSettings();
+			ps.setSchemeSettings(ss);
+			ss.setSchemeName(SingleObject.mainScheme.getSchemeName());
+			ss.setIdScheme(SingleObject.mainScheme.getIdScheme());
+			ss.setSchemeScale(SingleObject.mainScheme.getRoot().getScaleX());
+			
+			final LinkedValue lv = new LinkedValue("", "");
+			MainStage.controller.getAlarmsController().getTvTable().getColumns().forEach(c ->
+				lv.setVal(lv.getVal().toString() + (c.isVisible() ? 1 : 0) + ":")
+			);
+			ps.setShowAlarmColumns(lv.getVal().toString());
+			
+			ps.setIconWidth(ps.getIconWidth() == 0 ? 16 : ps.getIconWidth());
+			ps.setHotkeys(SingleObject.hotkeys.values().stream().collect(Collectors.toList()));
+			
+			try {
+				ps.saveToFile(SingleObject.FILE_SETTINGS);
+			} catch (JAXBException e) {
+				LogFiles.log.log(Level.SEVERE, "void exitProgram()", e);
+			}
+		} finally {		
+			LogFiles.log.log(Level.INFO, "Exit");
+			System.exit(0);
 		}
-		
-		LogFiles.log.log(Level.INFO, "Exit");
-		System.exit(0);
 	}
 	
 	public SidePane getMainPane() {
@@ -227,6 +241,10 @@ public class Controller implements IControllerInit, Initializable {
 
 	public BorderPane getBpScheme() {
 		return bpScheme;
+	}
+	
+	public Button getShowAlarm() {
+		return showAlarm;
 	}
 	
 	private static class UTF8Control extends Control {

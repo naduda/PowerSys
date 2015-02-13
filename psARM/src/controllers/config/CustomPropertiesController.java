@@ -11,6 +11,7 @@ import pr.svgObjects.CP;
 import pr.svgObjects.CustProps;
 import single.ProgramProperty;
 import single.SingleObject;
+import svg2fx.Convert;
 import controllers.interfaces.AController;
 import controllers.interfaces.StageLoader;
 import javafx.beans.property.BooleanProperty;
@@ -58,7 +59,7 @@ public class CustomPropertiesController extends AController implements Initializ
 	private String delete;
 	
 	@FXML protected void btnOK() {
-		SingleObject.svgModel.setObject(SingleObject.svg.getFileName(), SingleObject.svg);
+		Convert.svgModel.setObject(Convert.svg.getFileName(), Convert.svg);
 		btnCancel();
 	}
 	

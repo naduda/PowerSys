@@ -37,7 +37,7 @@
 									</content>
 
 									<sideBarContent>
-										<fx:include fx:id="spTree" source="Tree.xml" minWidth="${mainPane.width*0.1}" maxWidth="${mainPane.width*0.3}"/>
+										<fx:include fx:id="spTree" source="tree/Tree.xml" minWidth="${mainPane.width*0.1}" maxWidth="${mainPane.width*0.3}"/>
 									</sideBarContent>
 								</SidePane>
 							</content>
@@ -51,10 +51,13 @@
 			</content>
 
 			<sideBarContent>
-				<ToolBar fx:id="status">
-					<Label fx:id="statusLabel" text="Status bar" />
-					<Button fx:id="showAlarm" onAction="#showAlarm"/>
-				</ToolBar>
+				<VBox spacing="-2">
+					<Separator/>
+					<ToolBar>
+						<Button fx:id="showAlarm" onAction="#showAlarm"/>
+						<Label fx:id="statusLabel" text="Status bar" />
+					</ToolBar>
+				</VBox>
 			</sideBarContent>
 		</SidePane>
 	</content>

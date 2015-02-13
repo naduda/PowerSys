@@ -74,15 +74,13 @@ public class SchemeTreeCellImpl extends TreeCell<Scheme> {
             setContextMenu(addMenu);
         }
     }
-
-    @SuppressWarnings("static-access")
+    
 	@Override
 	public void updateSelected(boolean selected) {
 		super.updateSelected(selected);
 		if (selected) {
 			SingleObject.mainScheme = MainStage.schemes.get(getItem().getIdScheme());
 			MainStage.controller.getBpScheme().setCenter(SingleObject.mainScheme);
-			MainStage.controller.getToolBarController().zoomProperty.set(SingleObject.mainScheme.getRoot().getScaleX());
 		}
 	}
 

@@ -6,6 +6,7 @@ import controllers.LoginController;
 import controllers.interfaces.StageLoader;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class Main extends Application {
 	
@@ -20,7 +21,8 @@ public class Main extends Application {
 		LoginController controller = (LoginController) ((StageLoader)stage).getController();
 		
 		((StageLoader)stage).setMethod(() -> controller.btnOK());
-		stage.setResizable(false);
+		stage.initStyle(StageStyle.UNDECORATED);
+		//stage.setResizable(false);
         stage.show();
 	}
 }

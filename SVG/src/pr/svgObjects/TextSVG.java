@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -126,7 +127,7 @@ public class TextSVG extends AClassSVG {
 			String[] command = st.nextElement().toString().split(":");
 			
 			switch (command[0].toLowerCase()) {
-				case "fill": t.setFill(Color.web(command[1])); break;
+				case "fill": Platform.runLater(() -> t.setFill(Color.web(command[1]))); break;
 				case "font-family": fontName = command[1]; break;
 				case "font-size":
 					fontSize = Double.parseDouble(command[1].substring(0, command[1].indexOf("em"))) * svgFontSize;

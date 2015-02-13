@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <settings>
-    <windowstate x="108.0" y="72.0" width="1049.0" height="541.0" fullScreen="false" treeShowing="true" alarmsShowing="false" isMaximized="false">
-        <alarmDividerPositions>210.0</alarmDividerPositions>
-        <treeDividerPositions>251.0</treeDividerPositions>
+    <windowstate x="90.0" y="86.0" width="1049.0" height="568.0" fullScreen="false" treeShowing="true" alarmsShowing="false" isMaximized="false">
+        <alarmDividerPositions>173.0</alarmDividerPositions>
+        <treeDividerPositions>249.0</treeDividerPositions>
     </windowstate>
     <schemeSettings>
-        <schemeName>Kazahstan_інвертор</schemeName>
-        <schemeScale>0.5802915816880687</schemeScale>
+        <schemeName>СКЗ №21</schemeName>
+        <idScheme>13</idScheme>
+        <schemeScale>0.6150786063672676</schemeScale>
     </schemeSettings>
     <localeName>en</localeName>
     <showAlarmColumns>1:1:0:1:1:1:0:0:1:1:0:1:0:</showAlarmColumns>

@@ -3,6 +3,12 @@
   -fx-font-weight: bold;
 }
 
+#app-text {
+   -fx-font-size: 24px;
+   -fx-fill: green;
+   -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+}
+
 .alarms-text {
   -fx-text-fill: blue;
 }
@@ -10,6 +16,7 @@
 .toolBarButton {
     -fx-text-fill: green;
     -fx-background-radius: 1 1 1 1;
+    -fx-padding: 2 5 2 5;
     -fx-background-color: Transparent;
     -fx-background-repeat: no-repeat;
     -fx-border: none;
@@ -36,8 +43,30 @@
   -fx-background-position: center;
 }
 
-.full-screen-on {
+.hide-down {
   -fx-text-fill: green;
+  -fx-background-radius: 1 1 1 1;
+  -fx-padding: 5 20 5 20;
+  -fx-background-color: Transparent;
+  -fx-background-repeat: no-repeat;
+  -fx-border: none;
+  -fx-background-image: url('../Icon/downArrow.png');
+  -fx-background-size: 16, 16;
+  -fx-background-position: left;
+}
+.show-up {
+  -fx-text-fill: green;
+  -fx-background-radius: 1 1 1 1;
+  -fx-padding: 5 20 5 20;
+  -fx-background-color: Transparent;
+  -fx-background-repeat: no-repeat;
+  -fx-border: none;
+  -fx-background-image: url('../Icon/upArrow.png');
+  -fx-background-size: 16, 16;
+  -fx-background-position: left;
+}
+
+.full-screen-on {
   -fx-background-radius: 1 1 1 1;
   -fx-background-color: Transparent;
   -fx-background-repeat: no-repeat;
@@ -47,7 +76,6 @@
   -fx-background-position: center;
 }
 .full-screen-off {
-  -fx-text-fill: green;
   -fx-background-radius: 1 1 1 1;
   -fx-background-color: Transparent;
   -fx-background-repeat: no-repeat;
@@ -57,7 +85,49 @@
   -fx-background-position: center;
 }
 
-.toolBarButton:hover, .hide-left:hover, .show-right:hover, .full-screen-on:hover, .full-screen-off:hover {
+.previous_gray {
+  -fx-background-radius: 1 1 1 1;
+  -fx-background-color: Transparent;
+  -fx-background-repeat: no-repeat;
+  -fx-padding: 2 5 2 5;
+  -fx-border: none;
+  -fx-background-image: url('../Icon/previous_gray.png');
+  -fx-background-size: 16, 16;
+  -fx-background-position: center;
+}
+.previous {
+  -fx-background-radius: 1 1 1 1;
+  -fx-background-color: Transparent;
+  -fx-background-repeat: no-repeat;
+  -fx-padding: 2 5 2 5;
+  -fx-border: none;
+  -fx-background-image: url('../Icon/previous.png');
+  -fx-background-size: 16, 16;
+  -fx-background-position: center;
+}
+
+.next_gray {
+  -fx-background-radius: 1 1 1 1;
+  -fx-background-color: Transparent;
+  -fx-background-repeat: no-repeat;
+  -fx-border: none;
+  -fx-background-image: url('../Icon/next_gray.png');
+  -fx-background-size: 16, 16;
+  -fx-background-position: center;
+}
+
+.next {
+  -fx-background-radius: 1 1 1 1;
+  -fx-background-color: Transparent;
+  -fx-background-repeat: no-repeat;
+  -fx-border: none;
+  -fx-background-image: url('../Icon/next.png');
+  -fx-background-size: 16, 16;
+  -fx-background-position: center;
+}
+
+.toolBarButton:hover, .hide-left:hover, .show-right:hover, .full-screen-on:hover, 
+.full-screen-off:hover, .hide-down:hover, .show-up:hover, .next:hover, .previous:hover {
     -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), transparent;
 }
 

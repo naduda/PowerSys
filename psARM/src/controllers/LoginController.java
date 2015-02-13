@@ -4,13 +4,16 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCodeCombination;
 import pr.common.Utils;
+import pr.common.Encryptor;
 import pr.log.LogFiles;
+import pr.model.Tuser;
 import single.SingleFromDB;
 import single.SingleObject;
 import state.ProgramSettings;
@@ -24,8 +27,6 @@ import controllers.interfaces.IControllerInit;
 import controllers.interfaces.StageLoader;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -38,6 +39,10 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 public class LoginController implements IControllerInit, Initializable {	
+	@FXML private Label lUser;
+	@FXML private TextField tUser;
+	@FXML private Label lPassword;
+	@FXML private TextField tPassword;
 	@FXML private Label lbAddress;
 	@FXML private TextField txtAddress;
 	@FXML private Button btnOK;
@@ -53,6 +58,8 @@ public class LoginController implements IControllerInit, Initializable {
 		lbAddress.setText(rb.getString("keyIP"));
 		btnOK.setText(rb.getString("key_miLogin"));
 		btnCancel.setText(rb.getString("key_miExit"));
+		lUser.setText(rb.getString("keyLoginUser"));
+		lPassword.setText(rb.getString("keyLoginPassword"));
 	}
 	
 	@FXML public void btnOK() {
@@ -61,6 +68,11 @@ public class LoginController implements IControllerInit, Initializable {
 		SingleObject.ipAddress = txtAddress.getText();
 		
 		new SingleFromDB(new ClientPowerSys());
+		if (!checkUser()) {
+			LogFiles.log.log(Level.WARNING, "Autification error");
+			System.exit(0);
+		}
+		LogFiles.log.log(Level.INFO, "Autification -> " + tUser.getText());
 		
 		MainStage stage = new MainStage("./ui/Main.xml");
 		try {
@@ -116,6 +128,25 @@ public class LoginController implements IControllerInit, Initializable {
 		System.exit(0);
 	}
 	
+	private boolean checkUser() {
+		Optional<Tuser> filter = SingleFromDB.users.values().stream().filter(f -> f.getUn().equals(tUser.getText())).findFirst();
+		Encryptor encryptor = new Encryptor();
+		if (filter.isPresent()) {
+			SingleFromDB.curentUser = filter.get();
+			return encryptor.decrypt(SingleFromDB.curentUser.getPwd()).trim().equals(tPassword.getText()) && 
+					SingleFromDB.curentUser.getIsblocked() == 0;
+		} else {
+			String[] array = SingleFromDB.sqlConnectParameters.split(";");
+			if (array[0].equals(tUser.getText()) && encryptor.decrypt(array[3]).trim().equals(tPassword.getText())) {
+				SingleFromDB.curentUser = new Tuser();
+				SingleFromDB.curentUser.setIduser(-1);
+				SingleFromDB.curentUser.setUn("Administrator");
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private void setStageParams(Stage stage) {
 		Controller ctrlr = MainStage.controller;
 		ProgramSettings ps = SingleObject.getProgramSettings();
@@ -127,32 +158,70 @@ public class LoginController implements IControllerInit, Initializable {
 		w.setHeight(ws.getHeight());
 		stage.setMaximized(ws.isMaximized());
 		
-		Platform.runLater(() -> {
-			StatusListener mainSL = new StatusListener(ctrlr, ws, 1);
-			ctrlr.getMainPane().getStatus().addListener(mainSL);
-			
-			StatusListener alarmSL = new StatusListener(ctrlr, ws, 2);
-			ctrlr.getAlarmSplitPane().getStatus().addListener(alarmSL);
-			
-			if (ws.isFullScreen()) {
-				ctrlr.getMainPane().showSide();
-			} else {
-				ctrlr.getMainPane().getStatus().set(true);
-			}
-			
-			ctrlr.getAlarmSplitPane().setExpandedSize(ws.getAlarmDividerPositions());
-			ctrlr.getTreeSplitPane().setExpandedSize(ws.getTreeDividerPositions());
-		});
+		double oldDuration = ctrlr.getAlarmSplitPane().getDuration();
+		ctrlr.getAlarmSplitPane().setDuration(0);
+		ctrlr.getAlarmSplitPane().setExpandedSize(ws.getAlarmDividerPositions());
+		if (ws.isAlarmsShowing()) {
+			ctrlr.getAlarmSplitPane().showSide();
+		} else {
+			ctrlr.getAlarmSplitPane().hideSide();
+		}
+		ctrlr.getAlarmSplitPane().setDuration(oldDuration);
+		
+		ctrlr.getTreeSplitPane().setExpandedSize(ws.getTreeDividerPositions());
+		oldDuration = ctrlr.getTreeSplitPane().getDuration();
+		ctrlr.getTreeSplitPane().setDuration(0);
+		if (ws.isTreeShowing()) {
+			Platform.runLater(() -> ctrlr.getTreeSplitPane().showSide());
+		} else {
+			Platform.runLater(() -> ctrlr.getTreeSplitPane().hideSide());
+		}
+		ctrlr.getTreeSplitPane().setDuration(oldDuration);
+		Platform.runLater(() -> ctrlr.getSpTreeController().getTvSchemes().requestFocus());
 		
 		ctrlr.getMainPane().isShowingProperty()
 			.bind(SingleObject.mainStage.fullScreenProperty().isNotEqualTo(new SimpleBooleanProperty(true)));
 		ctrlr.getvToolBarPane().isShowingProperty().bind(ctrlr.getMainPane().isShowingProperty());
+		
 		ctrlr.getMainPane().getSideBar().visibleProperty().addListener((observ, old, newValue) -> {
 			if (newValue) {
-				Platform.runLater(() -> ctrlr.getTreeSplitPane().showSide());
+				String[] state = ctrlr.getMainPane().getUserData().toString().split(";");
+				if (Boolean.valueOf(state[0])) {
+					Platform.runLater(() -> ctrlr.getAlarmSplitPane().showSide());
+				} else {
+					if (Boolean.valueOf(state[1])) Platform.runLater(() -> ctrlr.getTreeSplitPane().showSide());
+				}
 			} else {
-				ctrlr.getTreeSplitPane().hideSide();
-				MainStage.fitToPage();
+				ctrlr.getMainPane().setUserData(ctrlr.getAlarmSplitPane().isShowingProperty().get() + ";" + 
+						ctrlr.getTreeSplitPane().isShowingProperty().get());
+				if (ctrlr.getAlarmSplitPane().isShowingProperty().get()) {
+					Platform.runLater(() -> ctrlr.getAlarmSplitPane().hideSide());
+				} else {
+					Platform.runLater(() -> ctrlr.getTreeSplitPane().hideSide());
+				}
+			}
+		});
+		
+		ctrlr.getAlarmSplitPane().getSideBar().visibleProperty().addListener((observ, old, newValue) -> {
+			if (!ctrlr.getMainPane().isShowingProperty().get()) {
+				Platform.runLater(() -> ctrlr.getTreeSplitPane().hideSide());
+			} else {
+				if (ctrlr.getMainPane().getUserData() != null) {
+					String[] state = ctrlr.getMainPane().getUserData().toString().split(";");
+					if (Boolean.valueOf(state[1])) Platform.runLater(() -> ctrlr.getTreeSplitPane().showSide());
+					ctrlr.getMainPane().setUserData(null);
+				}
+			}
+		});
+		
+		ctrlr.getShowAlarm().getStyleClass().add(ctrlr.getAlarmSplitPane().isShowingProperty().get() ? "hide-down" : "show-up");
+		ctrlr.getAlarmSplitPane().getSideBar().visibleProperty().addListener((observ, old, newVal) -> {
+			if (newVal) {
+				ctrlr.getShowAlarm().getStyleClass().add("hide-down");
+				ctrlr.getShowAlarm().getStyleClass().remove("show-up");
+			} else {
+				ctrlr.getShowAlarm().getStyleClass().remove("hide-down");
+				ctrlr.getShowAlarm().getStyleClass().add("show-up");
 			}
 		});
 		
@@ -185,51 +254,5 @@ public class LoginController implements IControllerInit, Initializable {
 		ctrlr.getMenuBarController().setLocaleName(ps.getLocaleName());
 		
 		ps.getHotkeys().forEach(e -> SingleObject.hotkeys.put(e.getIdCode(), e));
-	}
-	
-	private class StatusListener implements ChangeListener<Boolean> {
-		private Controller ctrlr;
-		private WindowState ws;
-		private int number;
-		
-		public StatusListener(Controller ctrlr, WindowState ws, int number) {
-			this.ctrlr = ctrlr;
-			this.ws = ws;
-			this.number = number;
-		}
-		
-		@Override
-		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-			if (newValue) {
-				switch (number) {
-					case 1:
-						double oldDuration = ctrlr.getAlarmSplitPane().getDuration();
-						ctrlr.getAlarmSplitPane().setDuration(0);
-						if (ws.isAlarmsShowing()) {
-							ctrlr.getAlarmSplitPane().setExpandedSize(ws.getAlarmDividerPositions());
-							ctrlr.getAlarmSplitPane().showSide();
-						} else {
-							ctrlr.getAlarmSplitPane().hideSide();
-						}
-						ctrlr.getAlarmSplitPane().setDuration(oldDuration);
-						ctrlr.getMainPane().getStatus().removeListener(this);
-						break;
-	
-					case 2:
-						oldDuration = ctrlr.getTreeSplitPane().getDuration();
-						ctrlr.getTreeSplitPane().setDuration(0);
-						if (ws.isTreeShowing()) {
-							ctrlr.getTreeSplitPane().setExpandedSize(ws.getTreeDividerPositions());
-							ctrlr.getTreeSplitPane().showSide();
-						} else {
-							ctrlr.getTreeSplitPane().hideSide();
-						}
-						ctrlr.getTreeSplitPane().setDuration(oldDuration);
-						ctrlr.getAlarmSplitPane().getStatus().removeListener(this);
-						break;
-				}
-				
-			}
-		}
 	}
 }

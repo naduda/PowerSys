@@ -43,3 +43,4 @@ logs/
 #Idea
 .idea
 *.iml
+*.class

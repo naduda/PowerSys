@@ -5,13 +5,13 @@
 <?import javafx.scene.image.*?>
 
 <ToolBar fx:id="tbMain" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ToolBarController">
-	<Button fx:id="hideLeft" onAction="#hideTree" styleClass="hide-left" />
+	<Button fx:id="hideLeft" onAction="#hideTree" prefWidth="24" styleClass="hide-left" />
 	<Separator/>
 	<Label fx:id="lDataOn"/>
 	<Label fx:id="lLastDate" prefWidth="150"/>
 	<Separator/>
-	<Button fx:id="previous" onAction="#previous" styleClass="toolBarButton" />
-	<Button fx:id="next" onAction="#next" styleClass="toolBarButton" />
+	<Button fx:id="previous" onAction="#previous" prefWidth="24" styleClass="previous_gray" />
+	<Button fx:id="next" onAction="#next" prefWidth="24" styleClass="next_gray" />
 	<Separator/>
 	<Button fx:id="zoomMinus" onAction="#zoomMinus" styleClass="toolBarButton" />
 	<Slider fx:id="zoomSlider" />

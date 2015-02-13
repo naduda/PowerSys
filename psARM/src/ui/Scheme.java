@@ -3,7 +3,6 @@ package ui;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -17,6 +16,7 @@ import pr.common.Utils;
 import pr.log.LogFiles;
 import pr.model.LinkedValue;
 import pr.model.Transparant;
+import pr.model.Tscheme;
 import pr.model.TtranspLocate;
 import pr.model.Ttransparant;
 import pr.model.VsignalView;
@@ -56,7 +56,6 @@ public class Scheme extends ScrollPane {
 	
 	public Scheme() {
 		LogFiles.log.log(Level.INFO, "Start building scheme");
-
 		setContent(rootScheme);
 		
 		Events events = new Events();
@@ -75,15 +74,37 @@ public class Scheme extends ScrollPane {
 		
 		schemeFileName = fileName;
 		setSchemeName(fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf(".")));
-				
+		
+		SingleFromDB.svgFile = new File(fileName);
+		
 		LogFiles.log.log(Level.INFO, "Start convert scheme");
 		long start = System.currentTimeMillis();
 		root = (Group) Convert.getNodeBySVG(fileName);
-		listSignals.addAll(Convert.getListSignals());
 		LogFiles.log.log(Level.INFO, "Finish convert scheme - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		
 		setIdScheme(Convert.idScheme);
 		rootScheme.getChildren().add(root);
+		setSchemeParams();
+	}
+	
+	public Scheme(Tscheme tScheme) {
+		this();
 		
+		setSchemeName(tScheme.getSchemename());
+		
+		LogFiles.log.log(Level.INFO, "Start convert scheme");
+		long start = System.currentTimeMillis();
+		root = (Group) Convert.getNodeBySVG(new ByteArrayInputStream((byte[])tScheme.getSchemefile()));
+		LogFiles.log.log(Level.INFO, "Finish convert scheme - " + (System.currentTimeMillis() - start) / 1000 + " s");
+		
+		setIdScheme(tScheme.getIdscheme());
+		rootScheme.getChildren().add(root);
+		setSchemeParams();
+		LogFiles.log.log(Level.INFO, "Finish building scheme");
+	}
+	
+	private void setSchemeParams() {
+		listSignals.addAll(Convert.getListSignals());
 		listSignals.forEach(e -> {
 			if (e.getId() != 0) {
 				if (!idSignals.contains(e.getId())) idSignals.add(e.getId());
@@ -114,11 +135,7 @@ public class Scheme extends ScrollPane {
 			}
 		});
 		
-		try {	
-			setTransparants();
-		} catch (RemoteException e) {
-			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
-		}
+		Platform.runLater(() -> setTransparants());
 		
 		if (Convert.backgroundColor != null) {
 			String bgColor = String.format("-fx-background: %s;", Convert.backgroundColor.toString().replace("0x", "#"));
@@ -164,7 +181,7 @@ public class Scheme extends ScrollPane {
 		return tt;
 	}
 	
-	private void setTransparants() throws RemoteException {
+	private void setTransparants() {
 		List<Ttransparant> tTransparants = SingleFromDB.psClient.getTtransparantsActive(getIdScheme());
 		if (tTransparants != null) {
 			tTransparants.forEach(t -> {
@@ -207,7 +224,7 @@ public class Scheme extends ScrollPane {
 	
 	private void addContextMenu(Shape sh) {
 		try {
-			FXMLLoader loader = new FXMLLoader(new File(Utils.getFullPath("./ui/TransparantContextMenu.xml")).toURI().toURL());
+			FXMLLoader loader = new FXMLLoader(new File(Utils.getFullPath("./ui/transparant/TransparantContextMenu.xml")).toURI().toURL());
 			ContextMenu contextMenu = loader.load();
 			ShapeController shapeController = loader.getController();
 			contextMenu.setId(sh.getId());
@@ -327,7 +344,7 @@ public class Scheme extends ScrollPane {
 	        	y = y < r ? r : y - r > maxY ? maxY - r : y - r;
 	        	
 				try {
-					SingleFromDB.psClient.updateTtranspLocate(ident, SingleObject.mainScheme.getIdScheme(), 
+					SingleFromDB.psClient.updateTtranspLocate(ident, getIdScheme(), 
 							(int)x, (int)y, (int)r * 2, (int)r * 2);
 					
 					SingleFromDB.psClient.updateTtransparantLastUpdate(ident);
@@ -335,7 +352,7 @@ public class Scheme extends ScrollPane {
 					ex.printStackTrace();
 				}
 			} else if (e.getEventType().equals(MouseEvent.MOUSE_DRAGGED)) {
-				Point2D p = SingleObject.mainScheme.getRoot().sceneToLocal(((MouseEvent)e).getSceneX(), ((MouseEvent)e).getSceneY());
+				Point2D p = getRoot().sceneToLocal(((MouseEvent)e).getSceneX(), ((MouseEvent)e).getSceneY());
 				double x = p.getX();
 	        	double y = p.getY();
 	            c.relocate(x < r ? r : x - r > maxX ? maxX - r : x - r, 

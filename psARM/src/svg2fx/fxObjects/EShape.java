@@ -6,16 +6,13 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import javax.script.ScriptException;
 
-import controllers.Controller;
 import controllers.ShapeController;
 import pr.common.Utils;
 import pr.log.LogFiles;
@@ -96,7 +93,7 @@ public class EShape extends AShape {
 	    rect.setOnMouseClicked(t -> {
 			if(t.getButton().equals(MouseButton.SECONDARY)) {
 				setContextMenu();
-				contextMenu.show(rect, t.getScreenX(), t.getSceneY());
+				contextMenu.show(rect, t.getScreenX(), t.getScreenY());
 			}
 	    });
 	    
@@ -114,10 +111,6 @@ public class EShape extends AShape {
 	
 	public String getCustomPropertyByName(String propertyName) {
 		return custProps != null ? custProps.get(propertyName) : null;
-	}
-	
-	public void getCustomPropertiesKeys() {
-		if (custProps != null) custProps.keySet().forEach(System.out::println);
 	}
 	
 	@Override
@@ -181,10 +174,7 @@ public class EShape extends AShape {
 					shapeController.getmOperationMode().getItems().add(mi);
 				});
 			}
-			contextMenu.setOnShowing(e -> {
-				ResourceBundle rb = Controller.getResourceBundle(new Locale(SingleObject.getProgramSettings().getLocaleName()));
-				shapeController.setElementText(rb);
-			});
+			contextMenu.setOnShowing(e -> shapeController.setElementText(SingleObject.getResourceBundle()));
 		} catch (IOException e) {
 			LogFiles.log.log(Level.SEVERE, "void setContextMenu()", e);
 		}

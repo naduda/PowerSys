@@ -28,7 +28,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class ShapeController implements IControllerInit {
-
 	@FXML private Menu mOperationMode;
 	@FXML private MenuItem miAddTransparant;
 	@FXML private MenuItem miEdit;
@@ -44,7 +43,7 @@ public class ShapeController implements IControllerInit {
 	private Stage getTransparantStage() {
 		if (transparantStage.getScene() == null) {
 			try {
-				FXMLLoader loader = new FXMLLoader(new File(Utils.getFullPath("./ui/Transparants.xml")).toURI().toURL());
+				FXMLLoader loader = new FXMLLoader(new File(Utils.getFullPath("./ui/transparant/Transparants.xml")).toURI().toURL());
 				Parent root = loader.load();
 				controller = loader.getController();
 				

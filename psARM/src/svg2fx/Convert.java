@@ -1,5 +1,6 @@
 package svg2fx;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,8 +11,9 @@ import pr.log.LogFiles;
 import pr.model.LinkedValue;
 import pr.svgObjects.G;
 import pr.svgObjects.SVG;
-import single.SingleObject;
+import single.ProgramProperty;
 import svg2fx.fxObjects.EShape;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Paint;
@@ -21,8 +23,10 @@ public class Convert {
 	private static List<LinkedValue> listSignals = new ArrayList<>();
 	public static int idScheme = 0;
 	public static Paint backgroundColor;
+	public static SVGModel svgModel;
+	public static SVG svg;
 
-	private static Node getFXgroup(G g, boolean isInRoot, SVG svg) {
+	private static Node getFXgroup(G g, boolean isInRoot) {
 		Group group = new Group();
 		group.setId(g.getTitle().replace(".", "_"));
 		
@@ -44,7 +48,7 @@ public class Convert {
 		List<G> listG = g.getListG();
 		if (listG != null) {
 			listG.forEach(itGroup -> {	
-				Node n = getFXgroup(itGroup, isInRootFinal, svg);
+				Node n = getFXgroup(itGroup, isInRootFinal);
 				group.setId("text".equals(n.getId()) ? n.getId() : null);
 				group.getChildren().add(n);
 			});
@@ -72,10 +76,11 @@ public class Convert {
 	
 	public static Node getNodeBySVG(String filePath) {
 		listSignals.clear();
-		SingleObject.svgModel = SVGModel.getInstance();
-		SVG svg = SingleObject.svgModel.getSVG(filePath);
+		svgModel = SVGModel.getInstance();
+		svg = svgModel.getSVG(filePath);
+		if (svg == null) return new Group();
+		
 		svg.setFileName(filePath);
-		SingleObject.svg = svg;
 		
 		try {
 			idScheme = Integer.parseInt(svg.getTitle());
@@ -84,8 +89,25 @@ public class Convert {
 		}
 		
 		Group ret = new Group();
+		setRootElement(ret);
+		return ret;
+	}
+	
+	public static Node getNodeBySVG(InputStream inputStream) {
+		listSignals.clear();
+		
+		svgModel = SVGModel.getInstance();
+		svg = svgModel.getSVG(inputStream);
+		
+		Group ret = new Group();
+		setRootElement(ret);
+		Platform.runLater(() -> ProgramProperty.schemeReadyProperty.set(true));
+		return ret;
+	}
+	
+	private static void setRootElement(Group ret) {
 		svg.getG().forEach(g -> {
-			Node gFX = getFXgroup(g, false, svg);
+			Node gFX = getFXgroup(g, false);
 
 			if (g.getTitle().toLowerCase().contains("background")) {
 				try {
@@ -101,7 +123,6 @@ public class Convert {
 				ret.getChildren().add(gFX);
 			}
 		});
-		return ret;
 	}
 
 	public static List<LinkedValue> getListSignals() {

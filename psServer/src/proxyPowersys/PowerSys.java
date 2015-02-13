@@ -23,6 +23,7 @@ import jdbc.mappers.IMapperSP;
 import jdbc.mappers.IMapperT;
 import jdbc.mappers.IMapperV;
 import pr.powersys.IPowersys;
+import pr.common.Encryptor;
 import pr.common.Utils;
 import pr.log.LogFiles;
 import pr.model.Alarm;
@@ -43,6 +44,7 @@ import pr.model.TViewParam;
 import pr.model.TalarmParam;
 import pr.model.Tconftree;
 import pr.model.Transparant;
+import pr.model.Tscheme;
 import pr.model.Tsignal;
 import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
@@ -51,6 +53,7 @@ import pr.model.Tuser;
 import pr.model.UserEventJournalItem;
 import pr.model.VsignalView;
 import reports.ReportTools;
+import single.SQLConnect;
 import single.SingleFromDB;
 import single.SingleObject;
 
@@ -66,6 +69,14 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	@Override
 	public void sendChatMessage(ChatMessage message) {
 		SingleObject.chatTopic.setChatMessage(message);
+	}
+//	==============================================================================
+	@Override
+	public String getDBparameters() {
+		SQLConnect sqlConnect = SingleFromDB.getSqlConnect();
+		return sqlConnect.getUser() + ";" + sqlConnect.getIpAddress() + ":" +
+				sqlConnect.getPort() + ";" + sqlConnect.getDbName() + ";" + 
+				new Encryptor().encrypt(sqlConnect.getPassword());
 	}
 //	==============================================================================
 	@Override
@@ -141,18 +152,23 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	}
 //	==============================================================================
 	@Override
+	public Map<Integer, Tscheme> getSchemesMap() {
+		return (Map<Integer, Tscheme>) new BatisJDBC(s -> s.getMapper(IMapperT.class).getSchemesMap()).get();
+	}
+	
+	@Override
 	public Map<Integer, Tsignal> getTsignalsMap() {
 		return SingleFromDB.getSignals();
 	}
 	
 	@Override
 	public Map<Integer, Tconftree> getTconftreeMap() {
-		return (Map<Integer, Tconftree>) (new BatisJDBC(s -> s.getMapper(IMapperT.class).getTconftreeMap())).get();
+		return (Map<Integer, Tconftree>) new BatisJDBC(s -> s.getMapper(IMapperT.class).getTconftreeMap()).get();
 	}
 
 	@Override
 	public Map<Integer, ConfTree> getConfTreeMap() {
-		return (Map<Integer, ConfTree>) (new BatisJDBC(s -> s.getMapper(IMapperT.class).getConfTreeMap())).get();
+		return (Map<Integer, ConfTree>) new BatisJDBC(s -> s.getMapper(IMapperT.class).getConfTreeMap()).get();
 	}
 
 	@Override
@@ -163,6 +179,9 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	@Override
 	public Map<String, TSysParam> getTSysParam(String paramname) {
 		Map<String, TSysParam> ret = new HashMap<>();
+//		List<TSysParam> params = (List<TSysParam>) new BatisJDBC(s -> s.getMapper(IMapperT.class).getTSysParam()).get();
+//		params.stream().filter(it -> it.getParamname()
+//				.equals(paramname)).forEach(it -> ret.put(it.getVal(), it));
 		SingleFromDB.getTsysparmams().stream().filter(it -> it.getParamname()
 				.equals(paramname)).forEach(it -> ret.put(it.getVal(), it));
 		return ret;
@@ -430,9 +449,33 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	public List<UserEventJournalItem> getUserEventJournalItems(Timestamp dtBeg, Timestamp dtEnd) {
 		return (List<UserEventJournalItem>) new BatisJDBC(s -> s.getMapper(IMapper.class).getUserEventJournalItems(dtBeg, dtEnd)).get();
 	}
+	
 	@Override
 	public Map<Integer, SpTypeSignal> getSpTypeSignalMap() {
 		return (Map<Integer, SpTypeSignal>) new BatisJDBC(s -> s.getMapper(IMapperSP.class).getSpTypeSignalMap()).get();
+	}
+
+	@Override
+	public void updateTScheme(int idscheme, String schemedenom, String schemename, 
+			String schemedescr, int parentref, Object schemefile, int userid) {
+		
+		new BatisJDBC(s -> {
+			s.getMapper(IMapperAction.class).updateTScheme(idscheme, schemedenom, schemename, schemedescr, parentref, schemefile, userid);
+			return 0;
+		}).get();
+	}
+
+	@Override
+	public void deleteScheme(int idscheme) {
+		new BatisJDBC(s -> {s.getMapper(IMapperAction.class).deleteScheme(idscheme);return 0;}).get();
+	}
+
+	@Override
+	public void addScheme(String schemedenom, String schemename, String schemedescr, int parentref, Object schemefile, int userid) {
+		new BatisJDBC(s -> {
+			s.getMapper(IMapperAction.class).addScheme(schemedenom, schemename, schemedescr, parentref, schemefile, userid);
+			return 0;
+		}).get();
 	}
 }
  

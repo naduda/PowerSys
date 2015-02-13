@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import pr.svgObjects.CP;
 import pr.svgObjects.CustProps;
 import single.SingleObject;
+import svg2fx.Convert;
 import controllers.interfaces.AController;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -41,7 +42,7 @@ public class AddCustPropController extends AController implements Initializable 
 				SingleObject.selectedShape.getSvgGroup().setCustProps(cProps);
 			}
 			cProps.getCustomProps().add(newCP);
-			SingleObject.svgModel.setObject(SingleObject.svg.getFileName(), SingleObject.svg);
+			Convert.svgModel.setObject(Convert.svg.getFileName(), Convert.svg);
 		}
 		btnCancel();
 	}

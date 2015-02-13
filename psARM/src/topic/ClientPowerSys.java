@@ -29,6 +29,7 @@ import pr.model.TViewParam;
 import pr.model.TalarmParam;
 import pr.model.Tconftree;
 import pr.model.Transparant;
+import pr.model.Tscheme;
 import pr.model.Tsignal;
 import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
@@ -72,6 +73,11 @@ public class ClientPowerSys implements IPowersys {
 	}
 //	==============================================================================
 	@Override
+	public String getDBparameters() {
+		return new ClientRMI(c -> c.getDBparameters()).get().toString();
+	}
+//	==============================================================================
+	@Override
 	public void update(String query) {
 		new ClientRMI(c -> {c.update(query); return 0;}).get();
 	}
@@ -96,6 +102,10 @@ public class ClientPowerSys implements IPowersys {
 		return (String) new ClientRMI(c -> c.getReportById(idReport, dtBeg, dtEnd)).get();
 	}
 //	==============================================================================
+	public Map<Integer, Tscheme> getSchemesMap() {
+		return (Map<Integer, Tscheme>) new ClientRMI(c -> c.getSchemesMap()).get();
+	}
+	
 	public Map<Integer, Tsignal> getTsignalsMap() {
 		return (Map<Integer, Tsignal>) new ClientRMI(c -> c.getTsignalsMap()).get();
 	}
@@ -368,5 +378,30 @@ public class ClientPowerSys implements IPowersys {
 	@Override
 	public Map<Integer, SpTypeSignal> getSpTypeSignalMap() {
 		return (Map<Integer, SpTypeSignal>) new ClientRMI(c -> c.getSpTypeSignalMap()).get();
+	}
+
+	@Override
+	public void updateTScheme(int idscheme, String schemedenom, String schemename, 
+			String schemedescr, int parentref, Object schemefile, int userid) {
+		
+		new ClientRMI(c -> {
+			c.updateTScheme(idscheme, schemedenom, schemename, schemedescr, parentref, schemefile, userid); 
+			return 0;
+		}).get();
+	}
+
+	@Override
+	public void deleteScheme(int idscheme) {
+		new ClientRMI(c -> {c.deleteScheme(idscheme);return 0;}).get();
+	}
+
+	@Override
+	public void addScheme(String schemedenom, String schemename, String schemedescr, int parentref, 
+			Object schemefile, int userid) {
+		
+		new ClientRMI(c -> {
+			c.addScheme(schemedenom, schemename, schemedescr, parentref, schemefile, userid); 
+			return 0;
+		}).get();
 	}
 } 

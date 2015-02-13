@@ -80,15 +80,21 @@ public class MainStage extends Stage implements Serializable {
 			heightProperty().addListener(e -> {
 				controller.getSpTreeController().setHeightTitlePanes(heightProperty().get() / 4);
 			});
+			
+			ProgramProperty.schemeReadyProperty.addListener((observ, old, newValue) -> {
+				if (newValue) {
+					ProgramProperty.schemeReadyProperty.set(false);
+				} else {
+					getScene().getRoot().setDisable(false);
+					SingleObject.getProgressStage(null).hide();
+				}
+			});
 		} catch (IOException e) {
 			LogFiles.log.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 	
 	public static void setScheme(String schemeName) {
-		final ExecutorService service = Executors.newFixedThreadPool(4);
-		List<Future<Map<Integer, DvalTI>>> futures = new ArrayList<>();
-				
 		if (schemeName == null) {
 			SingleObject.mainScheme = new Scheme();
 		} else {
@@ -100,6 +106,16 @@ public class MainStage extends Stage implements Serializable {
 			Platform.runLater(() -> controller.getSpTreeController().addScheme(ti));
 	        MainStage.schemes.put(SingleObject.mainScheme.getIdScheme(), SingleObject.mainScheme);
 		}
+		
+		setSchemeParams();
+		SingleObject.mainStage.getScene().getRoot().setEffect(null);
+	}
+	
+	public static void setSchemeParams() {
+		final ExecutorService service = Executors.newFixedThreadPool(4);
+		List<Future<Map<Integer, DvalTI>>> futures = new ArrayList<>(2);
+		
+		if (SingleObject.mainScheme.getIdSignals().size() == 0) return;
 		
 		final StringBuilder idBuilder = new StringBuilder();
 		idBuilder.append("{");
@@ -116,8 +132,6 @@ public class MainStage extends Stage implements Serializable {
 				service.submit(() -> SingleFromDB.psClient.getHightPriorityAlarm());
 		
 		controller.getBpScheme().setCenter(SingleObject.mainScheme);
-		
-		fitToPage();
 		
 		LogFiles.log.log(Level.INFO, "Start update values");
 		
@@ -143,9 +157,11 @@ public class MainStage extends Stage implements Serializable {
 		controller.getToolBarController().updateLabel(maxOldDTimestamp);
 		
 		try {
-			notConfirmedSignals.get().forEach(s -> controller.setNotConfirmed(s, false));
-			Alarm hpa = hightPriorityAlarm.get();
-			ProgramProperty.hightPriorityAlarmProperty.set(hpa);
+			if (notConfirmedSignals.get() != null) {
+				notConfirmedSignals.get().forEach(s -> controller.setNotConfirmed(s, false));
+				Alarm hpa = hightPriorityAlarm.get();
+				ProgramProperty.hightPriorityAlarmProperty.set(hpa);
+			}
 		} catch (InterruptedException | ExecutionException e) {
 			LogFiles.log.log(Level.SEVERE, "void setScheme(...) Futures ...", e);
 		}

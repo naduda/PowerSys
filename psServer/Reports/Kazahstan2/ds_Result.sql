@@ -1,6 +1,7 @@
-select times.dt, v1.val, v2.val as val2, v3.val as val3, 
-case getval_ts(25,times.dt) when 1 then 'Ток' when 2 then 'Напряжение' else 'Потенциал' end as val4, v5.val as val5, 
-case getval_ts(193,times.dt) when 0 then 'Отключен' else 'Включен' end as val6, v7.val as val7, v8.val as val8 
+select times.dt as "Дата/время", v1.val as "Выходной ток", v2.val as "Выходное напряжение", v3.val as "Датчик потенциала", 
+case getval_ts(25,times.dt) when 1 then 'Ток' when 2 then 'Напряжение' else 'Потенциал' end as "Режим стабилизации", 
+v5.val as "Значение стабилизации", case getval_ts(193,times.dt) when 0 then 'Отключен' else 'Включен' end as "Сотояние силового ", 
+v7.val as "Текущие показания А+", v8.val as "Текущие показания R+" 
 from (
 select  to_date('dtBeg','YYYY-MM-DD') + cast((i::varchar || ' hour') as interval) as dt 
 from generate_series(0,(to_date('dtEnd','YYYY-MM-DD')-to_date('dtBeg','YYYY-MM-DD'))*48) as i 

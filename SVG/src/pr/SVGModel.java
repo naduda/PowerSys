@@ -34,7 +34,7 @@ public class SVGModel {
 		return INSTANCE;
 	}
 
-	public Object getObject(String xmlFilePath, Class<?> xmlClass) {
+	private Object getObject(String xmlFilePath, Class<?> xmlClass) {
 		Object result = null;
 		try {
 			JAXBContext jc = JAXBContext.newInstance(xmlClass);
@@ -63,8 +63,39 @@ public class SVGModel {
 		return result;
 	}
 	
+	private Object getObject(InputStream inputStream, Class<?> xmlClass) {
+		Object result = null;
+		try {
+			JAXBContext jc = JAXBContext.newInstance(xmlClass);
+			
+			SAXParserFactory spf = SAXParserFactory.newInstance();
+			String FEATURE_NAMESPACES = "http://xml.org/sax/features/namespaces";
+			spf.setFeature(FEATURE_NAMESPACES, true);
+			String FEATURE_LOAD_DTD = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+			spf.setFeature(FEATURE_LOAD_DTD, false);
+	        
+	        XMLReader xmlReader = spf.newSAXParser().getXMLReader();
+			
+			Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+	        InputSource inputSource = new InputSource(reader);
+	        inputSource.setEncoding("UTF-8");
+	        SAXSource source = new SAXSource(xmlReader, inputSource);
+	        
+	        Unmarshaller um = jc.createUnmarshaller();
+	        
+			result = um.unmarshal(source);
+		} catch (Exception e) {
+			LogFiles.log.log(Level.SEVERE, "Object getObject(...)", e);
+		}
+		return result;
+	}
+	
 	public SVG getSVG(String xmlFilePath) {
 		return (SVG) getObject(xmlFilePath, SVG.class);
+	}
+	
+	public SVG getSVG(InputStream inputStream) {
+		return (SVG) getObject(inputStream, SVG.class);
 	}
 	
 	public void setObject(String xmlFilePath, Object object) {

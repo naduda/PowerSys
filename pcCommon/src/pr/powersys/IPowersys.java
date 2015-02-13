@@ -23,6 +23,7 @@ import pr.model.TViewParam;
 import pr.model.TalarmParam;
 import pr.model.Tconftree;
 import pr.model.Transparant;
+import pr.model.Tscheme;
 import pr.model.Tsignal;
 import pr.model.TtranspHistory;
 import pr.model.TtranspLocate;
@@ -38,6 +39,8 @@ public interface IPowersys extends Remote {
 //	==============================================================================
 	void sendChatMessage(ChatMessage message) throws RemoteException;
 //	==============================================================================
+	String getDBparameters() throws RemoteException;
+//	==============================================================================
 	void update(String query) throws RemoteException;
 	List<NormalModeJournalItem> getListNormalModeItems(Timestamp dtBeg, Timestamp dtEnd, String idSignals) throws RemoteException;
 	List<SwitchEquipmentJournalItem> getSwitchJournalItems(String idSignals) throws RemoteException;
@@ -45,6 +48,7 @@ public interface IPowersys extends Remote {
 	Map<Integer, String> getReports() throws RemoteException;
 	String getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd) throws RemoteException;
 //	==============================================================================
+	Map<Integer, Tscheme> getSchemesMap() throws RemoteException;
 	Map<Integer, Tconftree> getTconftreeMap() throws RemoteException;
 	Map<Integer, Tsignal> getTsignalsMap() throws RemoteException;
 	Map<Integer, VsignalView> getVsignalViewMap() throws RemoteException;
@@ -86,6 +90,11 @@ public interface IPowersys extends Remote {
 	List<Ttransparant> getTtransparantsClosed(Timestamp closetime) throws RemoteException;
 	List<Ttransparant> getTtransparantsUpdated(Timestamp lastupdate) throws RemoteException;
 	
+	void deleteScheme(int idscheme) throws RemoteException;
+	void addScheme(String schemedenom, String schemename, String schemedescr,
+			int parentref, Object schemefile, int userid) throws RemoteException;
+	void updateTScheme(int idscheme, String schemedenom, String schemename, String schemedescr,
+			int parentref, Object schemefile, int userid) throws RemoteException;
 	void insertTtransparant(int idtr, int signref, String objname, int tp, int schemeref) throws RemoteException;
 	void insertTtranspHistory(int trref, int userref, String txt, int trtype) throws RemoteException;
 	void deleteTtranspLocate(int trref, int scref) throws RemoteException;

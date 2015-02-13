@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:controller="controllers.tree.AddUpdateController" xmlns:fx="http://javafx.com/fxml" styleClass="root">
+	<center>
+		<VBox>
+			<padding>
+				<Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+			</padding>
+
+			<TextField fx:id="schemeName" />
+			<TextField fx:id="schemeDesc" />
+			<HBox spacing="10" alignment="bottom_right">
+				<padding>
+					<Insets bottom="5.0" left="2.0" right="2.0" top="5.0"/>
+				</padding>
+
+				<Label fx:id="fileName" prefWidth="200"/>
+				<Button fx:id="btnFileChooser" />
+				<Button fx:id="saveOnDisk" />
+			</HBox>
+		</VBox>
+	</center>
+
+	<bottom>
+		<HBox spacing="10" alignment="center">
+			<padding>
+				<Insets bottom="5.0" left="2.0" right="2.0" top="5.0"/>
+			</padding>
+
+			<Button fx:id="btnOK" onAction="#btnOK"/>
+			<Button fx:id="btnCancel" onAction="#btnCancel"/>
+		</HBox>
+	</bottom>
+</BorderPane>

@@ -25,12 +25,11 @@ import javax.script.ScriptEngineManager;
 import javax.xml.bind.JAXBException;
 
 import controllers.Controller;
+import controllers.ProgressStageController;
 import controllers.ToolBarController;
 import controllers.interfaces.StageLoader;
-import pr.SVGModel;
 import pr.common.Utils;
 import pr.log.LogFiles;
-import pr.svgObjects.SVG;
 import state.HotKeyClass;
 import state.ProgramSettings;
 import svg2fx.Convert;
@@ -60,6 +59,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class SingleObject {
 	public static String ipAddress = "";
@@ -67,8 +67,6 @@ public class SingleObject {
 	public static Scheme mainScheme;
 	public static String activeSchemeSignals = "";
 	public static EShape selectedShape;
-	public static SVGModel svgModel;
-	public static SVG svg;
 	public static Map<String, HotKeyClass> hotkeys = new HashMap<>();
 	public static AlarmActivities alarmActivities = new AlarmActivities();
 	
@@ -77,6 +75,8 @@ public class SingleObject {
 	public static final Invocable invokeEngine = (Invocable) SingleObject.engine;
 	public static final Map<String, Map<String, String>> readedScripts = new HashMap<>();
 	public static StageLoader chat = null;
+	private static StageLoader progressStage;
+	private static ProgressStageController progressStageController;
 	private static Stage navigator = null;
 	
 	private static ClassLoader classLoader;
@@ -282,10 +282,10 @@ public class SingleObject {
             }
         }
         
-        WritableImage wr = null;
+        WritableImage writableImage = null;
         if (bufferedImage != null) {
-            wr = new WritableImage(bufferedImage.getWidth(), bufferedImage.getHeight());
-            PixelWriter pw = wr.getPixelWriter();
+            writableImage = new WritableImage(bufferedImage.getWidth(), bufferedImage.getHeight());
+            PixelWriter pw = writableImage.getPixelWriter();
             for (int x = 0; x < bufferedImage.getWidth(); x++) {
                 for (int y = 0; y < bufferedImage.getHeight(); y++) {
                     pw.setArgb(x, y, bufferedImage.getRGB(x, y));
@@ -293,6 +293,23 @@ public class SingleObject {
             }
         }
         
-        return wr;
+        return writableImage;
     }
+	
+	public static StageLoader getProgressStage(String message) {
+		if (progressStage == null) {
+			progressStage = new StageLoader("ProgressStage.xml", true);
+			progressStage.initStyle(StageStyle.UNDECORATED);
+			progressStageController = (ProgressStageController) progressStage.getController();
+		}
+		if (message == null) return progressStage;
+		double width = mainStage.getWidth();
+		double height = mainStage.getHeight();
+		progressStage.setX(mainStage.getX() + width / 4);
+		progressStage.setY(mainStage.getY() + height / 2.5);
+		progressStage.setWidth(width / 2);
+		progressStage.setHeight(height / 5);
+		progressStageController.setMessage(message);
+		return progressStage;
+	}
 }

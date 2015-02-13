@@ -11,6 +11,7 @@ import pr.model.Alarm;
 public class ProgramProperty {
 	public static final ObjectProperty<Alarm> alarmProperty = new SimpleObjectProperty<>();
 	public static final BooleanProperty selectedShapeChangeProperty = new SimpleBooleanProperty();
+	public static final BooleanProperty schemeReadyProperty = new SimpleBooleanProperty(false);
 	public static final StringProperty localeName = new SimpleStringProperty();
 	public static final ObjectProperty<Alarm> hightPriorityAlarmProperty = new SimpleObjectProperty<>();
 	public static final StringProperty chatMessageProperty = new SimpleStringProperty();

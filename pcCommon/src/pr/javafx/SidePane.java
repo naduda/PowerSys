@@ -2,6 +2,7 @@ package pr.javafx;
 
 import javafx.animation.Animation;
 import javafx.animation.Transition;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Orientation;
@@ -16,7 +17,6 @@ import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 public class SidePane extends Pane {
-	private final BooleanProperty status = new SimpleBooleanProperty(false);
 	private final BooleanProperty isShowingProperty = new SimpleBooleanProperty(true);
 	private final Button controlButton = new Button();
 	private boolean isButton = false;
@@ -172,7 +172,6 @@ public class SidePane extends Pane {
 		
 		isShowingProperty.bind(sideBar.visibleProperty());
 		isShowingProperty.addListener((observ, old, newValue) -> {
-			
 			if (newValue) {
 				if (!sideBar.isVisible()) showSide();
 			} else {
@@ -204,7 +203,6 @@ public class SidePane extends Pane {
 	}
 	
 	public void showSide() {
-		status.set(false);
 		controlButton.setDisable(true);
 		sideBar.setVisible(true);
 		if (expandedWidthOld < 10) expandedWidthOld = 10;
@@ -224,14 +222,12 @@ public class SidePane extends Pane {
 			controlButton.setText(collapse);
 			isButton = false;
 			controlButton.setDisable(false);
-			status.set(true);
 		});
 		
-		showSidebar.play();
+		Platform.runLater(() -> showSidebar.play());
 	}
 	
 	public void hideSide() {
-		status.set(false);
 		if (expandedSize == 0) {
 			if (isHorizontal && sideBar.getWidth() != 0) expandedSize = sideBar.getWidth();
 			if (!isHorizontal && sideBar.getHeight() != 0) expandedSize = sideBar.getHeight();
@@ -257,10 +253,9 @@ public class SidePane extends Pane {
 			controlButton.setText(show);
 			isButton = false;
 			controlButton.setDisable(false);
-			status.set(true);
 		});
 		
-		hideSidebar.play();
+		Platform.runLater(() -> hideSidebar.play());
 	}
 	
 	private void animate(double curWidth) {
@@ -336,21 +331,19 @@ public class SidePane extends Pane {
 	}
 
 	public void setExpandedSize(double expandedWidth) {
-		this.expandedWidthOld = expandedWidth;
-		if (isHorizontal) {
-			sideBar.setMinWidth(expandedWidth);
-			sideBar.setPrefWidth(expandedWidth);
-			sideBar.setMaxWidth(expandedWidth);
-		} else {
-			sideBar.setMinHeight(expandedWidth);
-			sideBar.setPrefHeight(expandedWidth);
-			sideBar.setMaxHeight(expandedWidth);
-		}
-		this.expandedSize = expandedWidth;
-	}
-
-	public BooleanProperty getStatus() {
-		return status;
+		Platform.runLater(() -> {
+			this.expandedWidthOld = expandedWidth;
+			if (isHorizontal) {
+				sideBar.setMinWidth(expandedWidth);
+				sideBar.setPrefWidth(expandedWidth);
+				sideBar.setMaxWidth(expandedWidth);
+			} else {
+				sideBar.setMinHeight(expandedWidth);
+				sideBar.setPrefHeight(expandedWidth);
+				sideBar.setMaxHeight(expandedWidth);
+			}
+			this.expandedSize = expandedWidth;
+		});
 	}
 
 	public double getDuration() {

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<ContextMenu fx:id="treeContextMenu" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.tree.SchemeController">
+	<items>
+		<MenuItem fx:id="miEdit" onAction="#edit"/>
+		<SeparatorMenuItem/>
+		<MenuItem fx:id="miAdd" onAction="#add"/>
+		<MenuItem fx:id="miDelete" onAction="#delete"/>
+	</items>
+</ContextMenu>

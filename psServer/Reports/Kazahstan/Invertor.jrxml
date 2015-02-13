@@ -184,12 +184,33 @@
 			<pen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
+	<style name="table 9">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 9_TH" mode="Opaque" backcolor="#FFE4C4">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 9_CH" mode="Opaque" backcolor="#FFE2BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 9_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
 	<subDataset name="ds_Result" uuid="caba981c-9096-498f-a9cc-b598d731adbd">
 		<queryString>
-			<![CDATA[select times.dt, v1.val, v2.val as val2, v3.val as val3,
-case getval_ts(95,times.dt) when 1 then 'Ток' when 2 then 'Напряжение' else 'Потенциал' end as val4, v5.val as val5,
-case getval_ts(99,times.dt) when 1 then 'Отключен' else 'Включен' end as val6, v7.val as val7, v8.val as val8 from
-(
+			<![CDATA[select times.dt as "Дата/время", v1.val as "Выходной ток", v2.val as "Выходное напряжение", v3.val as "Датчик потенциала",
+case getval_ts(95,times.dt) when 1 then 'Ток' when 2 then 'Напряжение' else 'Потенциал' end as "Режим стабилизации",
+v5.val as "Значение стабилизации", case getval_ts(99,times.dt) when 0 then 'Отключен' else 'Включен' end as "Сотояние силового ",
+v7.val as "Текущие показания А+", v8.val as "Текущие показания R+"
+from (
 select  to_date('2014-01-12','YYYY-DD-MM') + cast((i::varchar || ' hour') as interval) as dt
 from generate_series(0,(to_date('2015-01-03','YYYY-DD-MM')-to_date('2014-01-12','YYYY-DD-MM'))*48) as i
 ) times
@@ -201,25 +222,15 @@ left join( select dt, val, signalref from f_arcvalti(27, '2014-01-12', '2015-01-
 left join( select dt, val, signalref from f_arcvalti(29, '2014-01-12', '2015-01-03', 60) order by dt) as v8 on v8.dt = times.dt
 where v1.val is not null]]>
 		</queryString>
-		<field name="dt" class="java.sql.Timestamp"/>
-		<field name="val" class="java.lang.Double"/>
-		<field name="val2" class="java.lang.Double"/>
-		<field name="val3" class="java.lang.Double"/>
-		<field name="val4" class="java.lang.String"/>
-		<field name="val5" class="java.lang.Double"/>
-		<field name="val6" class="java.lang.String"/>
-		<field name="val7" class="java.lang.Double"/>
-		<field name="val8" class="java.lang.Double"/>
-	</subDataset>
-	<subDataset name="ds_Header" uuid="bb0f414f-3b0d-49a2-a2eb-3800a79a228c">
-		<queryString>
-			<![CDATA[select namesignal from t_signal
-where idsignal in (87,86,89,95,96,99,27,29)
-order by position(idsignal::text in '87,86,89,95,96,99,27,29')]]>
-		</queryString>
-		<field name="namesignal" class="java.lang.String">
-			<fieldDescription><![CDATA[Название сигнала]]></fieldDescription>
-		</field>
+		<field name="Дата/время" class="java.sql.Timestamp"/>
+		<field name="Выходной ток" class="java.lang.Double"/>
+		<field name="Выходное напряжение" class="java.lang.Double"/>
+		<field name="Датчик потенциала" class="java.lang.Double"/>
+		<field name="Режим стабилизации" class="java.lang.String"/>
+		<field name="Значение стабилизации" class="java.lang.Double"/>
+		<field name="Сотояние силового " class="java.lang.String"/>
+		<field name="Текущие показания А+" class="java.lang.Double"/>
+		<field name="Текущие показания R+" class="java.lang.Double"/>
 	</subDataset>
 	<queryString language="SQL">
 		<![CDATA[select 1]]>
@@ -238,177 +249,173 @@ order by position(idsignal::text in '87,86,89,95,96,99,27,29')]]>
 			</staticText>
 		</band>
 	</title>
-	<columnHeader>
-		<band height="30">
-			<crosstab>
-				<reportElement style="table" mode="Transparent" x="0" y="0" width="758" height="30" backcolor="#000000" uuid="9d4cfa8e-e001-4353-8327-ba66d09c5194"/>
-				<crosstabDataset isDataPreSorted="true">
-					<dataset>
-						<datasetRun subDataset="ds_Header" uuid="757b4202-b839-4b00-ab8f-a3f3fb276c2c">
-							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-						</datasetRun>
-					</dataset>
-				</crosstabDataset>
-				<crosstabHeaderCell>
-					<cellContents>
-						<staticText>
-							<reportElement style="Crosstab Data Text" mode="Opaque" x="0" y="0" width="100" height="30" backcolor="#FFCC00" uuid="057377ac-74cb-44f3-b368-f66c041b97f9"/>
-							<textElement verticalAlignment="Middle">
-								<font isBold="true" isItalic="true"/>
-							</textElement>
-							<text><![CDATA[Date]]></text>
-						</staticText>
-					</cellContents>
-				</crosstabHeaderCell>
-				<rowGroup name="namesignal" width="101">
-					<bucket class="java.lang.String">
-						<bucketExpression><![CDATA[$F{namesignal}]]></bucketExpression>
-					</bucket>
-					<crosstabRowHeader>
-						<cellContents backcolor="#F0F8FF" mode="Opaque"/>
-					</crosstabRowHeader>
-					<crosstabTotalRowHeader>
-						<cellContents/>
-					</crosstabTotalRowHeader>
-				</rowGroup>
-				<columnGroup name="namesignal1" height="30">
-					<bucket class="java.lang.String">
-						<bucketExpression><![CDATA[$F{namesignal}]]></bucketExpression>
-					</bucket>
-					<crosstabColumnHeader>
-						<cellContents backcolor="#F0F8FF" mode="Opaque">
-							<textField>
-								<reportElement style="Crosstab Data Text" mode="Opaque" x="0" y="0" width="80" height="30" backcolor="#FFCC00" uuid="c0bd2255-1374-418f-a62c-9fbe245d0aa1"/>
-								<textElement verticalAlignment="Middle">
-									<font isBold="true" isItalic="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$V{namesignal1}]]></textFieldExpression>
-							</textField>
-						</cellContents>
-					</crosstabColumnHeader>
-					<crosstabTotalColumnHeader>
-						<cellContents/>
-					</crosstabTotalColumnHeader>
-				</columnGroup>
-				<measure name="namesignalMeasure" class="java.lang.Integer" calculation="Count">
-					<measureExpression><![CDATA[$F{namesignal}]]></measureExpression>
-				</measure>
-				<crosstabCell width="80" height="0">
-					<cellContents/>
-				</crosstabCell>
-				<crosstabCell height="25" rowTotalGroup="namesignal">
-					<cellContents backcolor="#BFE1FF" mode="Opaque">
-						<textField>
-							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" uuid="e3f3f790-d44c-4cb6-a98e-b29d69f35934"/>
-							<textFieldExpression><![CDATA[$V{namesignalMeasure}]]></textFieldExpression>
-						</textField>
-					</cellContents>
-				</crosstabCell>
-				<crosstabCell width="50" columnTotalGroup="namesignal1">
-					<cellContents backcolor="#BFE1FF" mode="Opaque">
-						<textField>
-							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" uuid="8cca828a-f1c9-47dc-8e97-040163e3b58e"/>
-							<textFieldExpression><![CDATA[$V{namesignalMeasure}]]></textFieldExpression>
-						</textField>
-					</cellContents>
-				</crosstabCell>
-				<crosstabCell rowTotalGroup="namesignal" columnTotalGroup="namesignal1">
-					<cellContents backcolor="#BFE1FF" mode="Opaque">
-						<textField>
-							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" uuid="25fac220-a971-4b1e-9f0b-16ebc6f7f879"/>
-							<textFieldExpression><![CDATA[$V{namesignalMeasure}]]></textFieldExpression>
-						</textField>
-					</cellContents>
-				</crosstabCell>
-			</crosstab>
-		</band>
-	</columnHeader>
 	<detail>
 		<band height="156" splitType="Stretch">
 			<componentElement>
-				<reportElement key="table 8" style="table 8" x="0" y="0" width="758" height="156" uuid="bcea6770-0a17-4417-80c4-2eca0dd2e4c0"/>
+				<reportElement key="table 9" style="table 9" x="0" y="0" width="758" height="156" uuid="4508d3a5-0700-4fe3-9c99-87749187bfed"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="ds_Result" uuid="dc95aab7-efed-408c-9710-534df1fcd348">
+					<datasetRun subDataset="ds_Result" uuid="6d938ce7-ac30-4e39-9a0b-62991c0a107a">
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:column width="100" uuid="eeceb071-8705-4011-8efa-31f383afb546">
-						<jr:detailCell style="table 8_TD" height="20" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="100" height="20" uuid="11e7733d-8324-46f3-bdbc-1cb46cabee10"/>
+					<jr:column width="100" uuid="a2793c4a-233c-4760-8a2e-ff2ec9e4d30f">
+						<jr:columnHeader style="table 9_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="100" height="30" uuid="e9599dd1-3c78-40c0-8f00-ca5cd9a63180"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true" isItalic="true"/>
+								</textElement>
+								<text><![CDATA[Дата/время]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
+							<textField pattern="dd.MM.yyyy hh:mm">
+								<reportElement x="10" y="0" width="90" height="20" uuid="468e2f60-39fd-4fa1-a1d2-b5105630d8e3"/>
 								<textElement verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{dt}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{Дата/время}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="80" uuid="a33928c5-9782-4da4-9857-ef02296ebae7">
-						<jr:detailCell style="table 8_TD" height="20" rowSpan="1">
-							<textField pattern="0.0">
-								<reportElement x="0" y="0" width="80" height="20" uuid="f0ca9385-6543-4a88-952a-7243586564c2"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{val}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="80" uuid="7530bbb0-7af5-4f0e-8242-1ab12d7d3d95">
-						<jr:detailCell style="table 8_TD" height="20" rowSpan="1">
-							<textField pattern="0.0">
-								<reportElement x="0" y="0" width="80" height="20" uuid="f9e1a30b-ff4f-4565-86f3-58ec69ed3345"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{val2}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="80" uuid="c6fc7a6b-c7aa-4e7c-8feb-db0480f480b0">
-						<jr:detailCell style="table 8_TD" height="20" rowSpan="1">
-							<textField pattern="0.0">
-								<reportElement x="0" y="0" width="80" height="20" uuid="cd94b189-dcf5-414e-a3ae-91cdd4785229"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{val3}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="80" uuid="62473a26-506e-47f6-9abc-d63d536c85eb">
-						<jr:detailCell style="table 8_TD" height="20" rowSpan="1">
+					<jr:column width="80" uuid="ee615945-bd42-448d-b375-8d434c8db345">
+						<jr:columnHeader style="table 9_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="80" height="30" uuid="90d964b2-6b81-4f54-8b09-36378a47f7a8"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true" isItalic="true"/>
+								</textElement>
+								<text><![CDATA[Выходной ток]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="80" height="20" uuid="5dd8a7a3-6763-4d2f-9e39-f02c8ad4c22f"/>
+								<reportElement x="0" y="0" width="80" height="20" uuid="99890071-445c-4692-a543-652528f94ed7"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{val4}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{Выходной ток}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="80" uuid="5ad17f6d-7015-4b0d-879e-8ebb93b8b602">
-						<jr:detailCell style="table 8_TD" height="20" rowSpan="1">
-							<textField pattern="0.0">
-								<reportElement x="0" y="0" width="80" height="20" uuid="aae028d8-3836-4dc5-81ef-d2ec7b9a8aa6"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{val5}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="80" uuid="ae120df5-5830-45e1-bba1-8109d91e3c76">
-						<jr:detailCell style="table 8_TD" height="20" rowSpan="1">
+					<jr:column width="80" uuid="f146baa4-0f35-40c8-800b-39b3bd9c828b">
+						<jr:columnHeader style="table 9_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="80" height="30" uuid="38fdb6ea-0482-4e5a-852c-64df0ed7c45d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true" isItalic="true"/>
+								</textElement>
+								<text><![CDATA[Выходное напряжение]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="80" height="20" uuid="dd6eb9ee-2188-464f-9a30-6e469786219e"/>
+								<reportElement x="0" y="0" width="80" height="20" uuid="f42da7f8-1553-477e-823d-cdfbcb81f9d8"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{val6}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{Выходное напряжение}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="80" uuid="8862350e-5087-4afc-8723-73e89bca5c50">
-						<jr:detailCell style="table 8_TD" height="20" rowSpan="1">
-							<textField pattern="0.00">
-								<reportElement x="0" y="0" width="80" height="20" uuid="1e4f430f-6d2f-4e97-8f9b-8b88ee1cda1e"/>
+					<jr:column width="80" uuid="89530419-6ba4-4fc4-a0cb-dccfae74e51d">
+						<jr:columnHeader style="table 9_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="80" height="30" uuid="88066d85-572e-4ae6-9968-8dc91845c434"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true" isItalic="true"/>
+								</textElement>
+								<text><![CDATA[Датчик потенциала]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="80" height="20" uuid="57fd71c0-77e1-4d96-b1a6-a1949457ac67"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{val7}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{Датчик потенциала}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="80" uuid="a7680453-139f-4348-b5c6-b8bdd78b5666">
-						<jr:detailCell style="table 8_TD" height="20" rowSpan="1">
-							<textField pattern="0.00">
-								<reportElement x="0" y="0" width="80" height="20" uuid="030f7a48-5ceb-44a5-8371-dabf819520a8"/>
+					<jr:column width="80" uuid="f60bd9d5-cc0a-4d0c-89d5-e147a8ad385e">
+						<jr:columnHeader style="table 9_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="80" height="30" uuid="a46d9b54-d846-48ff-a318-43f9ef8939af"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true" isItalic="true"/>
+								</textElement>
+								<text><![CDATA[Режим стабилизации]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="80" height="20" uuid="89fad5bb-1e60-491f-ae02-00bc41c25891"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{val8}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{Режим стабилизации}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="80" uuid="00558ac1-08c7-43b7-88ab-1a3d784754fc">
+						<jr:columnHeader style="table 9_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="80" height="30" uuid="2082c3ff-37ec-4818-852f-745f1868cd9b"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true" isItalic="true"/>
+								</textElement>
+								<text><![CDATA[Значение стабилизации]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="80" height="20" uuid="f17fb968-100a-4ca1-bb02-56e3ccd3c78d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{Значение стабилизации}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="80" uuid="03ed4cb2-378e-4e9e-a011-081ae802a086">
+						<jr:columnHeader style="table 9_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="80" height="30" uuid="44c2a1fc-a54c-4857-bca9-02bce020a45c"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true" isItalic="true"/>
+								</textElement>
+								<text><![CDATA[Сотояние силового ]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="80" height="20" uuid="45b6e602-60c6-4041-bf7c-8f3aa16e2e32"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{Сотояние силового }]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="80" uuid="6b0bf2ff-4bf4-4612-b60f-3d5e9a704267">
+						<jr:columnHeader style="table 9_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="80" height="30" uuid="78eaad75-97ab-41de-a1eb-d22d3c98a2f4"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true" isItalic="true"/>
+								</textElement>
+								<text><![CDATA[Текущие показания А+]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="80" height="20" uuid="3671c4ac-d120-41b7-8400-ea289c8ae3b6"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{Текущие показания А+}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="80" uuid="06dfe697-e0ee-4e54-ae7c-33677a4050b0">
+						<jr:columnHeader style="table 9_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="80" height="30" uuid="15298eef-5e56-4205-bdf8-9a9a8b4a3e13"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true" isItalic="true"/>
+								</textElement>
+								<text><![CDATA[Текущие показания R+]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="80" height="20" uuid="6dc2e4ed-0ab7-4f28-89e3-76a28e27858d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{Текущие показания R+}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -419,12 +426,12 @@ order by position(idsignal::text in '87,86,89,95,96,99,27,29')]]>
 	<pageFooter>
 		<band height="22">
 			<textField>
-				<reportElement x="204" y="2" width="80" height="20" uuid="042786f2-0651-43f8-8b1d-531ac0f65fd4"/>
+				<reportElement x="304" y="2" width="80" height="20" uuid="042786f2-0651-43f8-8b1d-531ac0f65fd4"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement x="284" y="2" width="40" height="20" uuid="813618fb-bb48-4415-b7f9-b8f8172fdb84"/>
+				<reportElement x="384" y="2" width="40" height="20" uuid="813618fb-bb48-4415-b7f9-b8f8172fdb84"/>
 				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 		</band>

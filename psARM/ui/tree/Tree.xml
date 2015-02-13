@@ -10,44 +10,44 @@
 	</padding>
 	<Accordion fx:id="accordTree">
 		<panes>
-			<TitledPane fx:id="tpSchemes" prefWidth="${spTree.width-spTree.padding.left-spTree.padding.right}" >
+			<TitledPane fx:id="tpSchemes">
 				<graphic>
 					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-						<Image url="@../Icon/schemes.png"/>
+						<Image url="@../../Icon/schemes.png"/>
 					</ImageView>
 				</graphic>
 				<content>
 					<TreeView fx:id="tvSchemes" showRoot="false">
 						<root>
-							<TreeItem fx:id="trSchemes" value="trSchemes"/>
+							<TreeItem fx:id="trSchemes"/>
 						</root>
 					</TreeView>
 				</content>
 			</TitledPane>
-			<TitledPane fx:id="tpTrends" text="Тренди" >
+			<TitledPane fx:id="tpReports">
 				<graphic>
 					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-						<Image url="@../Icon/trend2.png"/>
-					</ImageView>
-				</graphic>
-				<content>
-					<TreeView fx:id="tvTrends" showRoot="false">
-						<root>
-							<TreeItem fx:id="trTrends" value="trTrends"/>
-						</root>
-					</TreeView>
-				</content>
-			</TitledPane>
-			<TitledPane fx:id="tpReports" text="Звіти" >
-				<graphic>
-					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-						<Image url="@../Icon/report.png"/>
+						<Image url="@../../Icon/report.png"/>
 					</ImageView>
 				</graphic>
 				<content>
 					<TreeView fx:id="tvReports" showRoot="false">
 						<root>
-							<TreeItem fx:id="trReports" value="trReports"/>
+							<TreeItem fx:id="trReports"/>
+						</root>
+					</TreeView>
+				</content>
+			</TitledPane>
+			<TitledPane fx:id="tpSchemesLocal" prefWidth="${spTree.width-spTree.padding.left-spTree.padding.right}" visible="false">
+				<graphic>
+					<ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+						<Image url="@../../Icon/scheme.png"/>
+					</ImageView>
+				</graphic>
+				<content>
+					<TreeView fx:id="tvSchemesLocal" showRoot="false">
+						<root>
+							<TreeItem fx:id="trSchemesLocal"/>
 						</root>
 					</TreeView>
 				</content>
