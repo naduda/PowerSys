@@ -64,6 +64,7 @@ public class TreeController implements Initializable, IControllerInit {
 				
 				StageLoader stage = new StageLoader("ReportPeriod.xml", 
 						SingleObject.getResourceBundle().getString("keyPeriod"), true);
+				stage.setResizable(false);
 				
 				ReportPeriodController controller = (ReportPeriodController) stage.getController();
 				controller.setIdReport(item.getValue().getId());
@@ -93,7 +94,7 @@ public class TreeController implements Initializable, IControllerInit {
 								schemeHistory.remove(0);
 							}
 							if (schemeHistory.size() > 1) {
-								MainStage.controller.getToolBarController().getPrevious().getStyleClass().clear();
+								MainStage.controller.getToolBarController().getPrevious().getStyleClass().remove("previous_gray");
 								MainStage.controller.getToolBarController().getPrevious().getStyleClass().add("previous");
 							}
 						}

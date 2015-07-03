@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name="tspan", namespace="http://www.w3.org/2000/svg")
+@XmlRootElement(name="tspan", namespace=INamespaces.SVG)
 public class Tspan {
 	@XmlAttribute(name="x")
 	private Double x;

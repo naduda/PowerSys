@@ -53,10 +53,10 @@
 			<sideBarContent>
 				<VBox spacing="-2">
 					<Separator/>
-					<ToolBar>
-						<Button fx:id="showAlarm" onAction="#showAlarm"/>
+					<HBox alignment="center_left">
+						<Button fx:id="showAlarm" onAction="#showAlarm" styleClass="toolBarButton, hide-down"/>
 						<Label fx:id="statusLabel" text="Status bar" />
-					</ToolBar>
+					</HBox>
 				</VBox>
 			</sideBarContent>
 		</SidePane>

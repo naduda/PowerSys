@@ -8,6 +8,6 @@ import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserDefs {
-	@XmlElement(name="ud", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlElement(name="ud", namespace=INamespaces.VISIO)
 	List<Ud> ud;
 }

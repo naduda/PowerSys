@@ -1,17 +1,12 @@
 package reports;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Properties;
@@ -19,6 +14,7 @@ import java.util.logging.Level;
 
 import pr.log.LogFiles;
 import pr.model.Report;
+import pr.powersys.ObjectSerializable;
 import single.SQLConnect;
 import single.SingleFromDB;
 import net.sf.jasperreports.engine.JRDataset;
@@ -31,6 +27,7 @@ import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignQuery;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.HtmlExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
@@ -45,7 +42,8 @@ public class ReportTools {
 		this.sqlConnect = sqlConnect;
 	}
 	
-	public String getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd) {
+	
+	public ObjectSerializable getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd, String format) {
 		String pattern = "YYYY-MM-dd";
 		Report r = SingleFromDB.getReports().get(idReport);
 		if (r == null) return null;
@@ -73,45 +71,36 @@ public class ReportTools {
 			
 			JasperReport rep = JasperCompileManager.compileReport(design);
 			JasperPrint jp = JasperFillManager.fillReport(rep, null, conn);
-						
-			HtmlExporter exporter = new HtmlExporter();
-			exporter.setExporterInput(new SimpleExporterInput(jp));
-			exporter.setExporterOutput(new SimpleHtmlExporterOutput(bos));
 			
-			exporter.exportReport();
-			
-			try {
+			switch (format.toLowerCase()) {
+			case "html":
+				HtmlExporter exporter = new HtmlExporter();
+				exporter.setExporterInput(new SimpleExporterInput(jp));
+				exporter.setExporterOutput(new SimpleHtmlExporterOutput(bos));
+				exporter.exportReport();
+				break;
+			case "xls":
 				JRXlsExporter exporterXLS = new JRXlsExporter();
 				exporterXLS.setExporterInput(new SimpleExporterInput(jp));
-				String filePath = r.getTemplate().getName();
-				filePath = filePath.substring(0, filePath.indexOf("."));
-				filePath = "Z:/ОИК/Kazahstan/" + filePath + "___";
-				
-				File fileXLS = new File(filePath + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd_MM_yyyy_HH_mm_ss")) + ".xls");
-				exporterXLS.setExporterOutput(new SimpleOutputStreamExporterOutput(fileXLS));
+				exporterXLS.setExporterOutput(new SimpleOutputStreamExporterOutput(bos));
 				SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
 				//configuration.setOnePagePerSheet(true);
 				configuration.setDetectCellType(true);
 				configuration.setCollapseRowSpan(false);
 				exporterXLS.setConfiguration(configuration);
 				exporterXLS.exportReport();
-			} catch (Exception e) {
-				LogFiles.log.log(Level.SEVERE, "Create excel ...", e);
+				break;
+			case "pdf":
+				JRPdfExporter exporterPDF = new JRPdfExporter();
+				exporterPDF.setExporterInput(new SimpleExporterInput(jp));
+				exporterPDF.setExporterOutput(new SimpleOutputStreamExporterOutput(bos));
+				exporterPDF.exportReport();
+				break;
 			}
 			
-			try (BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(bos.toByteArray()), "UTF-8"));) {
-		        StringBuilder sb = new StringBuilder();
-		        String line = br.readLine();
-
-		        while (line != null) {
-		            sb.append(line);
-		            sb.append(System.lineSeparator());
-		            line = br.readLine();
-		        }
-		        String everything = sb.toString();
-		        return everything;
-		    }
-			
+			ObjectSerializable os = new ObjectSerializable();
+			os.setBaosSerializable(bos.toByteArray());
+			return os;
 		} catch (JRException | SQLException | IOException e) {
 			LogFiles.log.log(Level.SEVERE, "getReportById(...)", e);
 		}

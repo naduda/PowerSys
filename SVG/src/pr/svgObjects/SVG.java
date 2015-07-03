@@ -2,6 +2,7 @@ package pr.svgObjects;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -12,13 +13,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name="svg", namespace="http://www.w3.org/2000/svg")
+@XmlRootElement(name="svg", namespace=INamespaces.SVG)
 public class SVG {
 	@XmlTransient
 	private String fileName;
 	@XmlElement(name="title")
 	private String title;
-	@XmlElement(name="documentProperties", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlElement(name="documentProperties", namespace=INamespaces.VISIO)
 	private DocumentProperties documentProperties;
 	@XmlAttribute(name="width")
 	private String width;
@@ -32,7 +33,7 @@ public class SVG {
 	private Def defs;
 	@XmlElement(name="g")
 	private List<G> g;
-	@XmlAttribute(name = "space", namespace="http://www.w3.org/XML/1998/namespace", required = true)
+	@XmlAttribute(name = "space", namespace=INamespaces.XML, required = true)
 	private String space;
 	@XmlAttribute(name="color-interpolation-filters")
 	private String colorInterpolationFilters;
@@ -40,7 +41,26 @@ public class SVG {
 	private String clazz;
 	@XmlTransient
 	private double fontSize = 10;
+	@XmlTransient
+	private Map<String, G> groupMap;
 	
+	public Map<String, G> getGroupMap() {
+		if(groupMap == null) {
+			groupMap = new HashMap<>();
+			addGtoMap(groupMap, g);
+		}
+		return groupMap;
+	}
+	
+	private void addGtoMap(Map<String, G> gMap, List<G> g) {
+		if (g != null) {
+			g.forEach(gr -> {
+				gMap.put(gr.getId(), gr);
+				addGtoMap(gMap, gr.getListG());
+			});
+		}
+	}
+
 	public String getWidth() {
 		if (width.toLowerCase().endsWith("in")) {
 			width = width.replace("in", "").trim();
@@ -156,5 +176,25 @@ public class SVG {
 			e.printStackTrace();
 		}
 		return fontSize;
+	}
+
+	public DocumentProperties getDocumentProperties() {
+		return documentProperties;
+	}
+
+	public void setDocumentProperties(DocumentProperties documentProperties) {
+		this.documentProperties = documentProperties;
+	}
+
+	public String getSpace() {
+		return space;
+	}
+
+	public void setSpace(String space) {
+		this.space = space;
+	}
+
+	public void setFontSize(double fontSize) {
+		this.fontSize = fontSize;
 	}
 }

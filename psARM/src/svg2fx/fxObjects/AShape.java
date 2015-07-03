@@ -171,14 +171,12 @@ public abstract class AShape extends Group {
 	}
 	
 	public void rotate(Shape n, double deg) {
-		while (Math.abs(deg) > 180) {
-			deg = deg > 0 ? deg - 360 : deg + 360;
-		}
+		while (Math.abs(deg) > 180) deg = deg > 0 ? deg - 360 : deg + 360;
 		n.setRotate(-deg);
 
 		double adeg = Math.abs(deg);
-		double sWidth = n.getBoundsInLocal().getWidth() ;
-		double sHeight = n.getBoundsInLocal().getHeight() ;
+		double sWidth = n.getBoundsInLocal().getWidth();
+		double sHeight = n.getBoundsInLocal().getHeight();
 		
 		double sinD = Math.abs(Math.sin(Math.toRadians(adeg)));
 		double cosD = Math.abs(Math.cos(Math.toRadians(adeg)));

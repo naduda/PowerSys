@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Use {
-	@XmlAttribute(name="href", namespace="http://www.w3.org/1999/xlink")
+	@XmlAttribute(name="href", namespace=INamespaces.XLINK)
 	private String href;
 	@XmlAttribute(name="transform")
 	private String transform;

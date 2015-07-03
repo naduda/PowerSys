@@ -11,6 +11,7 @@ public class Transparant implements Serializable {
 	private String descr;
 	private Object img;
 	private byte[] imageByteArray;
+	private String svg;
 	
 	public Transparant() {
 		
@@ -67,5 +68,14 @@ public class Transparant implements Serializable {
 
 	public void setImageByteArray(byte[] imageByteArray) {
 		this.imageByteArray = imageByteArray;
+		setSvg(new String(imageByteArray));
+	}
+
+	public String getSvg() {
+		return svg;
+	}
+
+	public void setSvg(String svg) {
+		this.svg = svg;
 	}
 }

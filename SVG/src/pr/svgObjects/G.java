@@ -9,22 +9,22 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name="g", namespace="http://www.w3.org/2000/svg")
+@XmlRootElement(name="g", namespace=INamespaces.SVG)
 public class G extends AClassSVG {
-	@XmlElement(name="userDefs", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlElement(name="userDefs", namespace=INamespaces.VISIO)
 	private UserDefs userDefs;
 	@XmlElement(name="title")
 	private String title;
 	@XmlElement(name="desc")
 	private String desc;
-	@XmlElement(name="pageProperties", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlElement(name="pageProperties", namespace=INamespaces.VISIO)
 	private PageProperties pageProperties;
 	
-	@XmlElement(name="textBlock", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlElement(name="textBlock", namespace=INamespaces.VISIO)
 	private TextBlock textBlock;
-	@XmlElement(name="textRect", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlElement(name="textRect", namespace=INamespaces.VISIO)
 	private TextRect textRect;
-	@XmlElement(name="layer", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlElement(name="layer", namespace=INamespaces.VISIO)
 	private Layer layer;
 	@XmlAttribute(name="id")
 	private String id;
@@ -40,15 +40,15 @@ public class G extends AClassSVG {
 	private List<EllipseSVG> lEllipse;
 	@XmlElement(name="text")
 	private List<LineSVG> lLine;
-	@XmlElement(name="custProps", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlElement(name="custProps", namespace=INamespaces.VISIO)
 	private CustProps custProps;
-	@XmlAttribute(name="mID", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="mID", namespace=INamespaces.VISIO)
 	private Integer mID;
-	@XmlAttribute(name="groupContext", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="groupContext", namespace=INamespaces.VISIO)
 	private String groupContext;
-	@XmlAttribute(name="layerMember", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="layerMember", namespace=INamespaces.VISIO)
 	private String layerMember;
-	@XmlAttribute(name="index", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="index", namespace=INamespaces.VISIO)
 	private Integer index;
 	@XmlAttribute(name="transform")
 	private String transform;
@@ -192,5 +192,61 @@ public class G extends AClassSVG {
 
 	public void setTextRect(TextRect textRect) {
 		this.textRect = textRect;
+	}
+
+	public UserDefs getUserDefs() {
+		return userDefs;
+	}
+
+	public void setUserDefs(UserDefs userDefs) {
+		this.userDefs = userDefs;
+	}
+
+	public PageProperties getPageProperties() {
+		return pageProperties;
+	}
+
+	public void setPageProperties(PageProperties pageProperties) {
+		this.pageProperties = pageProperties;
+	}
+
+	public Layer getLayer() {
+		return layer;
+	}
+
+	public void setLayer(Layer layer) {
+		this.layer = layer;
+	}
+
+	public Integer getmID() {
+		return mID;
+	}
+
+	public void setmID(Integer mID) {
+		this.mID = mID;
+	}
+
+	public String getGroupContext() {
+		return groupContext;
+	}
+
+	public void setGroupContext(String groupContext) {
+		this.groupContext = groupContext;
+	}
+
+	public String getLayerMember() {
+		return layerMember;
+	}
+
+	public void setLayerMember(String layerMember) {
+		this.layerMember = layerMember;
+	}
+
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
 	}
 }

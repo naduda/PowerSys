@@ -6,9 +6,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TextBlock {
-	@XmlAttribute(name="margins", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="margins", namespace=INamespaces.VISIO)
 	private String margins;
-	@XmlAttribute(name="tabSpace", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="tabSpace", namespace=INamespaces.VISIO)
 	private String tabSpace;
 	
 	public String getMargins() {

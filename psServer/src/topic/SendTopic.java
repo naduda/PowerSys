@@ -63,6 +63,7 @@ public class SendTopic implements Runnable {
 			dbServer = "localhost";
 			dbPort = "5432";
 			dbName = "PowerSys_Donetsk_25";
+			dbName = "PowerSys_Donetsk";
 			//this.dbName = "Zaporizh";
 			dbUser = "postgres";
 			dbPassword = "12345678";

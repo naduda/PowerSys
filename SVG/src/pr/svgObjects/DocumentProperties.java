@@ -4,12 +4,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 public class DocumentProperties {
-	@XmlElement(name="userDefs", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlElement(name="userDefs", namespace=INamespaces.VISIO)
 	private UserDefs userDefs;
-	@XmlAttribute(name="langID", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="langID", namespace=INamespaces.VISIO)
 	private String langID;
-	@XmlAttribute(name="metric", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="metric", namespace=INamespaces.VISIO)
 	private Boolean metric;
-	@XmlAttribute(name="viewMarkup", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="viewMarkup", namespace=INamespaces.VISIO)
 	private Boolean viewMarkup;
 }

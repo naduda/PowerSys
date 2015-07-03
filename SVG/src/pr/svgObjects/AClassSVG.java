@@ -44,6 +44,10 @@ public abstract class AClassSVG {
 		return clazz;
 	}
 	
+	public void setClazz(String clazz) {
+		this.clazz = clazz;
+	}
+	
 	public String getStyle() {
 		return style;
 	}
@@ -83,7 +87,7 @@ public abstract class AClassSVG {
 		
 		return ret;
 	}
-	
+
 	private Node getMarkerFX(Marker marker, SVG svg, boolean isStart, double markerUnits) {
 		Use u = marker.getUse();
 		G gM = svg.getDefs().getGById(u.getHref().substring(1));

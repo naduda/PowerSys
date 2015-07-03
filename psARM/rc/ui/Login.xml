@@ -4,32 +4,35 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.LoginController" styleClass="root">
+<GridPane alignment="center" hgap="10" vgap="10" 
+	xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.LoginController" styleClass="root">
+
+	<padding>
+		<Insets top="10" right="25" bottom="10" left="25"/>
+	</padding>
+
+	<HBox spacing="10" alignment="center" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2">
+		<Text id="app-text" text="PowerSys v1.1" />
+	</HBox>
 	
-	<center>
-		<HBox spacing="10" alignment="center">
-			<padding>
-				<Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
-			</padding>
+	<Label fx:id="lUser" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-text-fill: green;"/>
+	<TextField fx:id="tUser" text="postgres" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+	
+	<Label fx:id="lPassword" GridPane.columnIndex="0" GridPane.rowIndex="2" style="-fx-text-fill: green;"/>
+	<PasswordField fx:id="tPassword" text="12345678" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
-			<Label fx:id="lbAddress" />
-			<TextField  fx:id="txtAddress" text="127.0.0.1" />
-		</HBox>
-	</center>
+	<Label fx:id="lbAddress" GridPane.columnIndex="0" GridPane.rowIndex="3" style="-fx-text-fill: green;"/>
+	<TextField  fx:id="txtAddress" text="127.0.0.1" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
-	<bottom>
-		<HBox spacing="10" alignment="center">
-			<padding>
-				<Insets bottom="5.0" left="2.0" right="2.0" top="5.0"/>
-			</padding>
+	<Button fx:id="btnOK" onAction="#btnOK" GridPane.columnIndex="0" GridPane.rowIndex="5" style="-fx-text-fill: green;"/>
 
-			<Button fx:id="btnOK" onAction="#btnOK"/>
-			<Button fx:id="btnCancel" onAction="#btnCancel"/>
-		</HBox>
-	</bottom>
+	<HBox spacing="10" alignment="bottom_right" GridPane.columnIndex="1" GridPane.rowIndex="5">
+		<Button fx:id="btnCancel" onAction="#btnCancel" GridPane.columnIndex="1" GridPane.rowIndex="5" style="-fx-text-fill: green;"/>
+	</HBox>
 
 	<stylesheets>
 		<URL value="@Main.css" />
 	</stylesheets>
-</BorderPane>
+</GridPane>

@@ -6,36 +6,28 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CP {
-	@XmlAttribute(name="nameU", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="nameU", namespace=INamespaces.VISIO)
 	private String nameU;
-	@XmlAttribute(name="lbl", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="lbl", namespace=INamespaces.VISIO)
 	private String lbl;
-	@XmlAttribute(name="val", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="val", namespace=INamespaces.VISIO)
 	private String val;	
-	@XmlAttribute(name="prompt", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="prompt", namespace=INamespaces.VISIO)
 	private String prompt;
-	@XmlAttribute(name="type", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="type", namespace=INamespaces.VISIO)
 	private Integer type;
-	@XmlAttribute(name="format", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="format", namespace=INamespaces.VISIO)
 	private String format;
-	@XmlAttribute(name="sortKey", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="sortKey", namespace=INamespaces.VISIO)
 	private String sortKey;
-	@XmlAttribute(name="invis", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="invis", namespace=INamespaces.VISIO)
 	private boolean invis;
-	@XmlAttribute(name="ask", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="ask", namespace=INamespaces.VISIO)
 	private boolean ask;
-	@XmlAttribute(name="langID", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="langID", namespace=INamespaces.VISIO)
 	private String langID;
-	@XmlAttribute(name="cal", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="cal", namespace=INamespaces.VISIO)
 	private String cal;	
-	@XmlAttribute(name="signals", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
-	private String signals;
-	@XmlAttribute(name="id", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
-	private String id;
-	@XmlAttribute(name="idTS", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
-	private String idTS;
-	@XmlAttribute(name="Precision", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
-	private String precision;
 	
 	@Override
 	public String toString() {
@@ -73,50 +65,6 @@ public class CP {
 			this.val = "VT4(" + val + ")";
 			break;	
 		}
-	}
-
-	public String getSignals() {
-		if (signals != null && signals.toLowerCase().startsWith("vt")) {
-			return signals.substring(signals.indexOf("(") + 1, signals.indexOf(")"));
-		}
-		return signals;
-	}
-
-	public void setSignals(String signals) {
-		this.signals = signals;
-	}
-
-	public String getId() {
-		if (id != null && id.toLowerCase().startsWith("vt")) {
-			return id.substring(id.indexOf("(") + 1, id.indexOf(")"));
-		}
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getIdTS() {
-		if (idTS != null && idTS.toLowerCase().startsWith("vt")) {
-			return idTS.substring(idTS.indexOf("(") + 1, idTS.indexOf(")"));
-		}
-		return idTS;
-	}
-
-	public void setIdTS(String idTS) {
-		this.idTS = idTS;
-	}
-
-	public String getPrecision() {
-		if (precision != null && precision.toLowerCase().startsWith("vt")) {
-			return precision.substring(precision.indexOf("(") + 1, precision.indexOf(")"));
-		}
-		return precision;
-	}
-
-	public void setPrecision(String precision) {
-		this.precision = precision;
 	}
 
 	public String getPrompt() {

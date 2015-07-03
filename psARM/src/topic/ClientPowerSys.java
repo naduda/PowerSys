@@ -39,6 +39,7 @@ import pr.model.UserEventJournalItem;
 import pr.model.VsignalView;
 import pr.powersys.IPowersys;
 import pr.powersys.MySocketFactory;
+import pr.powersys.ObjectSerializable;
 import single.SingleObject;
 
 @SuppressWarnings("unchecked")
@@ -53,7 +54,9 @@ public class ClientPowerSys implements IPowersys {
 		if (myServer == null) {
 			try {
 				MySocketFactory.setServer(SingleObject.ipAddress);
-				myServer = (IPowersys) Naming.lookup(String.format("rmi://%s:%s/PowerSysService", SingleObject.ipAddress, IPowersys.RMI_PORT));
+				myServer = (IPowersys) Naming
+						.lookup(String.format("rmi://%s:%s/PowerSysService", 
+								SingleObject.ipAddress, IPowersys.RMI_PORT));
 			} catch (NotBoundException | RemoteException | MalformedURLException e) {
 				LogFiles.log.log(Level.WARNING, "PowerSysService is stoped");
 				LogFiles.log.log(Level.INFO, "Exit ...");
@@ -98,8 +101,8 @@ public class ClientPowerSys implements IPowersys {
 	}
 	
 	@Override
-	public String getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd) {
-		return (String) new ClientRMI(c -> c.getReportById(idReport, dtBeg, dtEnd)).get();
+	public ObjectSerializable getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd, String format) {
+		return (ObjectSerializable) new ClientRMI(c -> c.getReportById(idReport, dtBeg, dtEnd, format)).get();
 	}
 //	==============================================================================
 	public Map<Integer, Tscheme> getSchemesMap() {

@@ -14,9 +14,9 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Def {
 	@XmlAttribute(name = "id")
 	private String id;
-	@XmlElement(name="g", namespace="http://www.w3.org/2000/svg")
+	@XmlElement(name="g", namespace=INamespaces.SVG)
 	private List<G> lg;
-	@XmlElement(name="marker", namespace="http://www.w3.org/2000/svg")
+	@XmlElement(name="marker", namespace=INamespaces.SVG)
 	private List<Marker> markers;
 	@XmlElement(name="linearGradient")
 	private List<LinearGradient> linearGradients;

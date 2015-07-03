@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Invertor" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="758" leftMargin="56" rightMargin="28" topMargin="28" bottomMargin="28" uuid="4c70f61b-5e61-48bd-8614-1038aa8f21e1">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Invertor" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="744" leftMargin="56" rightMargin="42" topMargin="28" bottomMargin="28" uuid="4c70f61b-5e61-48bd-8614-1038aa8f21e1">
 	<property name="ireport.zoom" value="1.2100000000000009"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -241,9 +241,9 @@ where v1.val is not null]]>
 	<title>
 		<band height="46" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="802" height="46" uuid="97e24455-bb69-4823-8377-f5e5a0264ce2"/>
+				<reportElement x="0" y="0" width="744" height="46" uuid="97e24455-bb69-4823-8377-f5e5a0264ce2"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="14" isBold="true"/>
+					<font fontName="Arial" size="14" isBold="true" pdfFontName="Courier" pdfEncoding="Cp1251"/>
 				</textElement>
 				<text><![CDATA[Отчет по СКЗ №93 88 км газопровода «Каратау»]]></text>
 			</staticText>
@@ -252,7 +252,7 @@ where v1.val is not null]]>
 	<detail>
 		<band height="156" splitType="Stretch">
 			<componentElement>
-				<reportElement key="table 9" style="table 9" x="0" y="0" width="758" height="156" uuid="4508d3a5-0700-4fe3-9c99-87749187bfed"/>
+				<reportElement key="table 9" style="table 9" x="0" y="0" width="744" height="156" uuid="4508d3a5-0700-4fe3-9c99-87749187bfed"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="ds_Result" uuid="6d938ce7-ac30-4e39-9a0b-62991c0a107a">
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
@@ -262,7 +262,7 @@ where v1.val is not null]]>
 							<staticText>
 								<reportElement x="0" y="0" width="100" height="30" uuid="e9599dd1-3c78-40c0-8f00-ca5cd9a63180"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font isBold="true" isItalic="true"/>
+									<font fontName="Arial" size="8" isBold="true" isItalic="true" pdfEncoding="Cp1251"/>
 								</textElement>
 								<text><![CDATA[Дата/время]]></text>
 							</staticText>
@@ -270,7 +270,9 @@ where v1.val is not null]]>
 						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
 							<textField pattern="dd.MM.yyyy hh:mm">
 								<reportElement x="10" y="0" width="90" height="20" uuid="468e2f60-39fd-4fa1-a1d2-b5105630d8e3"/>
-								<textElement verticalAlignment="Middle"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial" pdfEncoding="Cp1251"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{Дата/время}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -280,7 +282,7 @@ where v1.val is not null]]>
 							<staticText>
 								<reportElement x="0" y="0" width="80" height="30" uuid="90d964b2-6b81-4f54-8b09-36378a47f7a8"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font isBold="true" isItalic="true"/>
+									<font fontName="Arial" size="8" isBold="true" isItalic="true" pdfEncoding="Cp1251"/>
 								</textElement>
 								<text><![CDATA[Выходной ток]]></text>
 							</staticText>
@@ -288,7 +290,9 @@ where v1.val is not null]]>
 						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
 							<textField>
 								<reportElement x="0" y="0" width="80" height="20" uuid="99890071-445c-4692-a543-652528f94ed7"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" pdfEncoding="Cp1251"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{Выходной ток}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -298,7 +302,7 @@ where v1.val is not null]]>
 							<staticText>
 								<reportElement x="0" y="0" width="80" height="30" uuid="38fdb6ea-0482-4e5a-852c-64df0ed7c45d"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font isBold="true" isItalic="true"/>
+									<font fontName="Arial" size="8" isBold="true" isItalic="true" pdfEncoding="Cp1251"/>
 								</textElement>
 								<text><![CDATA[Выходное напряжение]]></text>
 							</staticText>
@@ -306,7 +310,9 @@ where v1.val is not null]]>
 						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
 							<textField>
 								<reportElement x="0" y="0" width="80" height="20" uuid="f42da7f8-1553-477e-823d-cdfbcb81f9d8"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" pdfEncoding="Cp1251"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{Выходное напряжение}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -316,7 +322,7 @@ where v1.val is not null]]>
 							<staticText>
 								<reportElement x="0" y="0" width="80" height="30" uuid="88066d85-572e-4ae6-9968-8dc91845c434"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font isBold="true" isItalic="true"/>
+									<font fontName="Arial" size="8" isBold="true" isItalic="true" pdfEncoding="Cp1251"/>
 								</textElement>
 								<text><![CDATA[Датчик потенциала]]></text>
 							</staticText>
@@ -324,7 +330,9 @@ where v1.val is not null]]>
 						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
 							<textField>
 								<reportElement x="0" y="0" width="80" height="20" uuid="57fd71c0-77e1-4d96-b1a6-a1949457ac67"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" pdfEncoding="Cp1251"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{Датчик потенциала}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -334,7 +342,7 @@ where v1.val is not null]]>
 							<staticText>
 								<reportElement x="0" y="0" width="80" height="30" uuid="a46d9b54-d846-48ff-a318-43f9ef8939af"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font isBold="true" isItalic="true"/>
+									<font fontName="Arial" size="8" isBold="true" isItalic="true" pdfEncoding="Cp1251"/>
 								</textElement>
 								<text><![CDATA[Режим стабилизации]]></text>
 							</staticText>
@@ -342,7 +350,9 @@ where v1.val is not null]]>
 						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
 							<textField>
 								<reportElement x="0" y="0" width="80" height="20" uuid="89fad5bb-1e60-491f-ae02-00bc41c25891"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" pdfEncoding="Cp1251"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{Режим стабилизации}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -352,7 +362,7 @@ where v1.val is not null]]>
 							<staticText>
 								<reportElement x="0" y="0" width="80" height="30" uuid="2082c3ff-37ec-4818-852f-745f1868cd9b"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font isBold="true" isItalic="true"/>
+									<font fontName="Arial" size="8" isBold="true" isItalic="true" pdfEncoding="Cp1251"/>
 								</textElement>
 								<text><![CDATA[Значение стабилизации]]></text>
 							</staticText>
@@ -360,7 +370,9 @@ where v1.val is not null]]>
 						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
 							<textField>
 								<reportElement x="0" y="0" width="80" height="20" uuid="f17fb968-100a-4ca1-bb02-56e3ccd3c78d"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" pdfEncoding="Cp1251"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{Значение стабилизации}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -370,7 +382,7 @@ where v1.val is not null]]>
 							<staticText>
 								<reportElement x="0" y="0" width="80" height="30" uuid="44c2a1fc-a54c-4857-bca9-02bce020a45c"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font isBold="true" isItalic="true"/>
+									<font fontName="Arial" size="8" isBold="true" isItalic="true" pdfEncoding="Cp1251"/>
 								</textElement>
 								<text><![CDATA[Сотояние силового ]]></text>
 							</staticText>
@@ -378,7 +390,9 @@ where v1.val is not null]]>
 						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
 							<textField>
 								<reportElement x="0" y="0" width="80" height="20" uuid="45b6e602-60c6-4041-bf7c-8f3aa16e2e32"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" pdfEncoding="Cp1251"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{Сотояние силового }]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -388,7 +402,7 @@ where v1.val is not null]]>
 							<staticText>
 								<reportElement x="0" y="0" width="80" height="30" uuid="78eaad75-97ab-41de-a1eb-d22d3c98a2f4"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font isBold="true" isItalic="true"/>
+									<font fontName="Arial" size="8" isBold="true" isItalic="true" pdfEncoding="Cp1251"/>
 								</textElement>
 								<text><![CDATA[Текущие показания А+]]></text>
 							</staticText>
@@ -396,25 +410,29 @@ where v1.val is not null]]>
 						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
 							<textField>
 								<reportElement x="0" y="0" width="80" height="20" uuid="3671c4ac-d120-41b7-8400-ea289c8ae3b6"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" pdfEncoding="Cp1251"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{Текущие показания А+}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="80" uuid="06dfe697-e0ee-4e54-ae7c-33677a4050b0">
+					<jr:column width="84" uuid="06dfe697-e0ee-4e54-ae7c-33677a4050b0">
 						<jr:columnHeader style="table 9_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="80" height="30" uuid="15298eef-5e56-4205-bdf8-9a9a8b4a3e13"/>
+								<reportElement x="0" y="0" width="84" height="30" uuid="15298eef-5e56-4205-bdf8-9a9a8b4a3e13"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font isBold="true" isItalic="true"/>
+									<font fontName="Arial" size="8" isBold="true" isItalic="true" pdfEncoding="Cp1251"/>
 								</textElement>
 								<text><![CDATA[Текущие показания R+]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="table 9_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="80" height="20" uuid="6dc2e4ed-0ab7-4f28-89e3-76a28e27858d"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<reportElement x="0" y="0" width="84" height="20" uuid="6dc2e4ed-0ab7-4f28-89e3-76a28e27858d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" pdfEncoding="Cp1251"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{Текущие показания R+}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>

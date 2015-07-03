@@ -6,10 +6,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Ud {
-	@XmlAttribute(name="nameU", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="nameU", namespace=INamespaces.VISIO)
 	private String nameU;
-	@XmlAttribute(name="prompt", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="prompt", namespace=INamespaces.VISIO)
 	private String prompt;
-	@XmlAttribute(name="val", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="val", namespace=INamespaces.VISIO)
 	private String val;
 }

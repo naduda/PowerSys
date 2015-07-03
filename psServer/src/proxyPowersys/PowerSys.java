@@ -23,6 +23,7 @@ import jdbc.mappers.IMapperSP;
 import jdbc.mappers.IMapperT;
 import jdbc.mappers.IMapperV;
 import pr.powersys.IPowersys;
+import pr.powersys.ObjectSerializable;
 import pr.common.Encryptor;
 import pr.common.Utils;
 import pr.log.LogFiles;
@@ -146,9 +147,9 @@ public class PowerSys extends UnicastRemoteObject  implements IPowersys {
 	}
 	
 	@Override
-	public String getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd) {
+	public ObjectSerializable getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd, String format) {
 		ReportTools rt = new ReportTools(SingleFromDB.getSqlConnect());
-		return rt.getReportById(idReport, dtBeg, dtEnd);
+		return rt.getReportById(idReport, dtBeg, dtEnd, format);
 	}
 //	==============================================================================
 	@Override

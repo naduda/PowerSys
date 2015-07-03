@@ -46,7 +46,7 @@ public interface IPowersys extends Remote {
 	List<SwitchEquipmentJournalItem> getSwitchJournalItems(String idSignals) throws RemoteException;
 	
 	Map<Integer, String> getReports() throws RemoteException;
-	String getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd) throws RemoteException;
+	ObjectSerializable getReportById(int idReport, LocalDate dtBeg, LocalDate dtEnd, String format) throws RemoteException;
 //	==============================================================================
 	Map<Integer, Tscheme> getSchemesMap() throws RemoteException;
 	Map<Integer, Tconftree> getTconftreeMap() throws RemoteException;

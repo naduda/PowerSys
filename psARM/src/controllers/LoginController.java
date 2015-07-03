@@ -214,7 +214,6 @@ public class LoginController implements IControllerInit, Initializable {
 			}
 		});
 		
-		ctrlr.getShowAlarm().getStyleClass().add(ctrlr.getAlarmSplitPane().isShowingProperty().get() ? "hide-down" : "show-up");
 		ctrlr.getAlarmSplitPane().getSideBar().visibleProperty().addListener((observ, old, newVal) -> {
 			if (newVal) {
 				ctrlr.getShowAlarm().getStyleClass().add("hide-down");
@@ -226,7 +225,7 @@ public class LoginController implements IControllerInit, Initializable {
 		});
 		
 		ctrlr.getToolBarController().getHideLeft().setGraphic(null);
-		ctrlr.getTreeSplitPane().getSideBar().visibleProperty().addListener((observ, old, newValue) -> {
+		ctrlr.getTreeSplitPane().isShowingProperty().addListener((observ, old, newValue) -> {
 			if (newValue) {
 				ctrlr.getToolBarController().getHideLeft().getStyleClass().add("hide-left");
 				ctrlr.getToolBarController().getHideLeft().getStyleClass().remove("show-right");
@@ -237,7 +236,6 @@ public class LoginController implements IControllerInit, Initializable {
 		});
 		
 		ctrlr.getToolBarController().getFit().setGraphic(null);
-		ctrlr.getToolBarController().getFit().getStyleClass().add("full-screen-off");
 		SingleObject.mainStage.fullScreenProperty().addListener((observ, old, newValue) -> {
 			if (newValue) {
 				ctrlr.getToolBarController().getFit().getStyleClass().add("full-screen-on");

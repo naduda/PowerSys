@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:controller="controllers.ProgressStageController" xmlns:fx="http://javafx.com/fxml" styleClass="root">
+	<center>
+		<VBox alignment="center" style="-fx-background-color: #FACC2E;">
+			<padding>
+				<Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+			</padding>
+
+			<Label fx:id="message">
+				<font>
+					<Font size="20.0"/>
+				</font>
+			</Label>
+		</VBox>
+	</center>
+</BorderPane>

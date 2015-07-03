@@ -7,14 +7,14 @@ public class PageProperties {
 	private Double width;
 	@XmlAttribute(name="height")
 	private Double height;
-	@XmlAttribute(name="drawingScale", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="drawingScale", namespace=INamespaces.VISIO)
 	private Double drawingScale;
-	@XmlAttribute(name="pageScale", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="pageScale", namespace=INamespaces.VISIO)
 	private Double pageScale;
-	@XmlAttribute(name="drawingUnits", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="drawingUnits", namespace=INamespaces.VISIO)
 	private Double drawingUnits;
-	@XmlAttribute(name="shadowOffsetX", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="shadowOffsetX", namespace=INamespaces.VISIO)
 	private Double shadowOffsetX;
-	@XmlAttribute(name="shadowOffsetY", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="shadowOffsetY", namespace=INamespaces.VISIO)
 	private Double shadowOffsetY;
 }

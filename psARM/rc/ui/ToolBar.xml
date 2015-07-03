@@ -5,13 +5,13 @@
 <?import javafx.scene.image.*?>
 
 <ToolBar fx:id="tbMain" xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ToolBarController">
-	<Button fx:id="hideLeft" onAction="#hideTree" styleClass="hide-left" />
+	<Button fx:id="hideLeft" onAction="#hideTree" prefWidth="24" styleClass="toolBarButton, hide-left" />
 	<Separator/>
 	<Label fx:id="lDataOn"/>
 	<Label fx:id="lLastDate" prefWidth="150"/>
 	<Separator/>
-	<Button fx:id="previous" onAction="#previous" styleClass="toolBarButton" />
-	<Button fx:id="next" onAction="#next" styleClass="toolBarButton" />
+	<Button fx:id="previous" onAction="#previous" prefWidth="24" styleClass="toolBarButton, previous_gray" />
+	<Button fx:id="next" onAction="#next" prefWidth="24" styleClass="toolBarButton, next_gray" />
 	<Separator/>
 	<Button fx:id="zoomMinus" onAction="#zoomMinus" styleClass="toolBarButton" />
 	<Slider fx:id="zoomSlider" />
@@ -19,7 +19,7 @@
 	<Button fx:id="fitVertical" onAction="#fitVertical" styleClass="toolBarButton" />
 	<Button fx:id="fitHorizontal" onAction="#fitHorizontal" styleClass="toolBarButton" />
 	<Separator/>
-	<Button fx:id="fit" onAction="#fullScreen" styleClass="full-screen-on" />
+	<Button fx:id="fit" onAction="#fullScreen" styleClass="toolBarButton, full-screen-off" />
 	<Button fx:id="info" onAction="#info" styleClass="toolBarButton" />
 	<Button fx:id="findAlarms" onAction="#showAlarms" styleClass="toolBarButton" />
 	<Button fx:id="showChart" onAction="#showChart" styleClass="toolBarButton" />

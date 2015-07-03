@@ -1,7 +1,8 @@
 package pr.svgObjects;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -9,7 +10,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CustProps {
-	@XmlElement(name="cp", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlElement(name="cp", namespace=INamespaces.VISIO)
 	private List<CP> customProps;
 
 	public List<CP> getCustomProps() {
@@ -21,9 +22,15 @@ public class CustProps {
 	}
 	
 	public CP getCPbyName(String name) {
-		List<CP> ls = customProps.stream().filter(f -> f.getLbl().equals(name)).collect(Collectors.toList());
-		if (ls.size() > 0) {
-			return ls.get(0);
+		if (customProps == null || name == null) return null;
+//		Optional<CP> ls = customProps.stream().filter(f -> f.getLbl().equals(name)).findFirst();
+		Optional<CP> ls = customProps.stream().filter(f -> f.getNameU().equals(name)).findFirst();
+		if (ls.isPresent()) {
+			try {
+				return ls.get();
+			} catch (NoSuchElementException e) {
+				System.out.println(ls);
+			}
 		}
 		return null;
 	}

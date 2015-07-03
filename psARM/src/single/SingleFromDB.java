@@ -1,7 +1,6 @@
 package single;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
-import pr.common.Utils;
 import pr.log.LogFiles;
 import pr.model.DvalTI;
 import pr.model.DvalTS;
@@ -40,7 +38,7 @@ public class SingleFromDB {
 	public static Map<Integer, SpTypeSignal> spTypeSignals;
 	public static int validTimeOutTI;
 	public static int validTimeOutTS;
-	public static File svgFile = new File(Utils.getFullPath("./logs/tmp.svg"));
+	public static File svgFile;
 	public static String sqlConnectParameters;
 	
 	public Collection<DvalTS> oldTS;
@@ -51,14 +49,6 @@ public class SingleFromDB {
 		this.psClient = psClient;
 		
 		long start = System.currentTimeMillis();
-		if (!svgFile.exists()) {
-			try {
-				svgFile.createNewFile();
-			} catch (IOException e1) {
-				LogFiles.log.log(Level.SEVERE, "create tmp.svg error ...", e1);
-			}
-		}
-		
 		LogFiles.log.log(Level.INFO, "Start reading DB");
 		Map<String, Future<Object>> futures = new HashMap<>();
 		Map<String, Object> results = new HashMap<>();

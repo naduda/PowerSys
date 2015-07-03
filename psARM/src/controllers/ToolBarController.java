@@ -245,17 +245,23 @@ public class ToolBarController implements Initializable, IControllerInit {
 		treeController.setPreviusNextButton(true);
 		int curIndex = treeController.getSchemeHistory().indexOf(treeController.getTvSchemes().getSelectionModel().getSelectedItem());
 		if (curIndex < 1) return;
+		
 		TreeItem<LinkedValue> prevItem = treeController.getSchemeHistory().get(curIndex - 1);
 		treeController.getTvSchemes().getSelectionModel().select(prevItem);
 		
-		String curClass = curIndex == 1 ? "previous_gray" : "previous";
-		if (!next.getStyleClass().get(0).equalsIgnoreCase("next")) {
-			next.getStyleClass().clear();
-			next.getStyleClass().add("next");
+		if (next.getStyleClass().contains("next_gray")) {
+			next.getStyleClass().remove("next_gray");
+			if (!next.getStyleClass().contains("next")) next.getStyleClass().add("next");
 		}
-		if (!previous.getStyleClass().get(0).equalsIgnoreCase(curClass)) {
-			previous.getStyleClass().clear();
-			previous.getStyleClass().add(curClass);
+		if (previous.getStyleClass().contains("previous_gray")) {
+			previous.getStyleClass().remove("previous_gray");
+			if (!previous.getStyleClass().contains("previous")) previous.getStyleClass().add("previous");
+		}
+		
+		if (curIndex < 2) {
+			if (previous.getStyleClass().contains("previous")) previous.getStyleClass().remove("previous");
+			if (previous.getStyleClass().contains("previous_gray")) previous.getStyleClass().remove("previous_gray");
+			if (!previous.getStyleClass().contains("previous_gray")) previous.getStyleClass().add("previous_gray");
 		}
 	}
 	
@@ -265,17 +271,23 @@ public class ToolBarController implements Initializable, IControllerInit {
 		treeController.setPreviusNextButton(true);
 		int curIndex = treeController.getSchemeHistory().indexOf(treeController.getTvSchemes().getSelectionModel().getSelectedItem());
 		if (curIndex == treeController.getSchemeHistory().size() - 1) return;
+		
 		TreeItem<LinkedValue> prevItem = treeController.getSchemeHistory().get(curIndex + 1);
 		treeController.getTvSchemes().getSelectionModel().select(prevItem);
 		
-		String curClass = curIndex == treeController.getSchemeHistory().size() - 2 ? "next_gray" : "next";
-		if (!previous.getStyleClass().get(0).equalsIgnoreCase("previous")) {
-			previous.getStyleClass().clear();
-			previous.getStyleClass().add("previous");
+		if (previous.getStyleClass().contains("previous_gray")) {
+			previous.getStyleClass().remove("previous_gray");
+			if (!previous.getStyleClass().contains("previous")) previous.getStyleClass().add("previous");
 		}
-		if (!next.getStyleClass().get(0).equalsIgnoreCase(curClass)) {
-			next.getStyleClass().clear();
-			next.getStyleClass().add(curClass);
+		if (next.getStyleClass().contains("next_gray")) {
+			next.getStyleClass().remove("next_gray");
+			if (!next.getStyleClass().contains("next")) next.getStyleClass().add("next");
+		}
+		
+		if (curIndex == treeController.getSchemeHistory().size() - 2) {
+			if (next.getStyleClass().contains("next_gray")) next.getStyleClass().remove("next_gray");
+			if (next.getStyleClass().contains("next")) next.getStyleClass().remove("next");
+			if (!next.getStyleClass().contains("next_gray")) next.getStyleClass().add("next_gray");
 		}
 	}
 	

@@ -24,6 +24,21 @@
 		</HBox>
 	</right>
 
+	<bottom>
+		<HBox alignment="center" styleClass="tool-bar">
+			<padding><Insets top="10" right="10" bottom="15" left="0"/></padding>
+
+			<fx:define>
+				<ToggleGroup fx:id="repToggleGroup"/>
+			</fx:define>
+			<children>
+				<RadioButton fx:id="rbHTML" text="HTML" toggleGroup="$repToggleGroup"/>
+				<RadioButton fx:id="rbXLS" text="XLS" selected="true" toggleGroup="$repToggleGroup"/>
+				<RadioButton fx:id="rbPDF" text="PDF" toggleGroup="$repToggleGroup"/>
+			</children>
+		</HBox>
+	</bottom>
+
 	<stylesheets>
 		<URL value="@Main.css" />
 	</stylesheets>

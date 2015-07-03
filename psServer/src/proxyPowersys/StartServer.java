@@ -18,7 +18,7 @@ public class StartServer {
 	public StartServer() {
 		try {
 			PowerSys ps = new PowerSys();
-			String rmiString = String.format("rmi://%s:%s/PowerSysService", "127.0.0.1", IPowersys.RMI_PORT);
+			String rmiString = String.format("rmi://%s:%s/PowerSysService", "localhost", IPowersys.RMI_PORT);
 			
 			RMISocketFactory sf = new MySocketFactory();
 			UnicastRemoteObject.unexportObject(ps, true);

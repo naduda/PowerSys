@@ -16,13 +16,13 @@ public class Marker extends AClassSVG {
 	private String orient;
 	@XmlAttribute(name="markerUnits")
 	private String markerUnits;
-	@XmlElement(name="use", namespace="http://www.w3.org/2000/svg")
+	@XmlElement(name="use", namespace=INamespaces.SVG)
 	private Use use;
-	@XmlAttribute(name="arrowType", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="arrowType", namespace=INamespaces.VISIO)
 	private String arrowType;
-	@XmlAttribute(name="arrowSize", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="arrowSize", namespace=INamespaces.VISIO)
 	private String arrowSize;
-	@XmlAttribute(name="setback", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="setback", namespace=INamespaces.VISIO)
 	private String setback;
 	@XmlAttribute(name="overflow")
 	private String overflow;
@@ -77,7 +77,6 @@ public class Marker extends AClassSVG {
 
 	@Override
 	public Node getNode(SVG svg) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Vparagraph {
-	@XmlAttribute(name="horizAlign", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="horizAlign", namespace=INamespaces.VISIO)
 	private Integer horizAlign;
 
 	public Integer getHorizAlign() {

@@ -11,11 +11,11 @@ import javax.xml.bind.annotation.XmlElement;
 public class Pattern {
 	@XmlAttribute(name="id")
 	private String id;
-	@XmlAttribute(name="fillPattern", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="fillPattern", namespace=INamespaces.VISIO)
 	private String fillPattern;
-	@XmlAttribute(name="foreground", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="foreground", namespace=INamespaces.VISIO)
 	private String foreground;
-	@XmlAttribute(name="background", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="background", namespace=INamespaces.VISIO)
 	private String background;
 	@XmlAttribute(name="x")
 	private double x;

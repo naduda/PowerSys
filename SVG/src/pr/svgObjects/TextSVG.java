@@ -27,9 +27,9 @@ public class TextSVG extends AClassSVG {
 	private Double x;
 	@XmlAttribute(name="y")
 	private Double y;
-	@XmlAttribute(name="langID", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlAttribute(name="langID", namespace=INamespaces.VISIO)
 	private String langID;
-	@XmlElement(name="paragraph", namespace="http://schemas.microsoft.com/visio/2003/SVGExtensions/")
+	@XmlElement(name="paragraph", namespace=INamespaces.VISIO)
 	private Vparagraph vParagraph;
 	@XmlMixed
 	@XmlAnyElement(lax=false)
@@ -171,5 +171,33 @@ public class TextSVG extends AClassSVG {
 
 	public Vparagraph getvParagraph() {
 		return vParagraph;
+	}
+
+	public String getLangID() {
+		return langID;
+	}
+
+	public void setLangID(String langID) {
+		this.langID = langID;
+	}
+
+	public double getSvgFontSize() {
+		return svgFontSize;
+	}
+
+	public void setSvgFontSize(double svgFontSize) {
+		this.svgFontSize = svgFontSize;
+	}
+
+	public void setvParagraph(Vparagraph vParagraph) {
+		this.vParagraph = vParagraph;
+	}
+
+	public void setValues(List<Object> values) {
+		this.values = values;
+	}
+
+	public void setFontSize(double fontSize) {
+		this.fontSize = fontSize;
 	}
 }
